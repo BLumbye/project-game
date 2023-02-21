@@ -11,6 +11,7 @@
     "lint:style": "stylelint src/**/*.{css,scss,vue}"
   },
   "dependencies": {
+    "pinia": "^2.0.32",
     "vue": "^3.2.45"
   },
   "devDependencies": {
