@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
+import { WorkerType } from '../types/types';
 
-type WorkerType = 'labour' | 'skilled' | 'electrician';
 type WorkersState = Record<WorkerType, number>;
 
 export const useWorkersStore = defineStore('workers', {

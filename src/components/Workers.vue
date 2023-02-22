@@ -18,8 +18,8 @@
 <style scoped lang="postcss">
 .workers {
   display: grid;
-  grid-template-columns: repeat(auto, 2);
-  grid-template-rows: repeat(auto, 5);
+  grid-template-columns: repeat(2, auto);
+  grid-template-rows: repeat(5, auto);
 }
 
 .component-title {
