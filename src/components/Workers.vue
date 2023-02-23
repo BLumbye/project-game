@@ -23,7 +23,7 @@
 }
 
 .component-title {
-  grid-column: span 2 / span 2;
+  grid-column: span 2;
 }
 
 .worker-label {

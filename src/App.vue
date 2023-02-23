@@ -9,7 +9,7 @@ import NextWeek from './components/NextWeek.vue';
 </script>
 
 <template>
-  <!-- <Bid /> -->
+  <Bid />
   <div class="week-display">
     <span>Current week: 0</span>
     <span>Decision form: 1</span>
@@ -21,3 +21,12 @@ import NextWeek from './components/NextWeek.vue';
   <Funds />
   <NextWeek /> 
 </template>
+
+
+<style scoped lang="postcss">
+.week-display {
+  display: grid;
+  grid-template-columns: repeat(1, auto);
+  grid-template-rows: repeat(2, auto);
+}
+</style>
