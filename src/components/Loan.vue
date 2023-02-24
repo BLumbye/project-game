@@ -2,14 +2,45 @@
   <div class="loan">
     <h3 class="component-title">Bank loan</h3>
     <!-- header, css, fysisk title -->
-    <label for="new-loan-input" class="loan-label">New loan:</label>
-    <input type="number" class="loan-input" name="new-loan-input" />
-    <label for="repay-input" class="loan-label">Repay amount:</label>
-    <input type="number" class="loan-input" name="repay-input" />
+    <label for="new-loan-input"
+           class="loan-label">New loan:</label>
+    <input v-model="newLoan"
+           type="number"
+           class="loan-input"
+           name="new-loan-input" />
+    <label for="repay-input"
+           class="loan-label">Repay amount:</label>
+    <input type="number"
+           v-model="repay"
+           class="loan-input"
+           name="repay-input" />
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { useFinanceStore } from '../stores/financeStore';
+import { useWeekStore } from '../stores/weekStore';
+
+const weekStore = useWeekStore();
+const financeStore = useFinanceStore();
+
+const newLoan = ref(0);
+const repay = ref(0);
+
+watch(newLoan, () => {
+  financeStore.takeLoan(newLoan.value);
+});
+
+watch(repay, () => {
+  financeStore.repayLoan(repay.value);
+});
+
+watch(() => weekStore.week, () => {
+  newLoan.value = 0;
+  repay.value = 0;
+})
+</script>
 
 <style scoped lang="postcss">
 .loan {

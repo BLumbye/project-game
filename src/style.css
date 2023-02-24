@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -10,6 +16,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-size-adjust: 100%;
+
+  --boxed-background-color: #333;
 }
 
 a {
@@ -67,10 +75,18 @@ button:focus-visible {
   text-align: center;
 }
 
+.boxed {
+  background-color: var(--boxed-background-color);
+  padding: 1em;
+  border-radius: 4px;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #fff;
+
+    --boxed-background-color: #eee;
   }
 
   a:hover {

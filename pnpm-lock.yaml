@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@csstools/normalize.css': ^12.0.0
   '@typescript-eslint/eslint-plugin': ^5.52.0
   '@typescript-eslint/parser': ^5.52.0
   '@vitejs/plugin-vue': ^4.0.0
@@ -30,6 +31,7 @@ dependencies:
   vue: 3.2.47
 
 devDependencies:
+  '@csstools/normalize.css': 12.0.0
   '@typescript-eslint/eslint-plugin': 5.52.0_6cfvjsbua5ptj65675bqcn6oza
   '@typescript-eslint/parser': 5.52.0_7kw3g6rralp5ps6mg3uyzz6azm
   '@vitejs/plugin-vue': 4.0.0_vite@4.1.3+vue@3.2.47
@@ -116,6 +118,10 @@ packages:
     dependencies:
       '@csstools/css-parser-algorithms': 2.0.1_xu4ijqbgbw3jz65fprqzqcck3y
       '@csstools/css-tokenizer': 2.0.2
+    dev: true
+
+  /@csstools/normalize.css/12.0.0:
+    resolution: {integrity: sha512-M0qqxAcwCsIVfpFQSlGN5XjXWu8l5JDZN+fPt1LeW5SZexQTgnaEvgXAY+CeygRw0EeppWHi12JxESWiWrB0Sg==}
     dev: true
 
   /@csstools/selector-specificity/2.1.1_wajs5nedgkikc5pcuwett7legi:

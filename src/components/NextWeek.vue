@@ -1,10 +1,9 @@
 <template>
-  <button class="next-week-button">Next Week -></button>
+  <button class="next-week-button"
+          @click="emit('week-progressed')">Next Week -></button>
 </template>
 
 <script setup lang="ts">
-import { defineEmits } from 'vue';
-
 const emit = defineEmits<{
   (e: 'week-progressed'): void
 }>();
@@ -15,5 +14,4 @@ const emit = defineEmits<{
   text-align: center;
   font-size: 1rem;
 }
-
 </style>

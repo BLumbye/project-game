@@ -6,27 +6,46 @@ import Loan from './components/Loan.vue';
 import Funds from './components/Funds.vue';
 import Allocation from './components/Allocation.vue';
 import NextWeek from './components/NextWeek.vue';
+import { useWeekStore } from './stores/weekStore';
+
+const weekStore = useWeekStore();
 </script>
 
 <template>
-  <Bid />
-  <div class="week-display">
-    <span>Current week: 0</span>
-    <span>Decision form: 1</span>
+  <div class="container">
+
+    <Bid class="bid boxed" />
+    <div class="week-display boxed">
+      <span>Current week: {{ weekStore.week }}</span>
+      <span>Decision form: {{ weekStore.decisionForm }}</span>
+    </div>
+
+    <Workers class="workers boxed" />
+    <Equipment class="equipment boxed" />
+    <Allocation class="allocation boxed" />
+    <Loan class="loan boxed" />
+    <Funds class="funds boxed" />
+    <NextWeek class="next-week-button"
+              @week-progressed="weekStore.nextWeek()" />
   </div>
-  <Workers />
-  <Equipment />
-  <Allocation />
-  <Loan />
-  <Funds />
-  <NextWeek /> 
 </template>
 
 
 <style scoped lang="postcss">
 .week-display {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.container {
   display: grid;
-  grid-template-columns: repeat(1, auto);
-  grid-template-rows: repeat(2, auto);
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+
+.allocation,
+.next-week-button {
+  grid-column: span 2;
 }
 </style>
