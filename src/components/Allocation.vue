@@ -2,10 +2,11 @@
   <div class="allocation">
     <span class="activities-label">Activity</span>
     <span class="component-title">Allocate workers to activities</span>
+    <span class="progress-label">Progress</span>
     <span>LAB</span>
     <span>SKI</span>
     <span>ELE</span>
-    <template v-for="activity in activities"> <!-- For each -->
+    <template v-for="(activity, index) in activities"> <!-- For each -->
       <span>{{ activity.label }}</span>
       <input type="text"
              class="worker-input"
@@ -13,18 +14,19 @@
              ref="lab"
              @keypress="validateField"
              @input="(evt) => change(evt, activity.label, 'labour')" />
-      <input type="number"
+      <input type="text"
              class="worker-input"
              name="SKI-input"
              ref="ski"
              @keypress="validateField"
              @input="(evt) => change(evt, activity.label, 'skilled')" />
-      <input type="number"
+      <input type="text"
              class="worker-input"
              name="ELE-input"
              ref="ele"
              @keypress="validateField"
              @input="(evt) => change(evt, activity.label, 'electrician')" />
+      <span>{{ activityStore.activities[index].progress }}/{{ activityStore.activities[index].duration() }}</span>
     </template>
   </div>
 </template>
@@ -62,7 +64,8 @@ watch(() => weekStore.week, () => {
 </script>
 
 <style scoped lang="postcss">
-.activities-label {
+.activities-label,
+.progress-label {
   grid-row: span 2;
 }
 
@@ -72,7 +75,7 @@ watch(() => weekStore.week, () => {
 
 .allocation {
   display: grid;
-  grid-template-columns: repeat(4, auto);
+  grid-template-columns: repeat(5, auto);
   grid-template-rows: repeat(v-bind('activities.length'), auto);
 
   /* v-bind takes setup language */

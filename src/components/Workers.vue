@@ -7,19 +7,19 @@
     <label for="labour-input"
            class="worker-label">Labour</label>
     <input v-model="labour"
-           type="number"
+           type="text"
            class="worker-input"
            name="labour-input" />
     <label for="skilled-input"
            class="worker-label">Skilled</label>
     <input v-model="skilled"
-           type="number"
+           type="text"
            class="worker-input"
            name="skilled-input" />
     <label for="electrician-input"
            class="worker-label">Electrician</label>
     <input v-model="electrician"
-           type="number"
+           type="text"
            class="worker-input"
            name="electrician-input" />
   </div>

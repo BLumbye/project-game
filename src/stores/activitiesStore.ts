@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import config from '../config';
 import { Activity, WorkerType } from '../types/types';
 import { useWeekStore } from './weekStore';
 import { useEquipmentStore } from './equipmentStore';
+import { useWorkersStore } from './workersStore';
 
 const generateProgressTimelines = () => {
   const timelines: Record<string, number[]> = {};
@@ -27,6 +28,7 @@ const generateAllocationState = () => {
 
 export const useActivitiesStore = defineStore('activities', () => {
   const weekStore = useWeekStore();
+  const workersStore = useWorkersStore();
 
   // State
   const progressTimelines = ref<Record<string, number[]>>(generateProgressTimelines());
@@ -37,7 +39,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: string, week?: number) => {
       week ??= weekStore.week;
       return progressTimelines.value[activity]
-        .slice(0, week)
+        .slice(0, week + 1)
         .reduce((accumulator, current) => accumulator + current, 0);
     };
   });
@@ -51,7 +53,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       })) as Activity[];
     };
   });
-  const activities = computed(() => activitiesAtWeek.value());
+  const activities = computed(() => activitiesAtWeek.value(weekStore.week));
   const isActivityDone = computed(() => {
     return (label: string, week?: number) => {
       week ??= weekStore.week;
@@ -65,43 +67,61 @@ export const useActivitiesStore = defineStore('activities', () => {
       return config.activities.every((activity) => isActivityDone.value(activity.label, week));
     };
   });
+  const totalWorkersAssigned = computed(() => {
+    return (type: WorkerType, week?: number) => {
+      week ??= weekStore.week;
+      return config.activities.reduce(
+        (totalWorkers, activity) => totalWorkers + allocations.value[activity.label][week!][type],
+        0,
+      );
+    };
+  });
+  const activityRequirementMet = computed(() => {
+    return (activity: Activity, week?: number) => {
+      week ??= weekStore.week;
+      return (
+        !activity.requirements.activities ||
+        activity.requirements.activities.every((requiredActivity) => isActivityDone.value(requiredActivity, week))
+      );
+    };
+  });
+  const equipmentRequirementMet = computed(() => {
+    return (activity: Activity, week?: number) => {
+      week ??= weekStore.week;
+      if (!activity.requirements.equipment) return true;
+      const equipmentStore = useEquipmentStore();
+      return activity.requirements.equipment.every(
+        (requiredEquipment) => equipmentStore.equipmentAtWeek(week)[requiredEquipment]?.status !== 'unordered',
+      );
+    };
+  });
+  const workerRequirementMet = computed(() => {
+    return (activity: Activity, week?: number) => {
+      week ??= weekStore.week;
+
+      if (!activity.requirements.workers) return true;
+
+      const enoughWorkers = (type: WorkerType) => {
+        if (!activity.requirements.workers![type]) return true;
+        const enoughAssigned = activity.requirements.workers![type]! <= activity.allocation[type];
+        const enoughHired = totalWorkersAssigned.value(type, week) <= workersStore.workersAtWeek(week)[type];
+        return enoughAssigned && enoughHired;
+      };
+
+      return enoughWorkers('labour') && enoughWorkers('skilled') && enoughWorkers('electrician');
+    };
+  });
   const requirementsMet = computed(() => {
     return (label: string, week?: number) => {
       week ??= weekStore.week;
       const activities = activitiesAtWeek.value(week);
       const activity = activities.find((activity) => activity.label === label);
-      if (!activity) return false;
-      if (
-        activity.requirements.activities &&
-        activity.requirements.activities.some((requiredActivity) => !isActivityDone.value(requiredActivity, week))
-      )
-        return false;
-      if (activity.requirements.equipment) {
-        const equipmentStore = useEquipmentStore();
-        if (
-          activity.requirements.equipment.some(
-            (requiredEquipment) => equipmentStore.equipmentAtWeek(week)[requiredEquipment]?.status !== 'unordered',
-          )
-        )
-          return false;
-      }
-      if (
-        activity.requirements.workers &&
-        !(
-          activity.requirements.workers.labour &&
-          activity.requirements.workers.labour > allocations.value[activity.label][week].labour
-        ) &&
-        !(
-          activity.requirements.workers.skilled &&
-          activity.requirements.workers.skilled > allocations.value[activity.label][week].skilled
-        ) &&
-        !(
-          activity.requirements.workers.electrician &&
-          activity.requirements.workers.electrician > allocations.value[activity.label][week].electrician
-        )
-      )
-        return false;
-      return true;
+      return (
+        !!activity &&
+        activityRequirementMet.value(activity, week) &&
+        equipmentRequirementMet.value(activity, week) &&
+        workerRequirementMet.value(activity, week)
+      );
     };
   });
 
@@ -111,7 +131,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   }
   function progressActivities() {
     for (const activity of config.activities) {
-      if (!isActivityDone.value(activity.label) && requirementsMet.value(activity.label)) {
+      if (!isActivityDone.value(activity.label) && requirementsMet.value(activity.label, weekStore.week - 1)) {
         progressTimelines.value[activity.label][weekStore.week] = 1;
         if (activity.requirements.equipment && isActivityDone.value(activity.label)) {
           const equipmentStore = useEquipmentStore();
@@ -121,6 +141,14 @@ export const useActivitiesStore = defineStore('activities', () => {
     }
   }
 
+  // Watch week store to progress activities
+  watch(
+    () => weekStore.week,
+    () => {
+      progressActivities();
+    },
+  );
+
   return {
     progressTimelines,
     allocations,
@@ -129,6 +157,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     activities,
     isActivityDone,
     allActivitiesDone,
+    workerRequirementMet,
     requirementsMet,
     allocateWorker,
     progressActivities,

@@ -11,20 +11,24 @@ export const useWorkersStore = defineStore('workers', () => {
   const workers = ref(Array.from({ length: config.duration }, () => ({ labour: 0, skilled: 0, electrician: 0 })));
 
   // Getters
-  const currentWorkers = computed(() => {
-    const { week } = useWeekStore();
-    const summedWorkers: WorkersState = {
-      labour: 0,
-      skilled: 0,
-      electrician: 0,
+  const workersAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= useWeekStore().week;
+      const summedWorkers: WorkersState = {
+        labour: 0,
+        skilled: 0,
+        electrician: 0,
+      };
+      for (let i = 0; i < week; i++) {
+        summedWorkers.labour += workers.value[i].labour;
+        summedWorkers.skilled += workers.value[i].skilled;
+        summedWorkers.electrician += workers.value[i].electrician;
+      }
+      return summedWorkers;
     };
-    for (let i = 0; i < week; i++) {
-      summedWorkers.labour += workers.value[i].labour;
-      summedWorkers.skilled += workers.value[i].skilled;
-      summedWorkers.electrician += workers.value[i].electrician;
-    }
-    return summedWorkers;
   });
+
+  const currentWorkers = computed(() => workersAtWeek.value());
 
   // Actions
   function change(type: WorkerType, value: number) {
@@ -32,5 +36,9 @@ export const useWorkersStore = defineStore('workers', () => {
     workers.value[week][type] = value;
   }
 
-  return { currentWorkers, change };
+  return {
+    workersAtWeek,
+    currentWorkers,
+    change,
+  };
 });

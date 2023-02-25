@@ -9,25 +9,24 @@
     <input v-model="steelwork"
            class="equipment-input"
            name="steelwork-input"
-           :disabled="equipmentStore.equipment.steelwork!.status !== 'unordered'" />
+           :disabled="previousEquipment.steelwork!.status !== 'unordered'" />
     <label for="interior-input"
            class="equipment-label">Interior (Task B)</label>
     <input v-model="interior"
            class="equipment-input"
            name="interior-input"
-           :disabled="equipmentStore.equipment.interior!.status !== 'unordered'" />
+           :disabled="previousEquipment.interior!.status !== 'unordered'" />
     <label for="tbs-input"
            class="equipment-label">TBS (Task C)</label>
     <input v-model="tbs"
            class="equipment-input"
            name="tbs-input"
-           :disabled="equipmentStore.equipment.tbs!.status !== 'unordered'" />
+           :disabled="previousEquipment.tbs!.status !== 'unordered'" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { Ref, ref, watch } from 'vue';
+import { computed, Ref, ref, watch } from 'vue';
 import { useEquipmentStore } from '../stores/equipmentStore';
 import { useWeekStore } from '../stores/weekStore';
 import { EquipmentType } from '../types/types';
@@ -38,6 +37,7 @@ const tbs = ref('');
 
 const weekStore = useWeekStore();
 const equipmentStore = useEquipmentStore();
+const previousEquipment = computed(() => equipmentStore.equipmentAtWeek(weekStore.week - 1));
 
 const makeEquipmentWatcher = (input: Ref<string>, type: EquipmentType) => {
   return watch(input, () => {
@@ -54,15 +54,15 @@ const stopInteriorWatcher = makeEquipmentWatcher(interior, 'interior');
 const stopTBSWatcher = makeEquipmentWatcher(tbs, 'tbs');
 
 watch([() => equipmentStore.timeline, () => weekStore.week], () => {
-  if (equipmentStore.equipment.steelwork!.status !== 'unordered') {
+  if (previousEquipment.value.steelwork!.status !== 'unordered') {
     stopSteelworkWatcher();
     steelwork.value = equipmentStore.equipment.steelwork!.status!;
   }
-  if (equipmentStore.equipment.interior!.status !== 'unordered') {
+  if (previousEquipment.value.interior!.status !== 'unordered') {
     stopInteriorWatcher();
     interior.value = equipmentStore.equipment.interior!.status!;
   }
-  if (equipmentStore.equipment.tbs!.status !== 'unordered') {
+  if (previousEquipment.value.tbs!.status !== 'unordered') {
     stopTBSWatcher();
     tbs.value = equipmentStore.equipment.tbs!.status!;
   }

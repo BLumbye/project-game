@@ -5,12 +5,12 @@
     <label for="new-loan-input"
            class="loan-label">New loan:</label>
     <input v-model="newLoan"
-           type="number"
+           type="text"
            class="loan-input"
            name="new-loan-input" />
     <label for="repay-input"
            class="loan-label">Repay amount:</label>
-    <input type="number"
+    <input type="text"
            v-model="repay"
            class="loan-input"
            name="repay-input" />
@@ -29,11 +29,11 @@ const newLoan = ref(0);
 const repay = ref(0);
 
 watch(newLoan, () => {
-  financeStore.takeLoan(newLoan.value);
+  financeStore.takeLoan(Number(newLoan.value));
 });
 
 watch(repay, () => {
-  financeStore.repayLoan(repay.value);
+  financeStore.repayLoan(Number(repay.value));
 });
 
 watch(() => weekStore.week, () => {

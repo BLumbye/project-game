@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { EquipmentType, Equipment, DeliveryType } from '../types/types';
-import { mergeDeep } from '../utils/merge';
+import { deepCopy, mergeDeep } from '../utils/merge';
 import { useWeekStore } from './weekStore';
 
 type EquipmentState = Record<EquipmentType, Equipment>;
@@ -22,12 +22,15 @@ export const useEquipmentStore = defineStore('equipment', () => {
     return (week?: number) => {
       week ??= weekStore.week;
       return timeline.value
-        .slice(0, week)
-        .reduce((accumulator, current) => mergeDeep(accumulator, current), defaultState);
+        .slice(0, week + 1)
+        .reduce((accumulator, current) => mergeDeep(accumulator, current), deepCopy(defaultState)) as Record<
+        EquipmentType,
+        Equipment
+      >;
     };
   });
 
-  const equipment = computed(() => equipmentAtWeek.value());
+  const equipment = computed(() => equipmentAtWeek.value(weekStore.week));
 
   // Actions
   function populateTimeline() {
@@ -51,5 +54,5 @@ export const useEquipmentStore = defineStore('equipment', () => {
     timeline.value[weekStore.week][type] = { status: 'delivered' };
   }
 
-  return { equipment, equipmentAtWeek, order, unorder, finishDelivery };
+  return { timeline, equipment, equipmentAtWeek, order, unorder, finishDelivery };
 });
