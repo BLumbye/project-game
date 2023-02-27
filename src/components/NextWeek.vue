@@ -1,12 +1,47 @@
 <template>
   <button class="next-week-button"
-          @click="emit('week-progressed')">Next Week -></button>
+          @click="emit('week-progressed')"
+          :disabled="gameDone || gameOver">{{ gameDone ? "Game Done" : gameOver ? "Game Over" : "Next Week ->" }}</button>
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue';
+import config from '../config';
+import { useActivitiesStore } from '../stores/activitiesStore';
+import { useBidStore } from '../stores/bidStore';
+import { useFinanceStore } from '../stores/financeStore';
+import { useWeekStore } from '../stores/weekStore';
+import { useWorkersStore } from '../stores/workersStore';
+
 const emit = defineEmits<{
   (e: 'week-progressed'): void
 }>();
+
+const gameDone = ref(false);
+const gameOver = ref(false);
+
+const weekStore = useWeekStore();
+const workersStore = useWorkersStore();
+const activitiesStore = useActivitiesStore();
+const financeStore = useFinanceStore();
+
+watch(() => weekStore.week, () => {
+  // Check if game is done
+  const noWorkers = Object.values(workersStore.currentWorkers).every(worker => worker === 0);
+  const activitiesDone = activitiesStore.allActivitiesDone();
+  const loanRepaid = financeStore.loan === 0;
+
+  if (noWorkers &&
+    activitiesDone &&
+    loanRepaid
+  ) {
+    gameDone.value = true;
+  }
+
+  if (weekStore.week === config.duration) {
+    gameOver.value = true;
+  }
+});
 </script>
 
 <style scoped lang="postcss">
