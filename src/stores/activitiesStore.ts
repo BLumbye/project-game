@@ -29,6 +29,7 @@ const generateAllocationState = () => {
 export const useActivitiesStore = defineStore('activities', () => {
   const weekStore = useWeekStore();
   const workersStore = useWorkersStore();
+  const equipmentStore = useEquipmentStore();
 
   // State
   const progressTimelines = ref<Record<string, number[]>>(generateProgressTimelines());
@@ -58,13 +59,18 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (label: string, week?: number) => {
       week ??= weekStore.week;
       const activity = config.activities.find((activity) => activity.label === label);
-      return activity !== undefined && activity?.duration() <= progressAtWeek.value(label, week);
+      return activity !== undefined && getDuration.value(activity) <= progressAtWeek.value(label, week);
     };
   });
   const allActivitiesDone = computed(() => {
     return (week?: number) => {
       week ??= weekStore.week;
       return config.activities.every((activity) => isActivityDone.value(activity.label, week));
+    };
+  });
+  const getDuration = computed(() => {
+    return (activity: Pick<Activity, 'duration'>) => {
+      return activity.duration({ equipment: equipmentStore.equipmentAtWeek(weekStore.week - 1) });
     };
   });
   const totalWorkersAssigned = computed(() => {
@@ -89,7 +95,6 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: Activity, week?: number) => {
       week ??= weekStore.week;
       if (!activity.requirements.equipment) return true;
-      const equipmentStore = useEquipmentStore();
       return activity.requirements.equipment.every(
         (requiredEquipment) => equipmentStore.equipmentAtWeek(week)[requiredEquipment]?.status !== 'unordered',
       );
@@ -157,6 +162,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     activities,
     isActivityDone,
     allActivitiesDone,
+    getDuration,
     workerRequirementMet,
     requirementsMet,
     allocateWorker,

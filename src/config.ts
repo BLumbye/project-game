@@ -4,21 +4,21 @@ const duration = 13;
 const activities: Pick<Activity, 'label' | 'duration' | 'requirements'>[] = [
   {
     label: 'A',
-    duration: () => 2,
+    duration: ({ equipment }) => (equipment.steelwork.deliveryType === 'express' ? 1 : 2),
     requirements: {
       equipment: ['steelwork'],
     },
   },
   {
     label: 'B',
-    duration: () => 3,
+    duration: ({ equipment }) => (equipment.interior.deliveryType === 'express' ? 2 : 3),
     requirements: {
       equipment: ['interior'],
     },
   },
   {
     label: 'C',
-    duration: () => 5,
+    duration: ({ equipment }) => (equipment.tbs.deliveryType === 'express' ? 4 : 5),
     requirements: {
       equipment: ['tbs'],
     },

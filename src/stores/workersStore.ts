@@ -33,7 +33,7 @@ export const useWorkersStore = defineStore('workers', () => {
   // Actions
   function change(type: WorkerType, value: number) {
     const { week } = useWeekStore();
-    workers.value[week][type] = value;
+    workers.value[week][type] = Math.max(value, -currentWorkers.value[type]);
   }
 
   return {

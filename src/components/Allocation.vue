@@ -26,7 +26,8 @@
              ref="ele"
              @keypress="validateField"
              @input="(evt) => change(evt, activity.label, 'electrician')" />
-      <span>{{ activityStore.activities[index].progress }}/{{ activityStore.activities[index].duration() }}</span>
+      <span>{{ activityStore.activities[index].progress }}/{{ activityStore.getDuration(activityStore.activities[index])
+      }}</span>
     </template>
   </div>
 </template>
