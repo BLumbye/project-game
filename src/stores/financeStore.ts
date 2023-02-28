@@ -133,9 +133,6 @@ export const useFinanceStore = defineStore('finance', () => {
   );
 
   return {
-    incomingTimeline,
-    outgoingTimeline,
-    loanTimeline,
     incoming,
     outgoing,
     loan,

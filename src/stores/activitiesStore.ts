@@ -155,8 +155,6 @@ export const useActivitiesStore = defineStore('activities', () => {
   );
 
   return {
-    progressTimelines,
-    allocations,
     progressAtWeek,
     activitiesAtWeek,
     activities,

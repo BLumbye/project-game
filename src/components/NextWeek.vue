@@ -8,7 +8,6 @@
 import { ref, watch } from 'vue';
 import config from '../config';
 import { useActivitiesStore } from '../stores/activitiesStore';
-import { useBidStore } from '../stores/bidStore';
 import { useFinanceStore } from '../stores/financeStore';
 import { useWeekStore } from '../stores/weekStore';
 import { useWorkersStore } from '../stores/workersStore';
