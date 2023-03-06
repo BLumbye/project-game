@@ -1,7 +1,6 @@
 <template>
   <div class="equipment">
     <h3 class="component-title">Order equipment</h3>
-    <!-- header, css, fysisk title -->
     <span class="equipment-column-label">Equipment</span>
     <span class="equipment-column-label">Order</span>
     <label for="steelwork-input"
@@ -27,9 +26,9 @@
 
 <script setup lang="ts">
 import { computed, Ref, ref, watch } from 'vue';
-import { useEquipmentStore } from '../stores/equipmentStore';
-import { useWeekStore } from '../stores/weekStore';
-import { EquipmentType } from '../types/types';
+import { useEquipmentStore } from '../../stores/equipmentStore';
+import { useWeekStore } from '../../stores/weekStore';
+import { EquipmentType } from '../../types/types';
 
 const steelwork = ref('');
 const interior = ref('');
@@ -67,22 +66,6 @@ watch([() => equipmentStore.timeline, () => weekStore.week], () => {
     tbs.value = equipmentStore.equipment.tbs!.status!;
   }
 }, { deep: true });
-
-// weekStore.addWeekListener(() => {
-//   if (steelwork.value === '1' || steelwork.value === '2') {
-//     equipmentStore.order('steelwork', steelwork.value === '1' ? 'regular' : 'express');
-//   }
-//   if (interior.value === '1' || interior.value === '2') {
-//     equipmentStore.order('interior', interior.value === '1' ? 'regular' : 'express');
-//   }
-//   if (tbs.value === '1' || tbs.value === '2') {
-//     equipmentStore.order('tbs', tbs.value === '1' ? 'regular' : 'express');
-//   }
-
-//   steelwork.value = equipmentStore.steelwork.status === 'unordered' ? '' : equipmentStore.steelwork.status;
-//   interior.value = equipmentStore.interior.status === 'unordered' ? '' : equipmentStore.interior.status;
-//   tbs.value = equipmentStore.tbs.status === 'unordered' ? '' : equipmentStore.tbs.status;
-// });
 </script>
 
 <style scoped lang="postcss">

@@ -15,8 +15,15 @@ export const useFinanceStore = defineStore('finance', () => {
   const activityStore = useActivitiesStore();
 
   // State
-  const incomingTimeline = ref([bidStore.price * 0.2]);
-  const outgoingTimeline = ref([0]);
+  const incomingTimeline = ref([bidStore.price * config.startBudget]);
+  const workersTimeline = ref([0]);
+  const equipmentTimeline = ref([0]);
+  const overheadTimeline = ref([0]);
+  const consumablesTimeline = ref([0]);
+  const delayPenaltyTimeline = ref([0]);
+  const loanInterestTimeline = ref([0]);
+  const overdraftInterestTimeline = ref([0]);
+  const loanPaybackTimeline = ref([0]);
   const loanTimeline = ref([0]);
 
   // Getters
@@ -26,10 +33,91 @@ export const useFinanceStore = defineStore('finance', () => {
       return timeline.value.slice(0, week + 1).reduce((accumulator, current) => accumulator + current, 0);
     };
   });
-  const incoming = computed(() => statusAtWeek.value(incomingTimeline, weekStore.week - 1));
-  const outgoing = computed(() => statusAtWeek.value(outgoingTimeline, weekStore.week - 1));
-  const loan = computed(() => statusAtWeek.value(loanTimeline, weekStore.week - 1));
-  const balance = computed(() => incoming.value + loan.value - outgoing.value);
+  const workersAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(workersTimeline, week);
+    };
+  });
+  const equipmentAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(equipmentTimeline, week);
+    };
+  });
+  const overheadAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(overheadTimeline, week);
+    };
+  });
+  const consumablesAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(consumablesTimeline, week);
+    };
+  });
+  const delayPenaltyAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(delayPenaltyTimeline, week);
+    };
+  });
+  const loanInterestAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(loanInterestTimeline, week);
+    };
+  });
+  const overdraftInterestAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(overdraftInterestTimeline, week);
+    };
+  });
+  const loanPaybackAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(loanPaybackTimeline, week);
+    };
+  });
+  const incomingAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(incomingTimeline, week);
+    };
+  });
+  const outgoingAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return (
+        statusAtWeek.value(workersTimeline, week) +
+        statusAtWeek.value(equipmentTimeline, week) +
+        statusAtWeek.value(overheadTimeline, week) +
+        statusAtWeek.value(consumablesTimeline, week) +
+        statusAtWeek.value(delayPenaltyTimeline, week) +
+        statusAtWeek.value(loanInterestTimeline, week) +
+        statusAtWeek.value(overdraftInterestTimeline, week) +
+        statusAtWeek.value(loanPaybackTimeline, week)
+      );
+    };
+  });
+  const loanAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return statusAtWeek.value(loanTimeline, week) - statusAtWeek.value(loanPaybackTimeline, week);
+    };
+  });
+  const balanceAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return incomingAtWeek.value(week) + loanAtWeek.value(week) - outgoingAtWeek.value(week);
+    };
+  });
+  const incoming = computed(() => incomingAtWeek.value());
+  const outgoing = computed(() => outgoingAtWeek.value());
+  const loan = computed(() => loanAtWeek.value());
+  const balance = computed(() => balanceAtWeek.value());
 
   // Actions
   function populateTimeline(timeline: Ref<number[]>) {
@@ -44,10 +132,40 @@ export const useFinanceStore = defineStore('finance', () => {
     incomingTimeline.value[week] += value;
   }
 
-  function addOutgoing(value: number, week?: number) {
+  function addWorkers(value: number, week?: number) {
     week ??= weekStore.week;
-    populateTimeline(outgoingTimeline);
-    outgoingTimeline.value[week] += value;
+    populateTimeline(workersTimeline);
+    workersTimeline.value[week] += value;
+  }
+
+  function addEquipment(value: number, week?: number) {
+    week ??= weekStore.week;
+    populateTimeline(equipmentTimeline);
+    equipmentTimeline.value[week] += value;
+  }
+
+  function addOverhead(value: number, week?: number) {
+    week ??= weekStore.week;
+    populateTimeline(overheadTimeline);
+    overheadTimeline.value[week] += value;
+  }
+
+  function addConsumables(value: number, week?: number) {
+    week ??= weekStore.week;
+    populateTimeline(consumablesTimeline);
+    consumablesTimeline.value[week] += value;
+  }
+
+  function addDelayPenalty(value: number, week?: number) {
+    week ??= weekStore.week;
+    populateTimeline(delayPenaltyTimeline);
+    delayPenaltyTimeline.value[week] += value;
+  }
+
+  function addOverdraftInterest(value: number, week?: number) {
+    week ??= weekStore.week;
+    populateTimeline(overdraftInterestTimeline);
+    overdraftInterestTimeline.value[week] += value;
   }
 
   function takeLoan(value: number, week?: number) {
@@ -56,39 +174,53 @@ export const useFinanceStore = defineStore('finance', () => {
     loanTimeline.value[week] = value;
   }
 
-  function repayLoan(value: number, week?: number) {
+  function addInterestToLoan(value: number, week?: number) {
     week ??= weekStore.week;
     populateTimeline(loanTimeline);
-    loanTimeline.value[week] = -Math.min(value, loan.value);
+    loanTimeline.value[week] += value;
+    addLoanInterest(value, week);
+  }
+
+  function addLoanInterest(value: number, week?: number) {
+    week ??= weekStore.week;
+    populateTimeline(loanInterestTimeline);
+    loanInterestTimeline.value[week] += value;
+  }
+
+  function repayLoan(value: number, week?: number) {
+    week ??= weekStore.week;
+    value = -Math.min(value, loan.value);
+    populateTimeline(loanPaybackTimeline);
+    loanPaybackTimeline.value[week] += value;
   }
 
   // Logic
   watch(
     () => weekStore.week,
     () => {
-      let weeklyOutgoing = 0;
-
       // Worker pay
       const previousWorkers = workersStore.workersAtWeek(weekStore.week - 1);
-      weeklyOutgoing += previousWorkers.labour * 800;
-      weeklyOutgoing += previousWorkers.skilled * 1500;
-      weeklyOutgoing += previousWorkers.electrician * 2000;
+      addWorkers(
+        previousWorkers.labour * config.labourPay +
+          previousWorkers.skilled * config.skilledPay +
+          previousWorkers.electrician * config.electricianPay,
+      );
 
       // Equipment costs
       const previousEquipment = equipmentStore.equipmentAtWeek(weekStore.week - 2);
       const equipment = equipmentStore.equipmentAtWeek(weekStore.week - 1);
       if (equipment.steelwork.status === 'ordered' && previousEquipment.steelwork.status !== 'ordered') {
-        weeklyOutgoing += equipment.steelwork.deliveryType! === 'regular' ? 38000 : 41800;
+        addEquipment(equipment.steelwork.deliveryType! === 'regular' ? 38000 : 41800);
       }
       if (equipment.interior.status === 'ordered' && previousEquipment.interior.status !== 'ordered') {
-        weeklyOutgoing += equipment.interior.deliveryType! === 'regular' ? 28000 : 30800;
+        addEquipment(equipment.interior.deliveryType! === 'regular' ? 28000 : 30800);
       }
       if (equipment.tbs.status === 'ordered' && previousEquipment.tbs.status !== 'ordered') {
-        weeklyOutgoing += equipment.tbs.deliveryType! === 'regular' ? 130000 : 143000;
+        addEquipment(equipment.tbs.deliveryType! === 'regular' ? 130000 : 143000);
       }
 
       // Overhead charge
-      weeklyOutgoing += 10000;
+      addOverhead(config.overhead);
 
       // Consumables charge - charge if any workers are working
       if (
@@ -100,24 +232,32 @@ export const useFinanceStore = defineStore('finance', () => {
               activityStore.workerRequirementMet(activity, weekStore.week - 1),
           )
       ) {
-        weeklyOutgoing += 50000;
+        addConsumables(config.consumables);
       }
 
       // Project delayed penalty
-      if (weekStore.week > bidStore.duration) {
-        weeklyOutgoing += 20000;
+      if (weekStore.week - 1 > bidStore.duration) {
+        addDelayPenalty(config.projectDelayPenalty);
       }
 
-      addOutgoing(weeklyOutgoing, weekStore.week - 1);
+      //Loan increase
+      if (loanTimeline.value[weekStore.week - 1] > 0) {
+        addInterestToLoan(config.loanInterest * loanAtWeek.value(weekStore.week - 1));
+      }
+
+      //Overdraft
+      if (balanceAtWeek.value(weekStore.week - 1) < 0) {
+        addOverdraftInterest(config.overdraftInterest * -balanceAtWeek.value(weekStore.week - 1));
+      }
     },
   );
 
   const stopMilestoneWatcher = watch(
-    () => activityStore.isActivityDone('H'),
+    () => activityStore.isActivityDone(config.milestoneActivity),
     () => {
-      if (activityStore.isActivityDone('H')) {
+      if (activityStore.isActivityDone(config.milestoneActivity)) {
         stopMilestoneWatcher();
-        addIncoming(bidStore.price * 0.5, weekStore.week - 1);
+        addIncoming(bidStore.price * config.milestoneReward, weekStore.week - 1);
       }
     },
   );
@@ -127,18 +267,39 @@ export const useFinanceStore = defineStore('finance', () => {
     () => {
       if (activityStore.allActivitiesDone()) {
         stopFinishedWatcher();
-        addIncoming(bidStore.price * 0.3, weekStore.week - 1);
+        addIncoming(bidStore.price * config.allActivitesCompleteReward, weekStore.week - 1);
       }
     },
   );
 
   return {
+    incomingTimeline,
+    workersTimeline,
+    equipmentTimeline,
+    overheadTimeline,
+    consumablesTimeline,
+    delayPenaltyTimeline,
+    loanInterestTimeline,
+    overdraftInterestTimeline,
+    loanPaybackTimeline,
+    loanTimeline,
+    workersAtWeek,
+    equipmentAtWeek,
+    overheadAtWeek,
+    consumablesAtWeek,
+    delayPenaltyAtWeek,
+    loanInterestAtWeek,
+    overdraftInterestAtWeek,
+    loanPaybackAtWeek,
+    incomingAtWeek,
+    outgoingAtWeek,
+    loanAtWeek,
+    balanceAtWeek,
     incoming,
     outgoing,
     loan,
     balance,
     addIncoming,
-    addOutgoing,
     takeLoan,
     repayLoan,
   };

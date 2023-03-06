@@ -33,11 +33,11 @@
 </template>
 
 <script setup lang="ts">
-import { useActivitiesStore } from '../stores/activitiesStore';
+import { useActivitiesStore } from '../../stores/activitiesStore';
 import { onMounted, Ref, ref, watch } from 'vue';
-import { WorkerType } from '../types/types';
-import config from '../config';
-import { useWeekStore } from '../stores/weekStore';
+import { WorkerType } from '../../types/types';
+import config from '../../config';
+import { useWeekStore } from '../../stores/weekStore';
 
 const weekStore = useWeekStore();
 const activityStore = useActivitiesStore();

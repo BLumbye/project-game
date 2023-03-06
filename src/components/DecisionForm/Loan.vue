@@ -19,8 +19,8 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useFinanceStore } from '../stores/financeStore';
-import { useWeekStore } from '../stores/weekStore';
+import { useFinanceStore } from '../../stores/financeStore';
+import { useWeekStore } from '../../stores/weekStore';
 
 const weekStore = useWeekStore();
 const financeStore = useFinanceStore();

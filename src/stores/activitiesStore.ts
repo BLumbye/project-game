@@ -17,7 +17,7 @@ const generateProgressTimelines = () => {
 const generateAllocationState = () => {
   const allocations: Record<string, Record<WorkerType, number>[]> = {};
   for (const activity of config.activities) {
-    allocations[activity.label] = Array.from({ length: config.duration }, () => ({
+    allocations[activity.label] = Array.from({ length: config.duration + 1 }, () => ({
       labour: 0,
       skilled: 0,
       electrician: 0,

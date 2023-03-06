@@ -8,7 +8,7 @@ type WorkersState = Record<WorkerType, number>;
 
 export const useWorkersStore = defineStore('workers', () => {
   // State
-  const workers = ref(Array.from({ length: config.duration }, () => ({ labour: 0, skilled: 0, electrician: 0 })));
+  const workers = ref(Array.from({ length: config.duration + 1 }, () => ({ labour: 0, skilled: 0, electrician: 0 })));
 
   // Getters
   const workersAtWeek = computed(() => {

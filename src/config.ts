@@ -1,6 +1,31 @@
 import { Activity } from './types/types';
 
+//Prices
+const loanInterest = 0.01;
+const overdraftInterest = 0.1;
+
+const consumables = 50000;
+const overhead = 10000;
+
+const projectDelayPenalty = 20000;
+
+//Salary
+const labourPay = 800;
+const skilledPay = 1500;
+const electricianPay = 2000;
+
+//Payments
+const startBudget = 0.2; //Money at start of the project
+const allActivitesCompleteReward = 0.3;
+const milestoneReward = 0.5; //Percentage paid on a certain activity completion
+
+//Milestone activity
+const milestoneActivity = 'H';
+
+//Time limit
 const duration = 13;
+
+//Activities
 const activities: Pick<Activity, 'label' | 'duration' | 'requirements'>[] = [
   {
     label: 'A',
@@ -116,4 +141,19 @@ const activities: Pick<Activity, 'label' | 'duration' | 'requirements'>[] = [
   },
 ];
 
-export default { duration, activities };
+export default {
+  milestoneActivity,
+  allActivitesCompleteReward,
+  startBudget,
+  milestoneReward,
+  projectDelayPenalty,
+  overhead,
+  consumables,
+  loanInterest,
+  overdraftInterest,
+  duration,
+  activities,
+  labourPay,
+  skilledPay,
+  electricianPay,
+};

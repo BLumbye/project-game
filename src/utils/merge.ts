@@ -25,20 +25,3 @@ export function mergeDeep(target: { [key: string]: any }, ...sources: any[]): { 
 
   return mergeDeep(target, ...sources);
 }
-
-/**
- * Deep copies an object - arrays inside aren't deep copied.
- */
-export function deepCopy(target: { [key: string]: any }): { [key: string]: any } {
-  const copy: { [key: string]: any } = {};
-
-  for (const key in target) {
-    if (isObject(target[key])) {
-      Object.assign(copy, { [key]: deepCopy(target[key]) });
-    } else {
-      Object.assign(copy, { [key]: target[key] });
-    }
-  }
-
-  return copy;
-}
