@@ -2,32 +2,29 @@
   <div class="allocation">
     <span class="activities-label">Activity</span>
     <span class="component-title">Allocate workers to activities</span>
-    <span class="progress-label">Progress</span>
     <span>LAB</span>
     <span>SKI</span>
     <span>ELE</span>
-    <template v-for="(activity, index) in activities"> <!-- For each -->
+    <template v-for="(activity, index) in activities">
       <span>{{ activity.label }}</span>
       <input type="text"
              class="worker-input"
              name="LAB-input"
              ref="lab"
-             @keypress="validateField"
+             @keypress="validateFieldIsDigit"
              @input="(evt) => change(evt, activity.label, 'labour')" />
       <input type="text"
              class="worker-input"
              name="SKI-input"
              ref="ski"
-             @keypress="validateField"
+             @keypress="validateFieldIsDigit"
              @input="(evt) => change(evt, activity.label, 'skilled')" />
       <input type="text"
              class="worker-input"
              name="ELE-input"
              ref="ele"
-             @keypress="validateField"
+             @keypress="validateFieldIsDigit"
              @input="(evt) => change(evt, activity.label, 'electrician')" />
-      <span>{{ activityStore.activities[index].progress }}/{{ activityStore.getDuration(activityStore.activities[index])
-      }}</span>
     </template>
   </div>
 </template>
@@ -38,6 +35,7 @@ import { onMounted, Ref, ref, watch } from 'vue';
 import { WorkerType } from '../../types/types';
 import config from '../../config';
 import { useWeekStore } from '../../stores/weekStore';
+import { validateFieldIsDigit } from '../../utils/validateField';
 
 const weekStore = useWeekStore();
 const activityStore = useActivitiesStore();
@@ -49,12 +47,6 @@ const ele = ref<HTMLInputElement[]>([]);
 
 const change = (evt: Event, activityLabel: string, workerType: WorkerType) => {
   activityStore.allocateWorker(activityLabel, workerType, Number((evt.target as HTMLInputElement).value));
-}
-
-const validateField = (evt: KeyboardEvent) => {
-  if (!(/\d/.test(evt.key))) {
-    evt.preventDefault();
-  }
 }
 
 watch(() => weekStore.week, () => {
@@ -76,7 +68,7 @@ watch(() => weekStore.week, () => {
 
 .allocation {
   display: grid;
-  grid-template-columns: repeat(5, auto);
+  grid-template-columns: repeat(4, auto);
   grid-template-rows: repeat(v-bind('activities.length'), auto);
 
   /* v-bind takes setup language */

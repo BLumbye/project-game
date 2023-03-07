@@ -25,6 +25,9 @@ const milestoneActivity = 'H';
 //Time limit
 const duration = 13;
 
+// Currency
+const currency = '€';
+
 //Activities
 const activities: Pick<Activity, 'label' | 'duration' | 'requirements'>[] = [
   {
@@ -156,4 +159,5 @@ export default {
   labourPay,
   skilledPay,
   electricianPay,
+  currency,
 };

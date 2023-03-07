@@ -161,6 +161,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     isActivityDone,
     allActivitiesDone,
     getDuration,
+    totalWorkersAssigned,
     workerRequirementMet,
     requirementsMet,
     allocateWorker,

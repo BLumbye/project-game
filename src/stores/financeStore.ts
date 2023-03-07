@@ -114,14 +114,32 @@ export const useFinanceStore = defineStore('finance', () => {
       return incomingAtWeek.value(week) + loanAtWeek.value(week) - outgoingAtWeek.value(week);
     };
   });
+  const weeklyBalanceAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= weekStore.week - 1;
+      return (
+        (incomingTimeline.value[week] || 0) +
+        (loanTimeline.value[week] || 0) -
+        (workersTimeline.value[week] || 0) -
+        (equipmentTimeline.value[week] || 0) -
+        (overheadTimeline.value[week] || 0) -
+        (consumablesTimeline.value[week] || 0) -
+        (delayPenaltyTimeline.value[week] || 0) -
+        2 * (loanInterestTimeline.value[week] || 0) -
+        (overdraftInterestTimeline.value[week] || 0) -
+        (loanPaybackTimeline.value[week] || 0)
+      );
+    };
+  });
   const incoming = computed(() => incomingAtWeek.value());
   const outgoing = computed(() => outgoingAtWeek.value());
   const loan = computed(() => loanAtWeek.value());
   const balance = computed(() => balanceAtWeek.value());
 
   // Actions
-  function populateTimeline(timeline: Ref<number[]>) {
-    for (let i = timeline.value.length; i <= weekStore.week; i++) {
+  function populateTimeline(timeline: Ref<number[]>, week?: number) {
+    week ??= weekStore.week;
+    for (let i = timeline.value.length; i <= week; i++) {
       timeline.value.push(0);
     }
   }
@@ -170,8 +188,8 @@ export const useFinanceStore = defineStore('finance', () => {
 
   function takeLoan(value: number, week?: number) {
     week ??= weekStore.week;
-    populateTimeline(loanTimeline);
-    loanTimeline.value[week] = value;
+    populateTimeline(loanTimeline, week + 1);
+    loanTimeline.value[week + 1] = value;
   }
 
   function addInterestToLoan(value: number, week?: number) {
@@ -189,9 +207,9 @@ export const useFinanceStore = defineStore('finance', () => {
 
   function repayLoan(value: number, week?: number) {
     week ??= weekStore.week;
-    value = -Math.min(value, loan.value);
-    populateTimeline(loanPaybackTimeline);
-    loanPaybackTimeline.value[week] += value;
+    value = Math.min(value, loan.value * (1 + config.loanInterest));
+    populateTimeline(loanPaybackTimeline, week + 1);
+    loanPaybackTimeline.value[week + 1] = value;
   }
 
   // Logic
@@ -241,8 +259,8 @@ export const useFinanceStore = defineStore('finance', () => {
       }
 
       //Loan increase
-      if (loanTimeline.value[weekStore.week - 1] > 0) {
-        addInterestToLoan(config.loanInterest * loanAtWeek.value(weekStore.week - 1));
+      if (loanAtWeek.value(weekStore.week) > 0) {
+        addInterestToLoan(config.loanInterest * loanAtWeek.value(weekStore.week));
       }
 
       //Overdraft
@@ -295,6 +313,7 @@ export const useFinanceStore = defineStore('finance', () => {
     outgoingAtWeek,
     loanAtWeek,
     balanceAtWeek,
+    weeklyBalanceAtWeek,
     incoming,
     outgoing,
     loan,

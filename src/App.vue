@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <WeeklyReport v-if="weekStore.week > 1" />
+    <WeeklyReport v-if="weekStore.week > 0" />
     <h2 v-else>No weekly report in week {{ weekStore.week }}</h2>
     <DecisionForm />
   </div>
@@ -16,7 +16,9 @@ const weekStore = useWeekStore();
 
 <style scoped lang="postcss">
 .container {
+  height: 100%;
   display: flex;
   justify-content: space-evenly;
+  align-items: start;
 }
 </style>

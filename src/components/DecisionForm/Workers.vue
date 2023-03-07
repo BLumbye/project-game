@@ -31,6 +31,7 @@ import { useWeekStore } from '../../stores/weekStore';
 import { useWorkersStore } from '../../stores/workersStore';
 import { WorkerType } from '../../types/types';
 
+
 const labour = ref('');       //Matches the v-model 'labour'
 const skilled = ref('');
 const electrician = ref('');

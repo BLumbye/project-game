@@ -8,18 +8,21 @@
     <input v-model="steelwork"
            class="equipment-input"
            name="steelwork-input"
+           @keypress="validateFieldIsDigit"
            :disabled="previousEquipment.steelwork!.status !== 'unordered'" />
     <label for="interior-input"
            class="equipment-label">Interior (Task B)</label>
     <input v-model="interior"
            class="equipment-input"
            name="interior-input"
+           @keypress="validateFieldIsDigit"
            :disabled="previousEquipment.interior!.status !== 'unordered'" />
     <label for="tbs-input"
            class="equipment-label">TBS (Task C)</label>
     <input v-model="tbs"
            class="equipment-input"
            name="tbs-input"
+           @keypress="validateFieldIsDigit"
            :disabled="previousEquipment.tbs!.status !== 'unordered'" />
   </div>
 </template>
@@ -29,6 +32,7 @@ import { computed, Ref, ref, watch } from 'vue';
 import { useEquipmentStore } from '../../stores/equipmentStore';
 import { useWeekStore } from '../../stores/weekStore';
 import { EquipmentType } from '../../types/types';
+import { validateFieldIsDigit } from '../../utils/validateField';
 
 const steelwork = ref('');
 const interior = ref('');
