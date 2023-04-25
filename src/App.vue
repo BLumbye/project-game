@@ -1,6 +1,12 @@
+<!-- 
+  App 
+-->
+
 <template>
   <router-view></router-view>
 </template>
+
+<!-- Script -->
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router';

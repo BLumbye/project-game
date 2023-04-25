@@ -1,8 +1,16 @@
+<!-- 
+  Next Week (Decision Form)
+
+  Next Week is a simple button which progresses the game one week when clicked.
+-->
+
 <template>
   <button class="next-week-button"
           @click="emit('week-progressed')"
           :disabled="gameDone || gameOver">{{ gameDone ? "Game Done" : gameOver ? "Game Over" : "Next Week ->" }}</button>
 </template>
+
+<!-- Script -->
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
@@ -42,6 +50,8 @@ watch(() => weekStore.week, () => {
   }
 });
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .next-week-button {

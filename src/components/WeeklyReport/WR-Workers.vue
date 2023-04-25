@@ -1,3 +1,9 @@
+<!-- 
+  Workers (Weekly Report)
+
+  Shows the workers on-site in the last week. 
+-->
+
 <template>
   <div class="workers boxed">
     <span class="workers-title">Total workers on site:</span>
@@ -10,6 +16,8 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useWeekStore } from '../../stores/weekStore';
@@ -19,6 +27,8 @@ const weekStore = useWeekStore();
 const workersStore = useWorkersStore();
 const workers = computed(() => workersStore.workersAtWeek(weekStore.week - 2));
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .workers {

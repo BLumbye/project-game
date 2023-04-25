@@ -1,3 +1,9 @@
+<!-- 
+  Bid (Decision Form)
+
+  The Bid is a simple box statically showing the bid made by the player(s).
+-->
+
 <template>
   <div class="bid">
     <h3 class="bid-column-label">Bid</h3>
@@ -6,11 +12,15 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { useBidStore } from '../../stores/bidStore';
 
 const bidStore = useBidStore();
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .bid {

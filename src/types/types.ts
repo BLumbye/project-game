@@ -1,3 +1,9 @@
+/**
+ * Types
+ * 
+ * This is where relevant general types and interfaces are defined. 
+ */
+
 export type WorkerType = 'labour' | 'skilled' | 'electrician';
 export type EquipmentType = 'steelwork' | 'interior' | 'tbs';
 export type EquipmentStatus = 'unordered' | 'ordered' | 'delivered';

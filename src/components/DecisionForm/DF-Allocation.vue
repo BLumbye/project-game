@@ -1,3 +1,11 @@
+<!-- 
+  Allocation (Decision Form)
+
+  Allocation is where the workers are assigned to an activity. 
+  Only positive, whole numbers work.
+
+-->
+
 <template>
   <div class="allocation">
     <span class="activities-label">Activity</span>
@@ -29,6 +37,8 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { useActivitiesStore } from '../../stores/activitiesStore';
 import { onMounted, Ref, ref, watch } from 'vue';
@@ -55,6 +65,8 @@ watch(() => weekStore.week, () => {
   ele.value.forEach(input => input.value = '');
 })
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .activities-label,

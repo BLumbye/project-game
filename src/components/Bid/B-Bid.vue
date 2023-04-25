@@ -1,3 +1,12 @@
+<!--
+  Bid page 
+
+  The bid page is where the player(s) put their initial bid. 
+
+  The bid consists of a Price and Duration
+  and they determine the money available through the game and the time limit respectively. 
+-->
+
 <template>
   <div class="bid-page">
     <h3 class="bid-label">Bid</h3>
@@ -18,6 +27,8 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { useBidStore } from '../../stores/bidStore';
 import { validateFieldIsDigit } from '../../utils/validateField';
@@ -25,6 +36,8 @@ import { validateFieldIsDigit } from '../../utils/validateField';
 const bidStore = useBidStore();
 
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .bid-page {

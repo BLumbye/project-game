@@ -1,3 +1,11 @@
+/**
+ * Config
+ * 
+ * 
+ * The Config file is where all relevant constant values are set.
+ * This is also where activities are defined. 
+ */
+
 import { Activity } from './types/types';
 
 //Prices

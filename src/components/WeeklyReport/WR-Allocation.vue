@@ -1,3 +1,10 @@
+<!-- 
+  Allocation (Weekly Report)
+
+  The Allocation in the Weekly Report shows the previous weeks' cumulative influence on the project's progress.
+
+-->
+
 <template>
   <div class="allocation boxed">
     <span class="activities-label">Activity</span>
@@ -25,6 +32,8 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { useActivitiesStore } from '../../stores/activitiesStore';
 import config from '../../config';
@@ -36,6 +45,8 @@ const activityStore = useActivitiesStore();
 const progressActivities = computed(() => activityStore.activitiesAtWeek(weekStore.week - 1));
 const activities = computed(() => activityStore.activitiesAtWeek(weekStore.week - 2));
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .activities-label {

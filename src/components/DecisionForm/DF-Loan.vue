@@ -1,3 +1,11 @@
+<!-- 
+  Loan (Decision Form)
+
+  Loan allows palyer to take a loan and repay a loan. 
+  Only one loan can be taken at a time. 
+  Interest rates are located in the Config file. 
+-->
+
 <template>
   <div class="loan">
     <h3 class="component-title">Bank loan</h3>
@@ -16,6 +24,8 @@
            name="repay-input" />
   </div>
 </template>
+
+<!-- Script -->
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
@@ -41,6 +51,8 @@ watch(() => weekStore.week, () => {
   repay.value = 0;
 })
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .loan {

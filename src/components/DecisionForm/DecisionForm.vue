@@ -1,3 +1,16 @@
+<!-- 
+  DecisionForm
+
+  The DecisionForm is where player(s) make all their decisions for the coming week.
+  Choices include: 
+    Ordering equipment
+    Hiring workers
+    Allocating workers
+    Taking/repaying a loan
+
+
+-->
+
 <template>
   <div class="decision-form">
     <h2 class="boxed section-title">Decision form for week: {{ weekStore.decisionForm }}</h2>
@@ -11,17 +24,21 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
-import Bid from './Bid.vue';
-import Workers from './Workers.vue';
-import Equipment from './Equipment.vue';
-import Loan from './Loan.vue';
-import Allocation from './Allocation.vue';
-import NextWeek from './NextWeek.vue';
+import Bid from './DF-Bid.vue';
+import Workers from './DF-Workers.vue';
+import Equipment from './DF-Equipment.vue';
+import Loan from './DF-Loan.vue';
+import Allocation from './DF-Allocation.vue';
+import NextWeek from './DF-NextWeek.vue';
 import { useWeekStore } from '../../stores/weekStore';
 
 const weekStore = useWeekStore();
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .week-display {

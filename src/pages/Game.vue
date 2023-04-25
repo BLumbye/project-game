@@ -6,6 +6,8 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import DecisionForm from '../components/DecisionForm/DecisionForm.vue';
 import WeeklyReport from '../components/WeeklyReport/WeeklyReport.vue';
@@ -13,6 +15,8 @@ import { useWeekStore } from '../stores/weekStore';
 
 const weekStore = useWeekStore();
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .container {

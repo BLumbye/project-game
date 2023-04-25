@@ -1,3 +1,15 @@
+<!-- 
+  Equipment (Decision Form)
+
+  Equipment is where a player orders equipment needed for activities.
+  Equipment, when ordered, functions like an activity with no need for workers.
+  The duration of ordered equipment is determined by input from player. 
+    1 = normal delivery
+    2 = express delivery (1 day less)
+
+  Equipment cannot be ordered more than once.
+-->
+
 <template>
   <div class="equipment">
     <h3 class="component-title">Order equipment</h3>
@@ -27,6 +39,8 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { computed, Ref, ref, watch } from 'vue';
 import { useEquipmentStore } from '../../stores/equipmentStore';
@@ -42,6 +56,12 @@ const weekStore = useWeekStore();
 const equipmentStore = useEquipmentStore();
 const previousEquipment = computed(() => equipmentStore.equipmentAtWeek(weekStore.week - 1));
 
+/**
+ * Watches for input from the player.
+ * If the player progresses a week and have inputted '1' or '2' in an Equipment field, the equipment is ordered. 
+ * @param input The input in the field
+ * @param type The type of equipment
+ */
 const makeEquipmentWatcher = (input: Ref<string>, type: EquipmentType) => {
   return watch(input, () => {
     if (['1', '2'].includes(input.value)) {
@@ -71,6 +91,8 @@ watch([() => equipmentStore.timeline, () => weekStore.week], () => {
   }
 }, { deep: true });
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .equipment {

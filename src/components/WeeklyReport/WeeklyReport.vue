@@ -1,3 +1,11 @@
+<!-- 
+  Weekly Report
+
+  The Weekly Report is a report generated based on the progress of the project so far.
+  Is shows finances, activity progress and worker allocation.
+  An in-depth summary of the previous week is shown as well as a general rundown of the whole project. 
+-->
+
 <template>
   <div class="weekly-report">
     <h2 class="boxed section-title">Weekly report for week: {{ weekStore.week - 1 }}</h2>
@@ -7,6 +15,8 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { useWeekStore } from '../../stores/weekStore';
 import WRAllocation from './WR-Allocation.vue';
@@ -15,6 +25,8 @@ import WRWorkers from './WR-Workers.vue';
 
 const weekStore = useWeekStore();
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .weekly-report {

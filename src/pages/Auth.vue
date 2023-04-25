@@ -30,6 +30,8 @@
   </form>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -67,6 +69,8 @@ const handleLogin = async () => {
   }
 }
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .login-form {

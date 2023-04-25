@@ -1,3 +1,12 @@
+<!-- 
+  Finances (Weekly Report)
+
+  The Finances is where all financial information from previous weeks are shown.
+  This report summarizes the project in terms of:
+    Outgoing: Wages paid, equipment costs, overhead, delay fees, etc.
+    Incoming: Initial payment, loans, milestone payments, etc.
+-->
+
 <template>
   <div class="finances boxed">
     <h3>Finance</h3>
@@ -126,6 +135,8 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useFinanceStore } from '../../stores/financeStore';
@@ -139,6 +150,8 @@ const currencyFormat = new Intl.NumberFormat('da-DK', {
   style: 'currency', currency: 'EUR'
 });
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .finance-item {

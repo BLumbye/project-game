@@ -1,7 +1,14 @@
+<!-- 
+  Workers (Decision Form)
+
+  This is where the player(s) hires or fires workers.
+  The input fields only accept whole numbers.
+  Positive denotes hiring, negative firing. 
+-->
+
 <template>
   <div class="workers">
     <h3 class="component-title">Hire or fire workers</h3>
-    <!-- header, css, fysisk title -->
     <span class="workers-column-label">Worker</span>
     <span class="workers-column-label">Amount</span>
     <label for="labour-input"
@@ -25,6 +32,8 @@
   </div>
 </template>
 
+<!-- Script -->
+
 <script setup lang="ts">
 import { Ref, ref, watch } from 'vue';
 import { useWeekStore } from '../../stores/weekStore';
@@ -39,6 +48,12 @@ const electrician = ref('');
 const weekStore = useWeekStore();
 const workersStore = useWorkersStore();
 
+/**
+ * Watches for input from the player.
+ * If the player progresses a week and have inputted any whole number, workers are either hired (positive input) or fired (negative input). 
+ * @param input The input in the field
+ * @param type The type of worker
+ */
 const makeWorkerWatcher = (input: Ref<string>, type: WorkerType) => {
   watch(input, () => {
     workersStore.change(type, parseInt(input.value) || 0);
@@ -58,6 +73,8 @@ watch(
   },
 );
 </script>
+
+<!-- Styling -->
 
 <style scoped lang="postcss">
 .workers {
