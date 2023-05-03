@@ -198,7 +198,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   function progressActivities() {
     for (const activity of config.activities) {
-      if (!isActivityDone.value(activity.label) && requirementsMet.value(activity.label, weekStore.week - 1)) {
+      if (requirementsMet.value(activity.label, weekStore.week - 1)) {
         progressTimelines.value[activity.label][weekStore.week] = 1;
         if (activity.requirements.equipment && isActivityDone.value(activity.label)) {
           const equipmentStore = useEquipmentStore();
