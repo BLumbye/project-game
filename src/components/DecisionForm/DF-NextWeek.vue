@@ -32,8 +32,16 @@ const workersStore = useWorkersStore();
 const activitiesStore = useActivitiesStore();
 const financeStore = useFinanceStore();
 
+/**
+ * Checks whether the game is done (win) or over (lose) whenever a week progresses. The game is done if the following requirements are met:
+ * 1) All workers are fired
+ * 2) All activites are done
+ * 3) Any potential loan has been repaid
+ * 
+ * You lose if more weeks have passed then allowed by the project duration defined in Config
+ */
 watch(() => weekStore.week, () => {
-  // Check if game is done
+
   const noWorkers = Object.values(workersStore.currentWorkers).every(worker => worker === 0);
   const activitiesDone = activitiesStore.allActivitiesDone();
   const loanRepaid = financeStore.loan === 0;

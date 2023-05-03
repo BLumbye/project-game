@@ -36,6 +36,11 @@ export const useActivitiesStore = defineStore('activities', () => {
   const allocations = ref<Record<string, Record<WorkerType, number>[]>>(generateAllocationState());
 
   // Getters
+
+  /**
+   * Returns the progress of an activity for a given week.
+   * If no week is given, it returns for the current week.
+   */
   const progressAtWeek = computed(() => {
     return (activity: string, week?: number) => {
       week ??= weekStore.week;
@@ -44,6 +49,10 @@ export const useActivitiesStore = defineStore('activities', () => {
         .reduce((accumulator, current) => accumulator + current, 0);
     };
   });
+  /**
+   * Returns an array of all activites for a given week.
+   * If no week is given, it returns for the current week.
+   */
   const activitiesAtWeek = computed(() => {
     return (week?: number) => {
       week ??= weekStore.week;
@@ -55,6 +64,11 @@ export const useActivitiesStore = defineStore('activities', () => {
     };
   });
   const activities = computed(() => activitiesAtWeek.value(weekStore.week));
+
+  /**
+   * Returns true if an activity has finished in a given week.
+   * If no week is given, it returns for the current week.
+   */
   const isActivityDone = computed(() => {
     return (label: string, week?: number) => {
       week ??= weekStore.week;
@@ -62,17 +76,31 @@ export const useActivitiesStore = defineStore('activities', () => {
       return activity !== undefined && getDuration.value(activity) <= progressAtWeek.value(label, week);
     };
   });
+
+  /**
+   * Returns true if all activites are done in the given week.
+   * If no week is given, it returns for the current week.
+   */
   const allActivitiesDone = computed(() => {
     return (week?: number) => {
       week ??= weekStore.week;
       return config.activities.every((activity) => isActivityDone.value(activity.label, week));
     };
   });
+
+  /**
+   * Returns the duration of an activity. The duration is the time needed for an acitivty is done.
+   */
   const getDuration = computed(() => {
     return (activity: Pick<Activity, 'duration'>) => {
       return activity.duration({ equipment: equipmentStore.equipmentAtWeek(weekStore.week - 1) });
     };
   });
+
+  /**
+   * Returns the total amount of workers assigned to an activity for a given week.
+   * If no week is given, it returns for the current week.
+   */
   const totalWorkersAssigned = computed(() => {
     return (type: WorkerType, week?: number) => {
       week ??= weekStore.week;
@@ -82,6 +110,12 @@ export const useActivitiesStore = defineStore('activities', () => {
       );
     };
   });
+
+  /**
+   * Returns true if the requirements for an activity to progress has been met for the given week.
+   * An activity might need other activites to be done before it can begin.
+   * If no week is given, it returns for the current week.
+   */
   const activityRequirementMet = computed(() => {
     return (activity: Activity, week?: number) => {
       week ??= weekStore.week;
@@ -91,6 +125,12 @@ export const useActivitiesStore = defineStore('activities', () => {
       );
     };
   });
+
+  /**
+   * Returns true if the requirements for ordered equipment has been met for the given week.
+   * Equipment must be ordered before it will progress.
+   * If no week is given, it returns for the current week.
+   */
   const equipmentRequirementMet = computed(() => {
     return (activity: Activity, week?: number) => {
       week ??= weekStore.week;
@@ -100,6 +140,11 @@ export const useActivitiesStore = defineStore('activities', () => {
       );
     };
   });
+
+  /**
+   * Returns true if the given activity does not require workers or if there are anough workers allocated and hired.
+   * If no week is given, it returns for the current week.
+   */
   const workerRequirementMet = computed(() => {
     return (activity: Activity, week?: number) => {
       week ??= weekStore.week;
@@ -116,6 +161,15 @@ export const useActivitiesStore = defineStore('activities', () => {
       return enoughWorkers('labour') && enoughWorkers('skilled') && enoughWorkers('electrician');
     };
   });
+
+  /**
+   * Returns true for a given week if all requirements for a given activity has been met:
+   * 1) Prerequsite activites done
+   * 2) Needed equipment has arrived
+   * 3) Enough workers are hired and allocated.
+   *
+   * If no week is given, it returns for the current week.
+   */
   const requirementsMet = computed(() => {
     return (label: string, week?: number) => {
       week ??= weekStore.week;
@@ -131,9 +185,17 @@ export const useActivitiesStore = defineStore('activities', () => {
   });
 
   // Actions
+
+  /**
+   * Allocates a worker to a given activity in the current week.
+   */
   function allocateWorker(activity: string, type: WorkerType, value: number) {
     allocations.value[activity][weekStore.week][type] = value;
   }
+  /**
+   * Progresses each activity which meets its requirements.
+   * An activity cannot progress if it already done.
+   */
   function progressActivities() {
     for (const activity of config.activities) {
       if (!isActivityDone.value(activity.label) && requirementsMet.value(activity.label, weekStore.week - 1)) {
@@ -147,6 +209,10 @@ export const useActivitiesStore = defineStore('activities', () => {
   }
 
   // Watch week store to progress activities
+
+  /**
+   * Every time the week progresses, elligible activities are progressed.
+   */
   watch(
     () => weekStore.week,
     () => {

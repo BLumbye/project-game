@@ -1,3 +1,9 @@
+/*
+    Style
+
+    This is where general CSS styles are defined to be used where relevant. 
+*/
+
 * {
   margin: 0;
   padding: 0;
@@ -43,7 +49,8 @@ h1 {
   line-height: 1.1;
 }
 
-button:not(.link-button), input[type="submit"] {
+button:not(.link-button),
+input[type='submit'] {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -55,12 +62,17 @@ button:not(.link-button), input[type="submit"] {
   transition: border-color 0.25s;
 
   &:hover {
-  border-color: #646cff;
-}
+    border-color: #646cff;
+  }
 
   &:focus,
   &:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
+  }
+
+  @media (prefers-color-scheme: light) {
+    border-color: black;
+    background-color: #f9f9f9;
   }
 }
 
@@ -108,11 +120,6 @@ hr {
 
   a:hover {
     color: #747bff;
-  }
-
-  button {
-    border-color: black;
-    background-color: #f9f9f9;
   }
 
   hr {

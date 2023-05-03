@@ -1,9 +1,9 @@
 /**
  * Config
- * 
- * 
+ *
+ *
  * The Config file is where all relevant constant values are set.
- * This is also where activities are defined. 
+ * This is also where activities are defined.
  */
 
 import { Activity } from './types/types';
@@ -31,7 +31,7 @@ const milestoneReward = 0.5; //Percentage paid on a certain activity completion
 const milestoneActivity = 'H';
 
 //Time limit
-const duration = 13;
+const projectDuration = 13;
 
 // Currency
 const currency = '€';
@@ -162,7 +162,7 @@ export default {
   consumables,
   loanInterest,
   overdraftInterest,
-  duration,
+  duration: projectDuration,
   activities,
   labourPay,
   skilledPay,

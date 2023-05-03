@@ -10,6 +10,10 @@ export const useWeekStore = defineStore('week', () => {
   const decisionForm = computed(() => week.value + 1);
 
   // Actions
+
+  /**
+   * Progresses the week when the player is done with the decision form
+   */
   function nextWeek() {
     week.value++;
   }

@@ -1,7 +1,7 @@
 /**
  * Types
- * 
- * This is where relevant general types and interfaces are defined. 
+ *
+ * This is where relevant general types and interfaces are defined.
  */
 
 export type WorkerType = 'labour' | 'skilled' | 'electrician';
