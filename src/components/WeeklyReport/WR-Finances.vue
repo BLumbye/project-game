@@ -148,10 +148,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useFinanceStore } from '../../stores/financeStore';
-import { useWeekStore } from '../../stores/weekStore';
-
 const weekStore = useWeekStore();
 const week = computed(() => weekStore.week);
 const financeStore = useFinanceStore();
@@ -163,11 +159,13 @@ const currencyFormat = new Intl.NumberFormat('da-DK', {
 
 <!-- Styling -->
 
-<style scoped lang="postcss">.finance-item {
+<style scoped lang="postcss">
+.finance-item {
   display: flex;
   justify-content: space-between;
 
   &.summary-item {
     font-weight: bold;
   }
-}</style>
+}
+</style>

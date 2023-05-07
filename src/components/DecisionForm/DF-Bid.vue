@@ -15,8 +15,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { useBidStore } from '../../stores/bidStore';
-
 const bidStore = useBidStore();
 </script>
 

@@ -35,11 +35,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { useActivitiesStore } from '../../stores/activitiesStore';
-import config from '../../config';
-import { useWeekStore } from '../../stores/weekStore';
-import { computed } from 'vue';
-
 const weekStore = useWeekStore();
 const activityStore = useActivitiesStore();
 const progressActivities = computed(() => activityStore.activitiesAtWeek(weekStore.week - 1));

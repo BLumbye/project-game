@@ -1,11 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, Ref, ref, watch } from 'vue';
 import config from '../config';
-import { useActivitiesStore } from './activitiesStore';
-import { useBidStore } from './bidStore';
-import { useEquipmentStore } from './equipmentStore';
-import { useWeekStore } from './weekStore';
-import { useWorkersStore } from './workersStore';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 
 export const useFinanceStore = defineStore('finance', () => {

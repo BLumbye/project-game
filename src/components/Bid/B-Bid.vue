@@ -30,7 +30,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { useBidStore } from '../../stores/bidStore';
 import { validateFieldIsDigit } from '../../utils/validateField';
 
 const bidStore = useBidStore();

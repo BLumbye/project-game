@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia';
-import { computed, ref, watch } from 'vue';
 import config from '../config';
 import { Activity, WorkerType } from '../types/types';
-import { useWeekStore } from './weekStore';
-import { useEquipmentStore } from './equipmentStore';
-import { useWorkersStore } from './workersStore';
 
 const generateProgressTimelines = () => {
   const timelines: Record<string, number[]> = {};

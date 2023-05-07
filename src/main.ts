@@ -3,15 +3,9 @@ import { createPinia } from 'pinia';
 import './style.pcss';
 import '@csstools/normalize.css';
 import App from './App.vue';
-import Auth from './pages/Auth.vue';
-import Game from './pages/Game.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { supabase } from './supabase';
-
-const routes = [
-  { path: '/', name: 'auth', component: Auth },
-  { path: '/game', name: 'game', component: Game },
-];
+import routes from '~pages';
 
 const router = createRouter({
   history: createWebHistory(),

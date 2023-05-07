@@ -19,10 +19,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useWeekStore } from '../../stores/weekStore';
-import { useWorkersStore } from '../../stores/workersStore';
-
 const weekStore = useWeekStore();
 const workersStore = useWorkersStore();
 const workers = computed(() => workersStore.workersAtWeek(weekStore.week - 2));

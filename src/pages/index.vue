@@ -33,8 +33,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { supabase } from '../supabase';
 
 const type = ref<'sign-up' | 'log-in'>('sign-up');
@@ -119,3 +117,9 @@ const handleLogin = async () => {
   }
 }
 </style>
+
+<route>
+{
+  name: "auth"
+}
+</route>

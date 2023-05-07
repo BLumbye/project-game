@@ -9,10 +9,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import DecisionForm from '../components/DecisionForm/DecisionForm.vue';
-import WeeklyReport from '../components/WeeklyReport/WeeklyReport.vue';
-import { useWeekStore } from '../stores/weekStore';
-
 const weekStore = useWeekStore();
 </script>
 
@@ -26,3 +22,9 @@ const weekStore = useWeekStore();
   align-items: flex-start;
 }
 </style>
+
+<route>
+{
+  name: "game"
+}
+</route>
