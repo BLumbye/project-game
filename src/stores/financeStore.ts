@@ -19,7 +19,7 @@ export const useFinanceStore = defineStore('finance', () => {
 
   //Timelines keep track of the finance through the weeks.
   const incomingTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  incomingTimeline.set(bidStore.price * config.startBudget, 0);
+  incomingTimeline.set(bidStore.price * config.startBudget, 0);   //Set the starting budget
   const workersTimeline = createWeeklyTimeline(0, sumReducer, 0);
   const equipmentTimeline = createWeeklyTimeline(0, sumReducer, 0);
   const overheadTimeline = createWeeklyTimeline(0, sumReducer, 0);

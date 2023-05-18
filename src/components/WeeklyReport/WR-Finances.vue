@@ -156,7 +156,7 @@ const weekStore = useWeekStore();
 const week = computed(() => weekStore.week);
 const financeStore = useFinanceStore();
 
-const currencyFormat = new Intl.NumberFormat('da-DK', {
+const currencyFormat = new Intl.NumberFormat('en-UK', {
   style: 'currency', currency: 'EUR'
 });
 </script>
