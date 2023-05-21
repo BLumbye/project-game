@@ -13,12 +13,7 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
 import config from '../../config';
-import { useActivitiesStore } from '../../stores/activitiesStore';
-import { useFinanceStore } from '../../stores/financeStore';
-import { useWeekStore } from '../../stores/weekStore';
-import { useWorkersStore } from '../../stores/workersStore';
 
 const emit = defineEmits<{
   (e: 'week-progressed'): void

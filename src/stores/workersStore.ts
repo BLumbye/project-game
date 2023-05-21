@@ -1,9 +1,6 @@
 import { defineStore } from 'pinia';
-import { computed, ref, watch } from 'vue';
 import { WorkerType } from '../types/types';
 import config from '../config';
-import { useWeekStore } from './weekStore';
-import { createTimeline, createWeeklyTimeline, sumReducer } from '../utils/timeline';
 
 type WorkersState = Record<WorkerType, number>;
 

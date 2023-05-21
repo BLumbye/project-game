@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
 import { EquipmentType, Equipment, DeliveryType } from '../types/types';
 import { mergeDeep } from '../utils/merge';
-import { useWeekStore } from './weekStore';
 
 type EquipmentState = Record<EquipmentType, Equipment>;
 

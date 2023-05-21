@@ -35,9 +35,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { Ref, ref, watch } from 'vue';
-import { useWeekStore } from '../../stores/weekStore';
-import { useWorkersStore } from '../../stores/workersStore';
 import { WorkerType } from '../../types/types';
 
 

@@ -18,11 +18,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { useWeekStore } from '../../stores/weekStore';
-import WRAllocation from './WR-Allocation.vue';
-import WRFinances from './WR-Finances.vue';
-import WRWorkers from './WR-Workers.vue';
-
 const weekStore = useWeekStore();
 </script>
 

@@ -13,7 +13,7 @@
     <span>LAB</span>
     <span>SKI</span>
     <span>ELE</span>
-    <template v-for="(activity, index) in activities">
+    <template v-for="activity in activities">
       <span>{{ activity.label }}</span>
       <input type="text"
              class="worker-input"
@@ -40,11 +40,8 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { useActivitiesStore } from '../../stores/activitiesStore';
-import { onMounted, Ref, ref, watch } from 'vue';
 import { WorkerType } from '../../types/types';
 import config from '../../config';
-import { useWeekStore } from '../../stores/weekStore';
 import { validateFieldIsDigit } from '../../utils/validateField';
 
 const weekStore = useWeekStore();

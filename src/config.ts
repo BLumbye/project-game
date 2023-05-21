@@ -9,32 +9,32 @@
 import { Activity } from './types/types';
 
 //Prices
-const loanInterest = 0.01;
-const overdraftInterest = 0.1;
+const loanInterest: number = 0.01;
+const overdraftInterest: number = 0.1;
 
-const consumables = 50000;
-const overhead = 10000;
+const consumables: number = 50000;
+const overhead: number = 10000;
 
-const projectDelayPenalty = 20000;
+const projectDelayPenalty: number = 20000;
 
 //Salary
-const labourPay = 800;
-const skilledPay = 1500;
-const electricianPay = 2000;
+const labourPay: number = 800;
+const skilledPay: number = 1500;
+const electricianPay: number = 2000;
 
 //Payments
-const startBudget = 0.2; //Money at start of the project
-const allActivitesCompleteReward = 0.3;
-const milestoneReward = 0.5; //Percentage paid on a certain activity completion
+const startBudget: number = 0.2; //Money at start of the project
+const allActivitesCompleteReward: number = 0.3;
+const milestoneReward: number = 0.5; //Percentage paid on a certain activity completion
 
 //Milestone activity
-const milestoneActivity = 'H';
+const milestoneActivity: typeof activities[number]['label'] = 'A';
 
 //Time limit
-const projectDuration = 13;
+const projectDuration: number = 13;
 
 // Currency
-const currency = '€';
+const currency: string = '€';
 
 //Activities
 const activities: Pick<Activity, 'label' | 'duration' | 'requirements'>[] = [

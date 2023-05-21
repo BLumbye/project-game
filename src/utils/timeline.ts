@@ -3,6 +3,12 @@ import { useWeekStore } from '../stores/weekStore';
 
 const sumReducer = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
+/**
+ * Creates a timeline with a default value, a reducer and an initial value. A timeline is an array of values that can be accessed by index and through a reduced value.
+ * @param defaultValue The default value of any item in the timeline.
+ * @param reducer The reducer function to use when reducing the timeline.
+ * @param initialValue The initial value used when reducing the timeline.
+ */
 function createTimeline<T>(defaultValue: T, reducer: (accumulator: T, currentValue: T) => T, initialValue: T) {
   const timeline = ref([defaultValue]) as Ref<T[]>;
 
@@ -34,6 +40,13 @@ function createTimeline<T>(defaultValue: T, reducer: (accumulator: T, currentVal
   return { timeline, set, get, getReduced };
 }
 
+/**
+ * Creates a weekly timeline, which is a timeline with some functions overwritten to take the current week into account.
+ * @param defaultValue The default value of any item in the timeline.
+ * @param reducer The reducer function to use when reducing the timeline.
+ * @param initialValue The initial value used when reducing the timeline.
+ * @see createTimeline for more info on timelines.
+ */
 function createWeeklyTimeline<T>(defaultValue: T, reducer: (accumulator: T, currentValue: T) => T, initialValue: T) {
   const weekStore = useWeekStore();
   const timeline = createTimeline(defaultValue, reducer, initialValue);

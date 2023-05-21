@@ -14,27 +14,19 @@
 <template>
   <div class="decision-form">
     <h2 class="boxed section-title">Decision form for week: {{ weekStore.decisionForm }}</h2>
-    <Bid class="bid boxed" />
-    <Workers class="workers boxed" />
-    <Equipment class="equipment boxed" />
-    <Allocation class="allocation boxed" />
-    <Loan class="loan boxed" />
-    <NextWeek class="next-week-button"
-              @week-progressed="weekStore.nextWeek()" />
+    <DFBid class="bid boxed" />
+    <DFWorkers class="workers boxed" />
+    <DFEquipment class="equipment boxed" />
+    <DFAllocation class="allocation boxed" />
+    <DFLoan class="loan boxed" />
+    <DFNextWeek class="next-week-button"
+                @week-progressed="weekStore.nextWeek()" />
   </div>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-import Bid from './DF-Bid.vue';
-import Workers from './DF-Workers.vue';
-import Equipment from './DF-Equipment.vue';
-import Loan from './DF-Loan.vue';
-import Allocation from './DF-Allocation.vue';
-import NextWeek from './DF-NextWeek.vue';
-import { useWeekStore } from '../../stores/weekStore';
-
 const weekStore = useWeekStore();
 </script>
 

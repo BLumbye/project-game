@@ -42,9 +42,6 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import { computed, Ref, ref, watch } from 'vue';
-import { useEquipmentStore } from '../../stores/equipmentStore';
-import { useWeekStore } from '../../stores/weekStore';
 import { EquipmentType } from '../../types/types';
 import { validateFieldIsDigit } from '../../utils/validateField';
 

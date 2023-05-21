@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
 
 export const useWeekStore = defineStore('week', () => {
   //Uses setup store
