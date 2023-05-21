@@ -35,8 +35,7 @@ export const useFinanceStore = defineStore('finance', () => {
         consumablesTimeline.getReduced.value(week) +
         delayPenaltyTimeline.getReduced.value(week) +
         loanInterestTimeline.getReduced.value(week) +
-        overdraftInterestTimeline.getReduced.value(week) +
-        loanRepayTimeline.getReduced.value(week)
+        overdraftInterestTimeline.getReduced.value(week)
       );
     };
   });
