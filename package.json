@@ -12,36 +12,36 @@
     "lint:style": "stylelint src/**/*.{css,scss,vue}"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.21.0",
-    "pinia": "^2.0.35",
-    "vue": "^3.2.47",
-    "vue-router": "^4.1.6"
+    "@supabase/supabase-js": "^2.22.0",
+    "pinia": "^2.1.3",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.1"
   },
   "devDependencies": {
     "@csstools/normalize.css": "^12.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.2",
-    "@typescript-eslint/parser": "^5.59.2",
-    "@vitejs/plugin-vue": "^4.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
+    "@typescript-eslint/parser": "^5.59.6",
+    "@vitejs/plugin-vue": "^4.2.3",
     "@vue/eslint-config-prettier": "^7.1.0",
     "@vue/eslint-config-typescript": "^11.0.3",
     "autoprefixer": "^10.4.14",
-    "eslint": "^8.40.0",
+    "eslint": "^8.41.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-vue": "^9.11.1",
+    "eslint-plugin-vue": "^9.13.0",
     "postcss": "^8.4.23",
     "postcss-html": "^1.5.0",
     "postcss-nesting": "^11.2.2",
     "prettier": "^2.8.8",
-    "stylelint": "^15.6.1",
+    "stylelint": "^15.6.2",
     "stylelint-config-recommended": "^12.0.0",
     "stylelint-config-recommended-vue": "^1.4.0",
     "stylelint-config-standard": "^33.0.0",
     "typescript": "^5.0.4",
-    "unplugin-auto-import": "^0.15.3",
+    "unplugin-auto-import": "^0.16.0",
     "unplugin-vue-components": "^0.24.1",
-    "vite": "^4.3.5",
-    "vite-plugin-pages": "^0.29.0",
-    "vue-tsc": "^1.6.4"
+    "vite": "^4.3.8",
+    "vite-plugin-pages": "^0.30.1",
+    "vue-tsc": "^1.6.5"
   }
 }

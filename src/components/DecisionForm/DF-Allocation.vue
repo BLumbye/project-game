@@ -13,7 +13,7 @@
     <span>LAB</span>
     <span>SKI</span>
     <span>ELE</span>
-    <template v-for="(activity, index) in activities">
+    <template v-for="activity in activities">
       <span>{{ activity.label }}</span>
       <input type="text"
              class="worker-input"

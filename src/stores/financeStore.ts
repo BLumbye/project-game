@@ -168,9 +168,9 @@ export const useFinanceStore = defineStore('finance', () => {
   /** When the milestone activity is completed, the the milestone payment is added to the incoming timeline only once
    * */
   const stopMilestoneWatcher = watch(
-    () => activityStore.isActivityDone(config.milestoneActivity),
+    () => activityStore.isActivityDone(activityStore.activityFromLabel(config.milestoneActivity)),
     () => {
-      if (activityStore.isActivityDone(config.milestoneActivity)) {
+      if (activityStore.isActivityDone(activityStore.activityFromLabel(config.milestoneActivity))) {
         stopMilestoneWatcher();
         incomingTimeline.add(bidStore.price * config.milestoneReward, weekStore.week - 1);
       }

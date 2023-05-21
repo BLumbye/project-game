@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
 import config from '../config';
 import { Activity, WorkerType } from '../types/types';
+import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 
 const generateProgressTimelines = () => {
-  const timelines: Record<string, number[]> = {};
+  const timelines: Record<string, ReturnType<typeof createWeeklyTimeline<number>>> = {};
   for (const activity of config.activities) {
-    timelines[activity.label] = [];
+    timelines[activity.label] = createWeeklyTimeline(0, sumReducer, 0);
   }
   return timelines;
 };
@@ -28,23 +29,11 @@ export const useActivitiesStore = defineStore('activities', () => {
   const equipmentStore = useEquipmentStore();
 
   // State
-  const progressTimelines = ref<Record<string, number[]>>(generateProgressTimelines());
-  const allocations = ref<Record<string, Record<WorkerType, number>[]>>(generateAllocationState());
+  const progressTimelines = generateProgressTimelines();
+  const allocations = ref(generateAllocationState());
 
   // Getters
 
-  /**
-   * Returns the progress of an activity for a given week.
-   * If no week is given, it returns for the current week.
-   */
-  const progressAtWeek = computed(() => {
-    return (activity: string, week?: number) => {
-      week ??= weekStore.week;
-      return progressTimelines.value[activity]
-        .slice(0, week + 1)
-        .reduce((accumulator, current) => accumulator + current, 0);
-    };
-  });
   /**
    * Returns an array of all activites for a given week.
    * If no week is given, it returns for the current week.
@@ -54,22 +43,36 @@ export const useActivitiesStore = defineStore('activities', () => {
       week ??= weekStore.week;
       return config.activities.map((activity) => ({
         ...activity,
-        progress: progressAtWeek.value(activity.label, week),
+        progress: progressTimelines[activity.label].getReduced.value(week),
         allocation: allocations.value[activity.label][week!],
-      })) as Activity[];
+      })) satisfies Activity[];
     };
   });
   const activities = computed(() => activitiesAtWeek.value(weekStore.week));
+
+  /**
+   * Returns an activity from a given label.
+   */
+  const activityFromLabel = computed(() => {
+    return (label: string, week?: number) => {
+      week ??= weekStore.week;
+      const configActivity = config.activities.find((activity) => activity.label === label);
+      if (configActivity === undefined) throw new Error(`Activity with label ${label} not found`);
+      return {
+        ...configActivity,
+        progress: progressTimelines[configActivity.label].getReduced.value(week),
+        allocation: allocations.value[configActivity.label][week!],
+      } satisfies Activity;
+    };
+  });
 
   /**
    * Returns true if an activity has finished in a given week.
    * If no week is given, it returns for the current week.
    */
   const isActivityDone = computed(() => {
-    return (label: string, week?: number) => {
-      week ??= weekStore.week;
-      const activity = config.activities.find((activity) => activity.label === label);
-      return activity !== undefined && getDuration.value(activity) <= progressAtWeek.value(label, week);
+    return (activity: Activity) => {
+      return getDuration.value(activity) <= activity.progress;
     };
   });
 
@@ -80,7 +83,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const allActivitiesDone = computed(() => {
     return (week?: number) => {
       week ??= weekStore.week;
-      return config.activities.every((activity) => isActivityDone.value(activity.label, week));
+      return activitiesAtWeek.value(week).every((activity) => isActivityDone.value(activity));
     };
   });
 
@@ -117,7 +120,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       week ??= weekStore.week;
       return (
         !activity.requirements.activities ||
-        activity.requirements.activities.every((requiredActivity) => isActivityDone.value(requiredActivity, week))
+        activity.requirements.activities.every((requiredActivity) => isActivityDone.value(activityFromLabel.value(requiredActivity, week)))
       );
     };
   });
@@ -167,10 +170,9 @@ export const useActivitiesStore = defineStore('activities', () => {
    * If no week is given, it returns for the current week.
    */
   const requirementsMet = computed(() => {
-    return (label: string, week?: number) => {
+    return (activity: Activity, week?: number) => {
       week ??= weekStore.week;
       const activities = activitiesAtWeek.value(week);
-      const activity = activities.find((activity) => activity.label === label);
       return (
         !!activity &&
         activityRequirementMet.value(activity, week) &&
@@ -193,10 +195,10 @@ export const useActivitiesStore = defineStore('activities', () => {
    * An activity cannot progress if it already done.
    */
   function progressActivities() {
-    for (const activity of config.activities) {
-      if (requirementsMet.value(activity.label, weekStore.week - 1)) {
-        progressTimelines.value[activity.label][weekStore.week] = 1;
-        if (activity.requirements.equipment && isActivityDone.value(activity.label)) {
+    for (const activity of activities.value) {
+      if (!isActivityDone.value(activity) && requirementsMet.value(activity, weekStore.week - 1)) {
+        progressTimelines[activity.label].set(1, weekStore.week);
+        if (activity.requirements.equipment && isActivityDone.value(activity)) {
           const equipmentStore = useEquipmentStore();
           activity.requirements.equipment.forEach((equipment) => equipmentStore.finishDelivery(equipment));
         }
@@ -211,15 +213,13 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   watch(
     () => weekStore.week,
-    () => {
-      progressActivities();
-    },
+    progressActivities,
   );
 
   return {
-    progressAtWeek,
     activitiesAtWeek,
     activities,
+    activityFromLabel,
     isActivityDone,
     allActivitiesDone,
     getDuration,
