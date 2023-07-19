@@ -12,8 +12,8 @@
     "lint:style": "stylelint src/**/*.{css,scss,vue}"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.22.0",
     "pinia": "^2.1.3",
+    "pocketbase": "^0.15.3",
     "vue": "^3.3.4",
     "vue-router": "^4.2.1"
   },

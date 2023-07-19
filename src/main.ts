@@ -4,7 +4,7 @@ import './style.pcss';
 import '@csstools/normalize.css';
 import App from './App.vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import { supabase } from './supabase';
+import { pocketbase } from './pocketbase';
 import routes from '~pages';
 
 const router = createRouter({
@@ -13,11 +13,8 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (to.name === 'auth' && session) return { name: 'game' };
-  if (to.name === 'game' && !session) return { name: 'auth' };
+  if (to.name === 'auth' && pocketbase.authStore.isValid) return { name: 'game' };
+  if (to.name === 'game' && !pocketbase.authStore.isValid) return { name: 'auth' };
 });
 
 const pinia = createPinia();

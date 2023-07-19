@@ -3,13 +3,13 @@
   <form @submit.prevent="handleLogin"
         class="login-form">
     <div class="input-container">
-      <label for="email">Email</label>
-      <input type="email"
-             name="email"
-             id="email"
+      <label for="username">Username</label>
+      <input type="text"
+             name="username"
+             id="username"
              required
              placeholder="john@doe.com"
-             v-model="email" />
+             v-model="username" />
     </div>
     <div class="input-container">
       <label for="password">Password</label>
@@ -20,48 +20,47 @@
              placeholder="1234"
              v-model="password" />
     </div>
+    <span v-if="errorMessage !== null"
+          class="error-message">{{ errorMessage }}</span>
     <input type="submit"
-           :value="loading ? 'loading' : (type === 'sign-up' ? 'Sign up' : 'Log in')"
+           value="Log in"
            :disabled="loading">
-    <span v-if="type === 'sign-up'">Already have an user? <button class="link-button"
-              @click="type = 'log-in'">Log In instead.</button></span>
-    <span v-else>Not registered yet? <button class="link-button"
-              @click="type = 'sign-up'">Sign up instead.</button></span>
   </form>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-import { supabase } from '../supabase';
+import { ClientResponseError } from 'pocketbase';
+import { pocketbase } from '../pocketbase';
 
-const type = ref<'sign-up' | 'log-in'>('sign-up');
 const loading = ref(false);
-const email = ref("");
+const username = ref("");
 const password = ref("");
+const errorMessage = ref<string | null>(null)
 
 const router = useRouter();
 
 const handleLogin = async () => {
   try {
     loading.value = true;
-    let response;
-    if (type.value === 'sign-up') {
-      response = await supabase.auth.signUp({
-        email: email.value,
-        password: password.value,
-      });
-    } else {
-      response = await supabase.auth.signInWithPassword({
-        email: email.value,
-        password: password.value,
-      });
-    }
-    if (response.error) throw response.error;
+    errorMessage.value = null;
+
+    const response = await pocketbase.collection('users').authWithPassword(username.value, password.value);
 
     router.push({ name: 'game' });
   } catch (error) {
-    console.error('error during log in', error);
+    if (!(error instanceof ClientResponseError)) {
+      errorMessage.value = "An unknown error occurred. Please contact an administrator.";
+      console.error('unknown error during login', error);
+    } else {
+      if (error.status === 400) {
+        errorMessage.value = "Invalid username or password.";
+      } else {
+        errorMessage.value = "A server error occurred. Please contact an administrator.";
+        console.error('server error during login', error);
+      }
+    }
   } finally {
     loading.value = false;
   }
@@ -114,6 +113,10 @@ const handleLogin = async () => {
 
   & input[type="submit"] {
     padding-inline: 1.5em;
+  }
+
+  & .error-message {
+    color: #ff6464;
   }
 }
 </style>
