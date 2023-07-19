@@ -3,7 +3,7 @@ import config from '../config';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 
 export const useFinanceStore = defineStore('finance', () => {
-  const weekStore = useWeekStore();
+  const gameStore = useGameStore();
   const bidStore = useBidStore();
   const workersStore = useWorkersStore();
   const equipmentStore = useEquipmentStore();
@@ -27,7 +27,7 @@ export const useFinanceStore = defineStore('finance', () => {
   // Getters
   const outgoingAtWeek = computed(() => {
     return (week?: number) => {
-      week ??= weekStore.week - 1;
+      week ??= gameStore.week - 1;
       return (
         workersTimeline.getReduced.value(week) +
         equipmentTimeline.getReduced.value(week) +
@@ -41,19 +41,19 @@ export const useFinanceStore = defineStore('finance', () => {
   });
   const loanAtWeek = computed(() => {
     return (week?: number) => {
-      week ??= weekStore.week - 1;
+      week ??= gameStore.week - 1;
       return loanTimeline.getReduced.value(week) - loanRepayTimeline.getReduced.value(week);
     };
   });
   const balanceAtWeek = computed(() => {
     return (week?: number) => {
-      week ??= weekStore.week - 1;
+      week ??= gameStore.week - 1;
       return incomingTimeline.getReduced.value(week) + loanAtWeek.value(week) - outgoingAtWeek.value(week);
     };
   });
   const weeklyBalanceAtWeek = computed(() => {
     return (week?: number) => {
-      week ??= weekStore.week - 1;
+      week ??= gameStore.week - 1;
       return (
         (incomingTimeline.get.value(week) || 0) +
         (loanTimeline.get.value(week) || 0) -
@@ -76,7 +76,7 @@ export const useFinanceStore = defineStore('finance', () => {
    * If no week is given, it is added to the next week.
    */
   function takeLoan(value: number, week?: number) {
-    week ??= weekStore.week;
+    week ??= gameStore.week;
     loanTimeline.set(value, week + 1);
   }
 
@@ -85,7 +85,7 @@ export const useFinanceStore = defineStore('finance', () => {
    * If no week is given, it is added to the current week.
    */
   function addInterestToLoan(value: number, week?: number) {
-    week ??= weekStore.week;
+    week ??= gameStore.week;
     loanTimeline.add(value, week);
     loanInterestTimeline.add(value, week);
   }
@@ -95,23 +95,23 @@ export const useFinanceStore = defineStore('finance', () => {
    * If no week is given, it is added to the current week.
    */
   function repayLoan(value: number, week?: number) {
-    week ??= weekStore.week;
+    week ??= gameStore.week;
     value = Math.min(value, loan.value * (1 + config.loanInterest));
     loanRepayTimeline.set(value, week + 1);
   }
 
   function applyWeeklyFinances() {
     // Worker pay
-    const previousWorkers = workersStore.workersAtWeek(weekStore.week - 1);
+    const previousWorkers = workersStore.workersAtWeek(gameStore.week - 1);
     workersTimeline.add(
       previousWorkers.labour * config.labourPay +
-        previousWorkers.skilled * config.skilledPay +
-        previousWorkers.electrician * config.electricianPay,
+      previousWorkers.skilled * config.skilledPay +
+      previousWorkers.electrician * config.electricianPay,
     );
 
     // Equipment costs
-    const previousEquipment = equipmentStore.equipmentAtWeek(weekStore.week - 2);
-    const equipment = equipmentStore.equipmentAtWeek(weekStore.week - 1);
+    const previousEquipment = equipmentStore.equipmentAtWeek(gameStore.week - 2);
+    const equipment = equipmentStore.equipmentAtWeek(gameStore.week - 1);
     if (equipment.steelwork.status === 'ordered' && previousEquipment.steelwork.status !== 'ordered') {
       equipmentTimeline.add(equipment.steelwork.deliveryType! === 'regular' ? 38000 : 41800);
     }
@@ -128,29 +128,29 @@ export const useFinanceStore = defineStore('finance', () => {
     // Consumables charge: charge only if any workers are working
     if (
       activityStore
-        .activitiesAtWeek(weekStore.week - 1)
+        .activitiesAtWeek(gameStore.week - 1)
         .some(
           (activity) =>
             activity.requirements.workers !== undefined &&
-            activityStore.workerRequirementMet(activity, weekStore.week - 1),
+            activityStore.workerRequirementMet(activity, gameStore.week - 1),
         )
     ) {
       consumablesTimeline.add(config.consumables);
     }
 
     // Project delayed penalty
-    if (weekStore.week - 1 > bidStore.duration) {
+    if (gameStore.week - 1 > bidStore.duration) {
       delayPenaltyTimeline.add(config.projectDelayPenalty);
     }
 
     //Loan increase
-    if (loanAtWeek.value(weekStore.week) > 0) {
-      addInterestToLoan(config.loanInterest * loanAtWeek.value(weekStore.week));
+    if (loanAtWeek.value(gameStore.week) > 0) {
+      addInterestToLoan(config.loanInterest * loanAtWeek.value(gameStore.week));
     }
 
     //Overdraft
-    if (balanceAtWeek.value(weekStore.week - 1) < 0) {
-      overdraftInterestTimeline.add(config.overdraftInterest * -balanceAtWeek.value(weekStore.week - 1));
+    if (balanceAtWeek.value(gameStore.week - 1) < 0) {
+      overdraftInterestTimeline.add(config.overdraftInterest * -balanceAtWeek.value(gameStore.week - 1));
     }
   }
 
@@ -158,7 +158,7 @@ export const useFinanceStore = defineStore('finance', () => {
 
   //When the week progresses all finance timelines are updated
   watch(
-    () => weekStore.week,
+    () => gameStore.week,
     () => {
       applyWeeklyFinances();
     },
@@ -171,7 +171,7 @@ export const useFinanceStore = defineStore('finance', () => {
     () => {
       if (activityStore.isActivityDone(activityStore.activityFromLabel(config.milestoneActivity))) {
         stopMilestoneWatcher();
-        incomingTimeline.add(bidStore.price * config.milestoneReward, weekStore.week - 1);
+        incomingTimeline.add(bidStore.price * config.milestoneReward, gameStore.week - 1);
       }
     },
   );
@@ -184,7 +184,7 @@ export const useFinanceStore = defineStore('finance', () => {
     () => {
       if (activityStore.allActivitiesDone()) {
         stopFinishedWatcher();
-        incomingTimeline.add(bidStore.price * config.allActivitesCompleteReward, weekStore.week - 1);
+        incomingTimeline.add(bidStore.price * config.allActivitesCompleteReward, gameStore.week - 1);
       }
     },
   );

@@ -148,8 +148,8 @@
 <!-- Script -->
 
 <script setup lang="ts">
-const weekStore = useWeekStore();
-const week = computed(() => weekStore.week);
+const gameStore = useGameStore();
+const week = computed(() => gameStore.week);
 const financeStore = useFinanceStore();
 
 const currencyFormat = new Intl.NumberFormat('en-UK', {

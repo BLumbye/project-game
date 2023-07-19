@@ -1,5 +1,5 @@
 import { ref, computed, Ref } from 'vue';
-import { useWeekStore } from '../stores/weekStore';
+import { useGameStore } from '../stores/gameStore';
 
 const sumReducer = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
@@ -48,25 +48,25 @@ function createTimeline<T>(defaultValue: T, reducer: (accumulator: T, currentVal
  * @see createTimeline for more info on timelines.
  */
 function createWeeklyTimeline<T>(defaultValue: T, reducer: (accumulator: T, currentValue: T) => T, initialValue: T) {
-  const weekStore = useWeekStore();
+  const gameStore = useGameStore();
   const timeline = createTimeline(defaultValue, reducer, initialValue);
 
   const get = computed(() => {
     return (week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       return timeline.get.value(week);
     };
   });
 
   const getReduced = computed(() => {
     return (week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       return timeline.getReduced.value(week);
     };
   });
 
   function set(value: T, week?: number) {
-    week ??= weekStore.week;
+    week ??= gameStore.week;
     timeline.set(value, week);
   }
 
@@ -76,7 +76,7 @@ function createWeeklyTimeline<T>(defaultValue: T, reducer: (accumulator: T, curr
    * @param week
    */
   function add(value: number, week?: number) {
-    week ??= weekStore.week;
+    week ??= gameStore.week;
     timeline.set((((timeline.get.value(week) || defaultValue) as number) + value) as T, week);
   }
 

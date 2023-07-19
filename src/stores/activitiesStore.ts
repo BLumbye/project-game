@@ -24,7 +24,7 @@ const generateAllocationState = () => {
 };
 
 export const useActivitiesStore = defineStore('activities', () => {
-  const weekStore = useWeekStore();
+  const gameStore = useGameStore();
   const workersStore = useWorkersStore();
   const equipmentStore = useEquipmentStore();
 
@@ -40,7 +40,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   const activitiesAtWeek = computed(() => {
     return (week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       return config.activities.map((activity) => ({
         ...activity,
         progress: progressTimelines[activity.label].getReduced.value(week),
@@ -48,14 +48,14 @@ export const useActivitiesStore = defineStore('activities', () => {
       })) satisfies Activity[];
     };
   });
-  const activities = computed(() => activitiesAtWeek.value(weekStore.week));
+  const activities = computed(() => activitiesAtWeek.value(gameStore.week));
 
   /**
    * Returns an activity from a given label.
    */
   const activityFromLabel = computed(() => {
     return (label: string, week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       const configActivity = config.activities.find((activity) => activity.label === label);
       if (configActivity === undefined) throw new Error(`Activity with label ${label} not found`);
       return {
@@ -82,7 +82,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   const allActivitiesDone = computed(() => {
     return (week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       return activitiesAtWeek.value(week).every((activity) => isActivityDone.value(activity));
     };
   });
@@ -92,7 +92,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   const getDuration = computed(() => {
     return (activity: Pick<Activity, 'duration'>) => {
-      return activity.duration({ equipment: equipmentStore.equipmentAtWeek(weekStore.week - 1) });
+      return activity.duration({ equipment: equipmentStore.equipmentAtWeek(gameStore.week - 1) });
     };
   });
 
@@ -102,7 +102,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   const totalWorkersAssigned = computed(() => {
     return (type: WorkerType, week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       return config.activities.reduce(
         (totalWorkers, activity) => totalWorkers + allocations.value[activity.label][week!][type],
         0,
@@ -117,7 +117,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   const activityRequirementMet = computed(() => {
     return (activity: Activity, week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       return (
         !activity.requirements.activities ||
         activity.requirements.activities.every((requiredActivity) => isActivityDone.value(activityFromLabel.value(requiredActivity, week)))
@@ -132,7 +132,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   const equipmentRequirementMet = computed(() => {
     return (activity: Activity, week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       if (!activity.requirements.equipment) return true;
       return activity.requirements.equipment.every(
         (requiredEquipment) => equipmentStore.equipmentAtWeek(week)[requiredEquipment]?.status !== 'unordered',
@@ -146,7 +146,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   const workerRequirementMet = computed(() => {
     return (activity: Activity, week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
 
       if (!activity.requirements.workers) return true;
 
@@ -171,7 +171,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   const requirementsMet = computed(() => {
     return (activity: Activity, week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       const activities = activitiesAtWeek.value(week);
       return (
         !!activity &&
@@ -188,7 +188,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    * Allocates a worker to a given activity in the current week.
    */
   function allocateWorker(activity: string, type: WorkerType, value: number) {
-    allocations.value[activity][weekStore.week][type] = value;
+    allocations.value[activity][gameStore.week][type] = value;
   }
   /**
    * Progresses each activity which meets its requirements.
@@ -196,8 +196,8 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   function progressActivities() {
     for (const activity of activities.value) {
-      if (!isActivityDone.value(activity) && requirementsMet.value(activity, weekStore.week - 1)) {
-        progressTimelines[activity.label].set(1, weekStore.week);
+      if (!isActivityDone.value(activity) && requirementsMet.value(activity, gameStore.week - 1)) {
+        progressTimelines[activity.label].set(1, gameStore.week);
         if (activity.requirements.equipment && isActivityDone.value(activity)) {
           const equipmentStore = useEquipmentStore();
           activity.requirements.equipment.forEach((equipment) => equipmentStore.finishDelivery(equipment));
@@ -212,7 +212,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    * Every time the week progresses, elligible activities are progressed.
    */
   watch(
-    () => weekStore.week,
+    () => gameStore.week,
     progressActivities,
   );
 

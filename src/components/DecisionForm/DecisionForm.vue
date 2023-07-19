@@ -13,21 +13,21 @@
 
 <template>
   <div class="decision-form">
-    <h2 class="boxed section-title">Decision form for week: {{ weekStore.decisionForm }}</h2>
+    <h2 class="boxed section-title">Decision form for week: {{ gameStore.decisionForm }}</h2>
     <DFBid class="bid boxed" />
     <DFWorkers class="workers boxed" />
     <DFEquipment class="equipment boxed" />
     <DFAllocation class="allocation boxed" />
     <DFLoan class="loan boxed" />
     <DFNextWeek class="next-week-button"
-                @week-progressed="weekStore.nextWeek()" />
+                @week-progressed="gameStore.nextWeek()" />
   </div>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-const weekStore = useWeekStore();
+const gameStore = useGameStore();
 </script>
 
 <!-- Styling -->

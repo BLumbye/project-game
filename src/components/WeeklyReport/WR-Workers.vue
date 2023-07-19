@@ -19,9 +19,9 @@
 <!-- Script -->
 
 <script setup lang="ts">
-const weekStore = useWeekStore();
+const gameStore = useGameStore();
 const workersStore = useWorkersStore();
-const workers = computed(() => workersStore.workersAtWeek(weekStore.week - 2));
+const workers = computed(() => workersStore.workersAtWeek(gameStore.week - 2));
 </script>
 
 <!-- Styling -->

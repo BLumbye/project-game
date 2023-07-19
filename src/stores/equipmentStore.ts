@@ -5,7 +5,7 @@ import { mergeDeep } from '../utils/merge';
 type EquipmentState = Record<EquipmentType, Equipment>;
 
 export const useEquipmentStore = defineStore('equipment', () => {
-  const weekStore = useWeekStore();
+  const gameStore = useGameStore();
 
   // State
 
@@ -27,24 +27,24 @@ export const useEquipmentStore = defineStore('equipment', () => {
    */
   const equipmentAtWeek = computed(() => {
     return (week?: number) => {
-      week ??= weekStore.week;
+      week ??= gameStore.week;
       return timeline.value
         .slice(0, week + 1)
         .reduce((accumulator, current) => mergeDeep(accumulator, current), structuredClone(defaultState)) as Record<
-        EquipmentType,
-        Equipment
-      >;
+          EquipmentType,
+          Equipment
+        >;
     };
   });
 
   /**
    * Returns equipment for the current week.
    */
-  const equipment = computed(() => equipmentAtWeek.value(weekStore.week));
+  const equipment = computed(() => equipmentAtWeek.value(gameStore.week));
 
   // Actions
   function populateTimeline() {
-    for (let i = timeline.value.length; i <= weekStore.week; i++) {
+    for (let i = timeline.value.length; i <= gameStore.week; i++) {
       timeline.value.push({});
     }
   }
@@ -54,7 +54,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
    */
   function order(type: EquipmentType, deliveryType: DeliveryType) {
     populateTimeline();
-    timeline.value[weekStore.week][type] = { status: 'ordered', deliveryType };
+    timeline.value[gameStore.week][type] = { status: 'ordered', deliveryType };
   }
 
   /**
@@ -62,7 +62,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
    */
   function unorder(type: EquipmentType) {
     populateTimeline();
-    delete timeline.value[weekStore.week][type];
+    delete timeline.value[gameStore.week][type];
   }
 
   /**
@@ -70,7 +70,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
    */
   function finishDelivery(type: EquipmentType) {
     populateTimeline();
-    timeline.value[weekStore.week][type] = { status: 'delivered' };
+    timeline.value[gameStore.week][type] = { status: 'delivered' };
   }
 
   return { timeline, equipment, equipmentAtWeek, order, unorder, finishDelivery };

@@ -28,7 +28,7 @@
 <!-- Script -->
 
 <script setup lang="ts">
-const weekStore = useWeekStore();
+const gameStore = useGameStore();
 const financeStore = useFinanceStore();
 
 const newLoan = ref(0);
@@ -42,7 +42,7 @@ watch(repay, () => {
   financeStore.repayLoan(Number(repay.value));
 });
 
-watch(() => weekStore.week, () => {
+watch(() => gameStore.week, () => {
   newLoan.value = 0;
   repay.value = 0;
 })

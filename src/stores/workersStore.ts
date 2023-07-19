@@ -16,7 +16,7 @@ export const useWorkersStore = defineStore('workers', () => {
    */
   const workersAtWeek = computed(() => {
     return (week?: number) => {
-      week ??= useWeekStore().week;
+      week ??= useGameStore().week;
       const summedWorkers: WorkersState = {
         labour: 0,
         skilled: 0,
@@ -41,7 +41,7 @@ export const useWorkersStore = defineStore('workers', () => {
    *  - Negative input fires (cannot fire more workers than are already hired)
    */
   function change(type: WorkerType, value: number) {
-    const { week } = useWeekStore();
+    const { week } = useGameStore();
     workers.value[week][type] = Math.max(value, -currentWorkers.value[type]);
   }
 

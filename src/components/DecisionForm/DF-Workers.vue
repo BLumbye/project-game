@@ -42,7 +42,7 @@ const labour = ref('');       //Matches the v-model 'labour'
 const skilled = ref('');
 const electrician = ref('');
 
-const weekStore = useWeekStore();
+const gameStore = useGameStore();
 const workersStore = useWorkersStore();
 
 /**
@@ -62,7 +62,7 @@ makeWorkerWatcher(skilled, 'skilled');
 makeWorkerWatcher(electrician, 'electrician');
 
 watch(
-  () => weekStore.week,
+  () => gameStore.week,
   () => {
     labour.value = '';
     skilled.value = '';

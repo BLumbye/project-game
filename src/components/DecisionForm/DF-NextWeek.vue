@@ -22,7 +22,7 @@ const emit = defineEmits<{
 const gameDone = ref(false);
 const gameOver = ref(false);
 
-const weekStore = useWeekStore();
+const gameStore = useGameStore();
 const workersStore = useWorkersStore();
 const activitiesStore = useActivitiesStore();
 const financeStore = useFinanceStore();
@@ -35,7 +35,7 @@ const financeStore = useFinanceStore();
  * 
  * You lose if more weeks have passed then allowed by the project duration defined in Config
  */
-watch(() => weekStore.week, () => {
+watch(() => gameStore.week, () => {
 
   const noWorkers = Object.values(workersStore.currentWorkers).every(worker => worker === 0);
   const activitiesDone = activitiesStore.allActivitiesDone();
@@ -48,7 +48,7 @@ watch(() => weekStore.week, () => {
     gameDone.value = true;
   }
 
-  if (weekStore.week === config.duration) {
+  if (gameStore.week === config.duration) {
     gameOver.value = true;
   }
 });

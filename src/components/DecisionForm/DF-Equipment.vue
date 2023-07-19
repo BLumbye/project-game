@@ -49,9 +49,9 @@ const steelwork = ref('');
 const interior = ref('');
 const tbs = ref('');
 
-const weekStore = useWeekStore();
+const gameStore = useGameStore();
 const equipmentStore = useEquipmentStore();
-const previousEquipment = computed(() => equipmentStore.equipmentAtWeek(weekStore.week - 1));
+const previousEquipment = computed(() => equipmentStore.equipmentAtWeek(gameStore.week - 1));
 
 /**
  * Watches for input from the player.
@@ -73,7 +73,7 @@ const stopSteelworkWatcher = makeEquipmentWatcher(steelwork, 'steelwork');
 const stopInteriorWatcher = makeEquipmentWatcher(interior, 'interior');
 const stopTBSWatcher = makeEquipmentWatcher(tbs, 'tbs');
 
-watch([() => equipmentStore.timeline, () => weekStore.week], () => {
+watch([() => equipmentStore.timeline, () => gameStore.week], () => {
   if (previousEquipment.value.steelwork!.status !== 'unordered') {
     stopSteelworkWatcher();
     steelwork.value = equipmentStore.equipment.steelwork!.status!;

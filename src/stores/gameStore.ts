@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
 
-export const useWeekStore = defineStore('week', () => {
+export const useGameStore = defineStore('game', () => {
   //Uses setup store
   // State
   const week = ref(0);
+  const plannedprojectGame = ref(false);
 
   // Getters
   const decisionForm = computed(() => week.value + 1);
@@ -17,5 +18,5 @@ export const useWeekStore = defineStore('week', () => {
     week.value++;
   }
 
-  return { week, decisionForm, nextWeek };
+  return { week, decisionForm, nextWeek, plannedprojectGame };
 });

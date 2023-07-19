@@ -8,9 +8,9 @@
 
 <template>
   <div class="weekly-report">
-    <h2 class="boxed section-title">Weekly report for week: {{ weekStore.week - 1 }}</h2>
-    <WRAllocation v-if="weekStore.week > 1" />
-    <WRWorkers v-if="weekStore.week > 1" />
+    <h2 class="boxed section-title">Weekly report for week: {{ gameStore.week - 1 }}</h2>
+    <WRAllocation v-if="gameStore.week > 1" />
+    <WRWorkers v-if="gameStore.week > 1" />
     <WRFinances />
   </div>
 </template>
@@ -18,7 +18,7 @@
 <!-- Script -->
 
 <script setup lang="ts">
-const weekStore = useWeekStore();
+const gameStore = useGameStore();
 </script>
 
 <!-- Styling -->

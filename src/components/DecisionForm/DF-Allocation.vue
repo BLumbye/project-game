@@ -44,7 +44,7 @@ import { WorkerType } from '../../types/types';
 import config from '../../config';
 import { validateFieldIsDigit } from '../../utils/validateField';
 
-const weekStore = useWeekStore();
+const gameStore = useGameStore();
 const activityStore = useActivitiesStore();
 const activities = config.activities;
 
@@ -56,7 +56,7 @@ const change = (evt: Event, activityLabel: string, workerType: WorkerType) => {
   activityStore.allocateWorker(activityLabel, workerType, Number((evt.target as HTMLInputElement).value));
 }
 
-watch(() => weekStore.week, () => {
+watch(() => gameStore.week, () => {
   lab.value.forEach(input => input.value = '');
   ski.value.forEach(input => input.value = '');
   ele.value.forEach(input => input.value = '');

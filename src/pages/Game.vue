@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <WeeklyReport v-if="weekStore.week > 0" />
-    <h2 v-else>No weekly report in week {{ weekStore.week }}</h2>
+    <WeeklyReport v-if="gameStore.week > 0" />
+    <h2 v-else>No weekly report in week {{ gameStore.week }}</h2>
     <DecisionForm />
   </div>
 </template>
@@ -9,7 +9,7 @@
 <!-- Script -->
 
 <script setup lang="ts">
-const weekStore = useWeekStore();
+const gameStore = useGameStore();
 </script>
 
 <!-- Styling -->
