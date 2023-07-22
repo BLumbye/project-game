@@ -1,16 +1,14 @@
 <template>
-    <div class="container">
-      <B-Bid/>
-    </div>
+  <div class="container">
+    <B-Bid />
+  </div>
 </template>
   
 <!-- Script -->
 
 <!-- Styling -->
 
-<style scoped lang="postcss">
-
-</style>
+<style scoped lang="postcss"></style>
 
   
 <route>

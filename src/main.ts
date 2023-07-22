@@ -7,14 +7,17 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { pocketbase } from './pocketbase';
 import routes from '~pages';
 
+
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
 
 router.beforeEach(async (to, from) => {
+  const gameStore = useGameStore();
+
   if (to.name === 'auth' && pocketbase.authStore.isValid) return { name: 'game' };
-  if (to.name === 'game' && !pocketbase.authStore.isValid) return { name: 'auth' };
+  if (to.name === 'game' && gameStore.synchronized && !pocketbase.authStore.isValid) return { name: 'auth' };
 });
 
 const pinia = createPinia();

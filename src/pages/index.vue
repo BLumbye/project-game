@@ -1,31 +1,51 @@
 <template>
-  <h1>Please log in :)</h1>
-  <form @submit.prevent="handleLogin"
-        class="login-form">
-    <div class="input-container">
-      <label for="username">Username</label>
-      <input type="text"
-             name="username"
-             id="username"
-             required
-             placeholder="john@doe.com"
-             v-model="username" />
-    </div>
-    <div class="input-container">
-      <label for="password">Password</label>
-      <input type="password"
-             name="password"
-             id="password"
-             required
-             placeholder="1234"
-             v-model="password" />
-    </div>
-    <span v-if="errorMessage !== null"
-          class="error-message">{{ errorMessage }}</span>
-    <input type="submit"
-           value="Log in"
-           :disabled="loading">
-  </form>
+  <main>
+    <h1>Project Game</h1>
+    <h2 v-if="!gameStore.synchronizedReady">Loading...</h2>
+    <template v-else-if="gameStore.synchronized">
+      <h2>Log In</h2>
+      <form @submit.prevent="handleLogin"
+            class="login-form">
+        <div class="input-container">
+          <label for="username">Username</label>
+          <input type="text"
+                 name="username"
+                 id="username"
+                 required
+                 placeholder="john@doe.com"
+                 v-model="username" />
+        </div>
+        <div class="input-container">
+          <label for="password">Password</label>
+          <input type="password"
+                 name="password"
+                 id="password"
+                 required
+                 placeholder="1234"
+                 v-model="password" />
+        </div>
+        <span v-if="errorMessage !== null"
+              class="error-message">{{ errorMessage }}</span>
+        <input type="submit"
+               value="Log in"
+               :disabled="loading">
+      </form>
+    </template>
+    <template v-else>
+      <h2>Freeplay mode</h2>
+      <p>
+        You are currently in freeplay mode. This means that you are not connected to a game server.
+        You can still play the game, but your progress will not be saved.
+      </p>
+      <router-link class="button-link"
+                   to="/game">Start Game</router-link>
+    </template>
+  </main>
+  <footer>
+    <span>
+      Created by Benjamin Lumbye and Victor Rasmussen for 42429/42430 Project Management at DTU
+    </span>
+  </footer>
 </template>
 
 <!-- Script -->
@@ -37,7 +57,9 @@ import { pocketbase } from '../pocketbase';
 const loading = ref(false);
 const username = ref("");
 const password = ref("");
-const errorMessage = ref<string | null>(null)
+const errorMessage = ref<string | null>(null);
+
+const gameStore = useGameStore();
 
 const router = useRouter();
 
@@ -117,6 +139,33 @@ const handleLogin = async () => {
 
   & .error-message {
     color: #ff6464;
+  }
+}
+
+.button-link {
+  display: block;
+  margin-top: 1em;
+  margin-inline: 5em;
+}
+
+main {
+  width: clamp(300px, 80%, 600px);
+}
+</style>
+
+<style lang="postcss">
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & main {
+    flex: 1;
+  }
+
+  & footer {
+    font-size: 0.875rem;
+    opacity: 0.75;
   }
 }
 </style>
