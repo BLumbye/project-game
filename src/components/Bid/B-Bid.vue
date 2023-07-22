@@ -44,6 +44,11 @@
                @input="(evt) => change(evt, 'expectedDuration')" />
       </div>
     </div>
+    <!-- New toggle section -->
+    <div class="toggle-section">
+      <label class="toggle-label">Ready?:</label>
+      <input type="checkbox" v-model="isReady" class="toggle-input" />
+    </div>
   </div>
 </template>
 
@@ -54,6 +59,8 @@ import { validateFieldIsDigit } from '../../utils/validateField';
 import {bidType} from '../../types/types'
 
 const bidStore = useBidStore();
+
+const isReady = ref(false);
 
 const change = (evt: Event, bid: bidType) => {
   bidStore.updateBid(bid, Number((evt.target as HTMLInputElement).value));
@@ -93,5 +100,16 @@ const change = (evt: Event, bid: bidType) => {
 
 .bid-input {
   width: 200px;
+}
+
+.toggle-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.toggle-label {
+  margin-right: 10px;
 }
 </style>
