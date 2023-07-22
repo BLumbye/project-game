@@ -8,6 +8,7 @@ export type WorkerType = 'labour' | 'skilled' | 'electrician';
 export type EquipmentType = 'steelwork' | 'interior' | 'tbs';
 export type EquipmentStatus = 'unordered' | 'ordered' | 'delivered';
 export type DeliveryType = 'regular' | 'express';
+export type bidType = 'bidPrice' | 'bidDuration' | 'expectedPrice' | 'expectedDuration';
 
 export interface DurationParameters {
   equipment: Record<EquipmentType, Equipment>;
