@@ -14,6 +14,7 @@
            class="loan-label">New loan:</label>
     <input v-model="newLoan"
            type="text"
+           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
            class="loan-input"
            name="new-loan-input" />
     <label for="repay-input"
@@ -28,6 +29,8 @@
 <!-- Script -->
 
 <script setup lang="ts">
+import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
+
 const gameStore = useGameStore();
 const financeStore = useFinanceStore();
 

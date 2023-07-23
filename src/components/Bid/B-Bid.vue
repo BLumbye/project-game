@@ -8,57 +8,66 @@
 -->
 
 <template>
-  <div class="bid-page">
-    <h3 class="bid-headline">BID ({{ 'username' }})</h3>
-    <div class="bid-container">
-      <div class="labels">
-        <div class="bid-label">Price:</div>
-        <div class="bid-label">Duration:</div>
-        <div class="bid-label">Expected cost:</div>
-        <div class="bid-label">Expected duration:</div>
-      </div>
-      <div class="inputs">
-        <input type="text"
-               class="bid-input"
-               name="bid-price-input"
-               ref="bid-price"
-               @keypress="validateFieldIsDigit"
-               @input="(evt) => change(evt, 'bidPrice')" />
-        <input type="text"
-               class="bid-input"
-               name="bid-duration-input"
-               ref="bid-duration"
-               @keypress="validateFieldIsDigit"
-               @input="(evt) => change(evt, 'bidDuration')" />
-        <input type="text"
-               class="bid-input"
-               name="expected-price-input"
-               ref="expected-price"
-               @keypress="validateFieldIsDigit"
-               @input="(evt) => change(evt, 'expectedPrice')" />
-        <input type="text"
-               class="bid-input"
-               name="expected-duration-input"
-               ref="expected-duration"
-               @keypress="validateFieldIsDigit"
-               @input="(evt) => change(evt, 'expectedDuration')" />
-      </div>
-    </div>
-    <!-- New toggle section -->
-    <div class="toggle-section">
-      <label class="toggle-label">Ready?:</label>
-      <input type="checkbox" v-model="isReady" class="toggle-input" />
+  <h1>Project Game</h1>
+  <h2 class="bid-headline">BID {{ gameStore.synchronized ? `(${pocketbase.authStore.model!.username})` : '' }}</h2>
+  <div class="bid-container">
+    <div class="inputs">
+      <label for="bid-price">Price:</label>
+      <input type="text"
+             class="bid-input"
+             id="bid-price"
+             name="bid-price"
+             :disabled="isReady"
+             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
+             @input="(evt) => change(evt, 'bidPrice')"
+             :value="bidStore.bidPrice" />
+      <label for="bid-duration">Duration:</label>
+      <input type="text"
+             class="bid-input"
+             id="bid-duration"
+             name="bid-duration"
+             :disabled="isReady"
+             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
+             @input="(evt) => change(evt, 'bidDuration')"
+             :value="bidStore.bidDuration" />
+      <label for="expected-price">Expected cost:</label>
+      <input type="text"
+             class="bid-input"
+             id="expected-price"
+             name="expected-price"
+             :disabled="isReady"
+             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
+             @input="(evt) => change(evt, 'expectedPrice')"
+             :value="bidStore.expectedPrice" />
+      <label for="expected-duration">Expected duration:</label>
+      <input type="text"
+             class="bid-input"
+             id="expected-duration"
+             name="expected-duration"
+             :disabled="isReady"
+             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
+             @input="(evt) => change(evt, 'expectedDuration')"
+             :value="bidStore.expectedDuration" />
     </div>
   </div>
+  <!-- New toggle section -->
+  <button @click="handleContinue"
+          class="ready-button"
+          :disabled="!bidStore.isBidValid">{{ gameStore.synchronized ? isReady ? 'Not Ready' : 'Ready' : 'Continue'
+          }}</button>
+  <p v-if="isReady">Wait for the admins to accept your bid and continue the game</p>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-import { validateFieldIsDigit } from '../../utils/validateField';
-import {bidType} from '../../types/types'
+import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
+import { bidType } from '../../types/types'
+import { pocketbase } from '~/pocketbase';
 
 const bidStore = useBidStore();
+const gameStore = useGameStore();
+const router = useRouter();
 
 const isReady = ref(false);
 
@@ -66,50 +75,45 @@ const change = (evt: Event, bid: bidType) => {
   bidStore.updateBid(bid, Number((evt.target as HTMLInputElement).value));
 }
 
+const handleContinue = () => {
+  if (gameStore.synchronized) {
+    isReady.value = !isReady.value;
+    if (gameStore.bidsAccepted) {
+      router.push('/game');
+    }
+  } else {
+    bidStore.acceptBid();
+    router.push('/game');
+  }
+}
+
+watch(() => gameStore.bidsAccepted, () => {
+  if (isReady.value && gameStore.bidsAccepted) {
+    router.push('/game');
+  }
+});
 </script>
 
 <!-- Styling -->
 
 <style scoped lang="postcss">
-.bid-page {
-  text-align: center;
-}
-
-.bid-container {
-  display: flex;
-  justify-content: center; 
-}
-
-.labels {
-  display: flex;
-  flex-direction: column;
-}
-
-.bid-label {
-  text-align: left;
-  margin-bottom: 10px;
-  margin-right: 15px;
-  white-space: nowrap;
-}
-
 .inputs {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   grid-gap: 10px;
+
+  & label {
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  & input {
+    width: 200px;
+  }
 }
 
-.bid-input {
-  width: 200px;
-}
-
-.toggle-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.toggle-label {
-  margin-right: 10px;
+.ready-button {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 }
 </style>

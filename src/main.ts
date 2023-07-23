@@ -15,9 +15,11 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const gameStore = useGameStore();
+  const bidStore = useBidStore();
 
   if (to.name === 'auth' && pocketbase.authStore.isValid) return { name: 'game' };
   if (to.name === 'game' && gameStore.synchronized && !pocketbase.authStore.isValid) return { name: 'auth' };
+  if (to.name === 'bid' && gameStore.synchronized && !pocketbase.authStore.isValid && bidStore.accepted) return { name: 'auth' };
 });
 
 const pinia = createPinia();

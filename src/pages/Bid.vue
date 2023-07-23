@@ -1,7 +1,5 @@
 <template>
-  <div class="container">
-    <B-Bid />
-  </div>
+  <B-Bid />
 </template>
   
 <!-- Script -->

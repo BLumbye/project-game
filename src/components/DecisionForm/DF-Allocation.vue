@@ -19,19 +19,19 @@
              class="worker-input"
              name="LAB-input"
              ref="lab"
-             @keypress="validateFieldIsDigit"
+             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'labour')" />
       <input type="text"
              class="worker-input"
              name="SKI-input"
              ref="ski"
-             @keypress="validateFieldIsDigit"
+             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'skilled')" />
       <input type="text"
              class="worker-input"
              name="ELE-input"
              ref="ele"
-             @keypress="validateFieldIsDigit"
+             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'electrician')" />
     </template>
   </div>
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { WorkerType } from '../../types/types';
 import config from '../../config';
-import { validateFieldIsDigit } from '../../utils/validateField';
+import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
 
 const gameStore = useGameStore();
 const activityStore = useActivitiesStore();

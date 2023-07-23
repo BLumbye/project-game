@@ -20,21 +20,21 @@
     <input v-model="steelwork"
            class="equipment-input"
            name="steelwork-input"
-           @keypress="validateFieldIsDigit"
+           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
            :disabled="previousEquipment.steelwork!.status !== 'unordered'" />
     <label for="interior-input"
            class="equipment-label">Interior (Task B)</label>
     <input v-model="interior"
            class="equipment-input"
            name="interior-input"
-           @keypress="validateFieldIsDigit"
+           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
            :disabled="previousEquipment.interior!.status !== 'unordered'" />
     <label for="tbs-input"
            class="equipment-label">TBS (Task C)</label>
     <input v-model="tbs"
            class="equipment-input"
            name="tbs-input"
-           @keypress="validateFieldIsDigit"
+           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
            :disabled="previousEquipment.tbs!.status !== 'unordered'" />
   </div>
 </template>
@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { EquipmentType } from '../../types/types';
-import { validateFieldIsDigit } from '../../utils/validateField';
+import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
 
 const steelwork = ref('');
 const interior = ref('');

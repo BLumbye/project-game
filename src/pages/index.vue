@@ -1,7 +1,7 @@
 <template>
   <main>
     <h1>Project Game</h1>
-    <h2 v-if="!gameStore.synchronizedReady">Loading...</h2>
+    <h2 v-if="!gameStore.settingsReady">Loading...</h2>
     <template v-else-if="gameStore.synchronized">
       <h2>Log In</h2>
       <form @submit.prevent="handleLogin"
@@ -38,7 +38,7 @@
         You can still play the game, but your progress will not be saved.
       </p>
       <router-link class="button-link"
-                   to="/game">Start Game</router-link>
+                   to="/bid">Start Game</router-link>
     </template>
   </main>
   <footer>
@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { ClientResponseError } from 'pocketbase';
-import { pocketbase } from '../pocketbase';
+import { collections } from '../pocketbase';
 
 const loading = ref(false);
 const username = ref("");
@@ -68,9 +68,9 @@ const handleLogin = async () => {
     loading.value = true;
     errorMessage.value = null;
 
-    const response = await pocketbase.collection('users').authWithPassword(username.value, password.value);
+    await collections.users.authWithPassword(username.value, password.value);
 
-    router.push({ name: 'game' });
+    router.push({ name: 'bid' });
   } catch (error) {
     if (!(error instanceof ClientResponseError)) {
       errorMessage.value = "An unknown error occurred. Please contact an administrator.";

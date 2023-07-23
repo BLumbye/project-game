@@ -15,18 +15,21 @@
            class="worker-label">Labour</label>
     <input v-model="labour"
            type="text"
+           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber()))(evt as InputEvent)"
            class="worker-input"
            name="labour-input" />
     <label for="skilled-input"
            class="worker-label">Skilled</label>
     <input v-model="skilled"
            type="text"
+           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber()))(evt as InputEvent)"
            class="worker-input"
            name="skilled-input" />
     <label for="electrician-input"
            class="worker-label">Electrician</label>
     <input v-model="electrician"
            type="text"
+           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber()))(evt as InputEvent)"
            class="worker-input"
            name="electrician-input" />
   </div>
@@ -36,6 +39,7 @@
 
 <script setup lang="ts">
 import { WorkerType } from '../../types/types';
+import { and, isNumber, isWholeNumber, validate } from '~/utils/validation';
 
 
 const labour = ref('');       //Matches the v-model 'labour'
