@@ -44,7 +44,7 @@
                @input="(evt) => change(evt, 'expectedDuration')" />
       </div>
     </div>
-    <!-- New toggle section -->
+    <!-- Toggle when ready -->
     <div class="toggle-section">
       <label class="toggle-label">Ready?:</label>
       <input type="checkbox" v-model="isReady" class="toggle-input" />
