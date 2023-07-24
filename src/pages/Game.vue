@@ -1,6 +1,6 @@
 <template>
   <TopBar />
-  <h2> Week: {{ gameStore.week }} </h2>
+  <h2> Current week: {{ gameStore.week }} </h2>
   <Event/>
   <div class="container">
     <WeeklyReport v-if="gameStore.week > 0" />
