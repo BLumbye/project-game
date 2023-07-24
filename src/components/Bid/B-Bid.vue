@@ -88,7 +88,7 @@ const handleContinue = () => {
 }
 
 watch(() => gameStore.bidsAccepted, () => {
-  if (isReady.value && gameStore.bidsAccepted) {
+  if (gameStore.bidsAccepted) {
     router.push('/game');
   }
 });
