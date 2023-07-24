@@ -26,6 +26,13 @@ export interface Activity {
   allocation: Record<WorkerType, number>;
 }
 
+export interface Event{
+  week: number;
+  image: string;
+  title: string;
+  description: string;
+}
+
 export interface Equipment {
   status: EquipmentStatus;
   deliveryType?: DeliveryType;
