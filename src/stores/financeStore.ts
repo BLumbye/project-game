@@ -13,7 +13,7 @@ export const useFinanceStore = defineStore('finance', () => {
 
   //Timelines keep track of the finance through the weeks.
   const incomingTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  incomingTimeline.set(bidStore.price * config.startBudget, 0);   //Set the starting budget
+  incomingTimeline.set(bidStore.bidPrice * config.startBudget, 0);   //Set the starting budget
   const workersTimeline = createWeeklyTimeline(0, sumReducer, 0);
   const equipmentTimeline = createWeeklyTimeline(0, sumReducer, 0);
   const overheadTimeline = createWeeklyTimeline(0, sumReducer, 0);
@@ -140,7 +140,7 @@ export const useFinanceStore = defineStore('finance', () => {
     }
 
     // Project delayed penalty
-    if (gameStore.week - 1 > bidStore.duration) {
+    if (gameStore.week - 1 > bidStore.bidDuration) {
       delayPenaltyTimeline.add(config.projectDelayPenalty);
     }
 
@@ -172,7 +172,7 @@ export const useFinanceStore = defineStore('finance', () => {
     () => {
       if (activityStore.isActivityDone(activityStore.activityFromLabel(config.milestoneActivity))) {
         stopMilestoneWatcher();
-        incomingTimeline.add(bidStore.price * config.milestoneReward, gameStore.week - 1);
+        incomingTimeline.add(bidStore.bidPrice * config.milestoneReward, gameStore.week - 1);
       }
     },
   );
@@ -185,7 +185,7 @@ export const useFinanceStore = defineStore('finance', () => {
     () => {
       if (activityStore.allActivitiesDone()) {
         stopFinishedWatcher();
-        incomingTimeline.add(bidStore.price * config.allActivitesCompleteReward, gameStore.week - 1);
+        incomingTimeline.add(bidStore.bidPrice * config.allActivitesCompleteReward, gameStore.week - 1);
       }
     },
   );
