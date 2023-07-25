@@ -51,21 +51,29 @@ export const useBidStore = defineStore('bid', () => {
     // Update database after cooldown
     if (gameStore.synchronized) {
       if (dbUpdateTimeout) clearTimeout(dbUpdateTimeout);
-      dbUpdateTimeout = setTimeout(async () => {
-        dbUpdateTimeout = undefined;
-        collections.bids.update(recordID!, {
-          user: pocketbase.authStore.model!.id,
-          bid_price: bidPrice.value,
-          bid_duration: bidDuration.value,
-          expected_duration: expectedDuration.value,
-          expected_price: expectedPrice.value
-        });
-      }, dbUpdateCooldown);
+      dbUpdateTimeout = setTimeout(updateDatabase, dbUpdateCooldown);
     }
   }
 
+  function updateDatabase() {
+    dbUpdateTimeout = undefined;
+    collections.bids.update(recordID!, {
+      user: pocketbase.authStore.model!.id,
+      bid_price: bidPrice.value,
+      bid_duration: bidDuration.value,
+      expected_duration: expectedDuration.value,
+      expected_price: expectedPrice.value,
+      ready: ready.value
+    });
+  }
+
+  /**
+   * Assumes we are in synchronized mode.
+   */
   function toggleReady() {
     ready.value = !ready.value;
+    if (dbUpdateTimeout) clearTimeout(dbUpdateTimeout);
+    updateDatabase();
   }
 
   // Logic
@@ -91,7 +99,8 @@ export const useBidStore = defineStore('bid', () => {
           bid_duration: bidDuration.value,
           expected_duration: expectedDuration.value,
           expected_price: expectedPrice.value,
-          game_id: gameStore.gameID
+          game_id: gameStore.gameID,
+          ready: ready.value
         });
         recordID = record.id;
       } else {

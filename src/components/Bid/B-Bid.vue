@@ -19,7 +19,7 @@
                class="bid-input"
                id="bid-price"
                name="bid-price"
-               :disabled="isReady"
+               :disabled="bidStore.ready"
                @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
                @input="(evt) => change(evt, 'bidPrice')"
                :value="bidStore.bidPrice" />
@@ -28,7 +28,7 @@
                class="bid-input"
                id="bid-duration"
                name="bid-duration"
-               :disabled="isReady"
+               :disabled="bidStore.ready"
                @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
                @input="(evt) => change(evt, 'bidDuration')"
                :value="bidStore.bidDuration" />
@@ -37,7 +37,7 @@
                class="bid-input"
                id="expected-price"
                name="expected-price"
-               :disabled="isReady"
+               :disabled="bidStore.ready"
                @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
                @input="(evt) => change(evt, 'expectedPrice')"
                :value="bidStore.expectedPrice" />
@@ -46,7 +46,7 @@
                class="bid-input"
                id="expected-duration"
                name="expected-duration"
-               :disabled="isReady"
+               :disabled="bidStore.ready"
                @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
                @input="(evt) => change(evt, 'expectedDuration')"
                :value="bidStore.expectedDuration" />
@@ -54,9 +54,10 @@
     </div>
     <button @click="handleContinue"
             class="ready-button"
-            :disabled="!bidStore.isBidValid">{{ gameStore.synchronized ? isReady ? 'Not Ready' : 'Ready' : 'Continue'
+            :disabled="!bidStore.isBidValid">{{ gameStore.synchronized ? bidStore.ready ? 'Not Ready' : 'Ready' :
+              'Continue'
             }}</button>
-    <p v-if="isReady">Wait for the admins to accept your bid and continue the game</p>
+    <p v-if="bidStore.ready">Wait for the admins to accept your bid and continue the game</p>
   </template>
 </template>
 
@@ -71,18 +72,13 @@ const bidStore = useBidStore();
 const gameStore = useGameStore();
 const router = useRouter();
 
-const isReady = ref(false);
-
 const change = (evt: Event, bid: bidType) => {
   bidStore.updateBid(bid, Number((evt.target as HTMLInputElement).value));
 }
 
 const handleContinue = () => {
   if (gameStore.synchronized) {
-    isReady.value = !isReady.value;
-    if (gameStore.bidsAccepted) {
-      router.push('/game');
-    }
+    bidStore.toggleReady();
   } else {
     router.push('/game');
   }
