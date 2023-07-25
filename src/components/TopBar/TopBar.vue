@@ -34,6 +34,7 @@ function logout(){
     align-items: center;
     padding: 1rem;
     width: 100%;
+    border: 1px solid #000000;
 }
 .text{
     font-size: 20px;
