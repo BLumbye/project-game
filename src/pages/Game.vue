@@ -1,7 +1,7 @@
 <template>
   <TopBar />
   <h2> Week: {{ gameStore.week }} </h2>
-  <Event/>
+  <Event />
   <div class="container">
     <WeeklyReport v-if="gameStore.week > 0" />
     <h2 v-else>No weekly report in week {{ gameStore.week }}</h2>
@@ -21,12 +21,11 @@ const gameStore = useGameStore();
 <style scoped lang="postcss">
 .container {
   height: 100%;
+  width: 100%;
   display: flex;
   justify-content: space-evenly;
   align-items: flex-start;
 }
-
-
 </style>
 
 <route>

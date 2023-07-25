@@ -1,8 +1,7 @@
 <template>
   <main>
     <h1>Project Game</h1>
-    <h2 v-if="!gameStore.settingsReady">Loading...</h2>
-    <template v-else-if="gameStore.synchronized">
+    <template v-if="gameStore.synchronized">
       <h2>Log In</h2>
       <form @submit.prevent="handleLogin"
             class="login-form">
@@ -70,7 +69,7 @@ const handleLogin = async () => {
 
     await collections.users.authWithPassword(username.value, password.value);
 
-    router.push({ name: 'bid' });
+    gameStore.routeCorrectly();
   } catch (error) {
     if (!(error instanceof ClientResponseError)) {
       errorMessage.value = "An unknown error occurred. Please contact an administrator.";

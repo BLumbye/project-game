@@ -12,18 +12,18 @@ export const useGameStore = defineStore('game', () => {
   //Uses setup store
   // State
   const week = ref(0);
+  const settingsLoaded = ref(false);
   /**
    * Whether a not the server is running in synchronized mode.
    * Synchronized mode means that the player can only progress to the next week when allowed by the admins.
    */
-  const { state: settingsState, isReady: settingsReady } = useAsyncState<{ synchronized: boolean | undefined, gameID: number | undefined }>(collections.settings.getList(1, 1).then(result => ({ synchronized: result.items[0].synchronized, gameID: result.items[0].game_id })), { synchronized: undefined, gameID: undefined });
-  const bidsAccepted = ref(undefined);
-  const allowedWeeks = ref(undefined);
+  const synchronized = ref<boolean | undefined>(undefined);
+  const gameID = ref<number | undefined>(undefined);
+  const bidsAccepted = ref<boolean | undefined>(undefined);
+  const currentWeek = ref<number | undefined>(undefined);
 
   // Getters
   const decisionForm = computed(() => week.value + 1);
-  const synchronized = computed(() => settingsState.value.synchronized);
-  const gameID = computed(() => settingsState.value.gameID);
 
   // Actions
 
@@ -35,18 +35,34 @@ export const useGameStore = defineStore('game', () => {
   }
 
   // Logic
-  const synchronizedWatcher = watch(synchronized, (synchronized) => {
-    if (settingsReady.value) synchronizedWatcher();
+  async function connectWithDatabase() {
+    const settingsRecord = (await collections.settings.getList(1, 1)).items[0];
+    synchronized.value = settingsRecord.synchronized;
+    if (synchronized.value) {
+      gameID.value = settingsRecord.game_id;
+      bidsAccepted.value = settingsRecord.bids_accepted;
+      currentWeek.value = settingsRecord.allowed_weeks;
 
-    if (synchronized) {
-      collections.settings.getList(1, 1).then(result => {
-        collections.settings.subscribe(result.items[0].id, (data) => {
-          if (data.record['bids_accepted'] !== bidsAccepted.value) bidsAccepted.value = data.record['bids_accepted'];
-          if (data.record['allowed_weeks'] !== allowedWeeks.value) allowedWeeks.value = data.record['allowed_weeks'];
-        });
+      collections.settings.subscribe(settingsRecord.id, (data) => {
+        if (data.record.bids_accepted !== bidsAccepted.value) bidsAccepted.value = data.record.bids_accepted;
+        if (data.record.allowed_weeks !== currentWeek.value) currentWeek.value = data.record.allowed_weeks;
       });
-    }
-  });
 
-  return { week, decisionForm, nextWeek, synchronized, settingsReady, gameID, bidsAccepted, allowedWeeks };
+      routeCorrectly();
+    }
+    settingsLoaded.value = true;
+  }
+
+  function routeCorrectly() {
+    if (!pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth') {
+        router.push({ name: 'auth' });
+      } else {
+        if (router.currentRoute.value.name !== 'game' && bidsAccepted.value) router.push({ name: 'game' });
+        if (router.currentRoute.value.name !== 'bid' && !bidsAccepted.value) router.push({ name: 'bid' });
+      }
+  }
+
+  connectWithDatabase();
+
+  return { week, decisionForm, nextWeek, synchronized, settingsLoaded, gameID, bidsAccepted, allowedWeeks: currentWeek, routeCorrectly };
 });

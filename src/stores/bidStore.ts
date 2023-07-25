@@ -5,16 +5,27 @@ import { ClientResponseError } from 'pocketbase';
 
 const dbUpdateCooldown = 2000;
 
+/**
+ * This store contains information about the groups bid.
+ * If in free play everything is stored in memory, in synchronized mode it is stored in the database.
+ * It uses the following flow to connect with database:
+ * 1. When we know we are in synchronized mode, we fetch the bid from the database if it exists. If not we use the default data and create the bid in the database.
+ * 2. When the bid is updated, we update the bid in the database after a cooldown.
+ * 3. We subscribe to the created record to keep the bid in sync with the database.
+ */
+
 export const useBidStore = defineStore('bid', () => {
   const gameStore = useGameStore();
   let dbUpdateTimeout: number | undefined = undefined;
+  let recordID: string | undefined = undefined;
 
   // State
+  const loading = ref(true);
   const bidPrice = ref(1000000);
   const bidDuration = ref(9);
   const expectedPrice = ref(1000000);
   const expectedDuration = ref(9);
-  const accepted = ref(false);
+  const ready = ref(false);
 
   // Getters
   const isBidValid = computed(() => bidPrice.value !== undefined && bidPrice.value > 0
@@ -37,12 +48,12 @@ export const useBidStore = defineStore('bid', () => {
 
     bidVar.value = n;
 
+    // Update database after cooldown
     if (gameStore.synchronized) {
       if (dbUpdateTimeout) clearTimeout(dbUpdateTimeout);
       dbUpdateTimeout = setTimeout(async () => {
-        console.log('updating');
         dbUpdateTimeout = undefined;
-        updateExistingOrCreate(collections.bids, `user.username="${pocketbase.authStore.model!.username}"`, {
+        collections.bids.update(recordID!, {
           user: pocketbase.authStore.model!.id,
           bid_price: bidPrice.value,
           bid_duration: bidDuration.value,
@@ -53,9 +64,60 @@ export const useBidStore = defineStore('bid', () => {
     }
   }
 
-  function acceptBid() {
-    accepted.value = true;
+  function toggleReady() {
+    ready.value = !ready.value;
+  }
+
+  // Logic
+  async function connectWithDatabase() {
+    if (!gameStore.synchronized) {
+      loading.value = false;
+      return;
+    }
+
+    // Get existing bid from database or create new one
+    try {
+      const record = await collections.bids.getFirstListItem(`user.username="${pocketbase.authStore.model!.username}"`);
+      recordID = record.id;
+      bidPrice.value = record.bid_price;
+      bidDuration.value = record.bid_duration;
+      expectedDuration.value = record.expected_duration;
+      expectedPrice.value = record.expected_price;
+    } catch (error) {
+      if (error instanceof ClientResponseError && error.status === 404) {
+        const record = await collections.bids.create({
+          user: pocketbase.authStore.model!.id,
+          bid_price: bidPrice.value,
+          bid_duration: bidDuration.value,
+          expected_duration: expectedDuration.value,
+          expected_price: expectedPrice.value,
+          game_id: gameStore.gameID
+        });
+        recordID = record.id;
+      } else {
+        throw error;
+      }
+    }
+
+    // Subscribe to bid record
+    collections.bids.subscribe(recordID, (data) => {
+      bidPrice.value = data.record['bid_price'];
+      bidDuration.value = data.record['bid_duration'];
+      expectedDuration.value = data.record['expected_duration'];
+      expectedPrice.value = data.record['expected_price'];
+    });
+    
+    loading.value = false;
+  }
+
+  if (gameStore.settingsLoaded) {
+    connectWithDatabase();
+  } else {
+    const synchronizedWatcher = watch(() => gameStore.settingsLoaded, () => {
+      if (gameStore.settingsLoaded) synchronizedWatcher();
+      connectWithDatabase();
+    });
   }
   
-  return { bidPrice, bidDuration,expectedDuration,expectedPrice, accepted, isBidValid, updateBid, acceptBid };
+  return { loading, bidPrice, bidDuration, expectedDuration, expectedPrice, ready, isBidValid, updateBid, toggleReady };
 });

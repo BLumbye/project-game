@@ -15,12 +15,8 @@ export const updateExistingOrCreate = async (collection: RecordService, filter: 
     const existingRecord = await collection.getFirstListItem(filter);
     return await collection.update(existingRecord.id, data);
   } catch (error) {
-    if (error instanceof ClientResponseError) {
-      if (error.status === 404) {
-        return await collection.create(data);
-      } else {
-        throw error;
-      }
+    if (error instanceof ClientResponseError && error.status === 404) {
+      return await collection.create(data);
     } else {
       throw error;
     }
