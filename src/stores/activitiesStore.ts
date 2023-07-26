@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import config from '../config';
-import { Activity, WorkerType } from '../types/types';
+import { Activity, ConfigActivity, WorkerType } from '../types/types';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 
 const generateProgressTimelines = () => {
@@ -88,12 +88,20 @@ export const useActivitiesStore = defineStore('activities', () => {
   });
 
   /**
-   * Returns the duration of an activity. The duration is the time needed for an acitivty is done.
+   * Returns the duration of an activity. The duration is the time needed for an activity is done.
    */
   const getDuration = computed(() => {
-    return (activity: Pick<Activity, 'duration'>) => {
-      return activity.duration({ equipment: equipmentStore.equipmentAtWeek(gameStore.week - 1) });
+    return (activity: ConfigActivity) => {
+      if (
+        activity.expressDuration &&
+        activity.requirements.equipment?.every(
+          (equipment) => equipmentStore.equipment[equipment].deliveryType === 'express',
+        )
+      ) {
+        return activity.expressDuration;
+      } else return activity.duration;
     };
+    //TODO: Cycle through event effects to see if any should affect it
   });
 
   /**
@@ -120,7 +128,9 @@ export const useActivitiesStore = defineStore('activities', () => {
       week ??= gameStore.week;
       return (
         !activity.requirements.activities ||
-        activity.requirements.activities.every((requiredActivity) => isActivityDone.value(activityFromLabel.value(requiredActivity, week)))
+        activity.requirements.activities.every((requiredActivity) =>
+          isActivityDone.value(activityFromLabel.value(requiredActivity, week)),
+        )
       );
     };
   });
@@ -159,6 +169,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
       return enoughWorkers('labour') && enoughWorkers('skilled') && enoughWorkers('electrician');
     };
+    //TODO: Add event effects in terms of workers
   });
 
   /**
@@ -195,6 +206,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    * An activity cannot progress if it already done.
    */
   function progressActivities() {
+    //TODO: Add event effects in terms of resource dependency
     for (const activity of activities.value) {
       if (!isActivityDone.value(activity) && requirementsMet.value(activity, gameStore.week - 1)) {
         progressTimelines[activity.label].set(1, gameStore.week);
@@ -211,10 +223,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   /**
    * Every time the week progresses, elligible activities are progressed.
    */
-  watch(
-    () => gameStore.week,
-    progressActivities,
-  );
+  watch(() => gameStore.week, progressActivities);
 
   return {
     activitiesAtWeek,
