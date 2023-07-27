@@ -34,6 +34,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const loading = ref(true);
   const progressTimelines = generateProgressTimelines();
   const allocations = ref(generateAllocationState());
+  const weekActivityDone = ref<Record<string, number>>({}); //Which week an activity is done. If an activity is not in the record, it is not done.
 
   // Getters
 
@@ -91,24 +92,25 @@ export const useActivitiesStore = defineStore('activities', () => {
   });
 
   /**
-   * Returns the duration of an activity. The duration is the time needed for an activity is done.
+   * Returns the duration of an activity. The duration is the time needed for an activity to be completed.
    */
   const getDuration = computed(() => {
-    return (activity: ConfigActivity) => {
+    return (activity: ConfigActivity, week?: number) => {
+      week ??= gameStore.week;
+      var durationModification = getEventDurationModification.value(activity, week);
       if (
         activity.expressDuration &&
         activity.requirements.equipment?.every(
           (equipment) => equipmentStore.equipment[equipment].deliveryType === 'express',
         )
       ) {
-        return activity.expressDuration;
-      } else return activity.duration;
+        return activity.expressDuration + durationModification;
+      } else return activity.duration + durationModification;
     };
-    //TODO: Cycle through event effects to see if any should affect it
   });
 
   /**
-   * Returns the total amount of workers assigned to an activity for a given week.
+   * Returns the total amount of workers assigned in a given week.
    * If no week is given, it returns for the current week.
    */
   const totalWorkersAssigned = computed(() => {
@@ -161,18 +163,26 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: Activity, week?: number) => {
       week ??= gameStore.week;
 
-      if (!activity.requirements.workers) return true;
+      var eventWorkersModification: Partial<Record<WorkerType, number>> = getEventWorkersModification.value(
+        activity,
+        week,
+      );
+
+      if (!activity.requirements.workers && !eventWorkersModification) return true;
 
       const enoughWorkers = (type: WorkerType) => {
-        if (!activity.requirements.workers![type]) return true;
-        const enoughAssigned = activity.requirements.workers![type]! <= activity.allocation[type];
+        if ((!activity.requirements.workers || !activity.requirements.workers[type]) && !eventWorkersModification[type])
+          return true;
+        const enoughAssigned =
+          (activity.requirements.workers ? activity.requirements.workers[type] || 0 : 0) +
+            eventWorkersModification[type]! <=
+          activity.allocation[type];
         const enoughHired = totalWorkersAssigned.value(type, week) <= workersStore.workersAtWeek(week)[type];
         return enoughAssigned && enoughHired;
       };
 
       return enoughWorkers('labour') && enoughWorkers('skilled') && enoughWorkers('electrician');
     };
-    //TODO: Add event effects in terms of workers
   });
 
   /**
@@ -208,10 +218,17 @@ export const useActivitiesStore = defineStore('activities', () => {
    * An activity cannot progress if it already done.
    */
   function progressActivities() {
-    //TODO: Add event effects in terms of resource dependency
     for (const activity of activities.value) {
       if (!isActivityDone.value(activity) && requirementsMet.value(activity, gameStore.week)) {
-        progressTimelines[activity.label].set(1, gameStore.week + 1);
+        if (isActivityResourceDependant(activity)) {
+          let max = getDuration.value(activity) - activity.progress;
+          progressTimelines[activity.label].set(
+            Math.min(max, getResourceDependancyMultiplier(activity)),
+            gameStore.week + 1,
+          );
+        } else {
+          progressTimelines[activity.label].set(1, gameStore.week + 1);
+        }
         if (
           activity.requirements.equipment &&
           isActivityDone.value(activityFromLabel.value(activity.label, gameStore.week + 1))
@@ -219,10 +236,104 @@ export const useActivitiesStore = defineStore('activities', () => {
           const equipmentStore = useEquipmentStore();
           activity.requirements.equipment.forEach((equipment) => equipmentStore.finishDelivery(equipment));
         }
+        if (isActivityDone.value(activityFromLabel.value(activity.label, gameStore.week + 1))) {
+          weekActivityDone.value[activity.label] = gameStore.week + 1;
+        }
       }
     }
 
     if (gameStore.synchronized) updateDatabase();
+  }
+
+  ///Events
+
+  /**
+   * Returns the duration modification of an activity based on events.
+   * The duration modification is the time added or subtracted from the duration of an activity.
+   */
+  const getEventDurationModification = computed(() => {
+    return (activity: ConfigActivity, week?: number) => {
+      week ??= gameStore.week;
+      let durationModification = 0;
+      for (const event of config.events) {
+        if (
+          weekActivityDone.value[activity.label] !== undefined &&
+          weekActivityDone.value[activity.label] <= event.week
+        ) {
+          continue;
+        }
+        if (event.week > week) continue;
+        event.effects?.forEach((effect) => {
+          if (effect.activityLabels.includes(activity.label) && effect.durationModification !== undefined) {
+            durationModification += effect.durationModification;
+          }
+        });
+      }
+      return durationModification;
+    };
+  });
+
+  /**
+   * Returns the duration modification of an activity based on events.
+   * The duration modification is the time added or subtracted from the duration of an activity.
+   */
+  const getEventWorkersModification = computed(() => {
+    return (activity: ConfigActivity, week?: number) => {
+      week ??= gameStore.week;
+      let workersModification: Partial<Record<WorkerType, number>> = {
+        labour: 0,
+        skilled: 0,
+        electrician: 0,
+      };
+      if (weekActivityDone.value[activity.label] !== undefined && weekActivityDone.value[activity.label] <= week) {
+        return workersModification;
+      }
+      for (const event of config.events) {
+        if (event.week > week) continue;
+        event.effects?.forEach((effect) => {
+          if (effect.activityLabels.includes(activity.label) && effect.workersModification !== undefined) {
+            if (effect.workersModification.labour !== undefined && workersModification.labour !== undefined)
+              workersModification.labour += effect.workersModification.labour;
+            if (effect.workersModification.skilled !== undefined && workersModification.skilled !== undefined)
+              workersModification.skilled += effect.workersModification.skilled;
+            if (effect.workersModification.electrician !== undefined && workersModification.electrician !== undefined)
+              workersModification.electrician += effect.workersModification.electrician;
+          }
+        });
+      }
+      return workersModification;
+    };
+  });
+
+  function getResourceDependancyMultiplier(activity: Activity): number {
+    let multiplier = Infinity;
+
+    let workersRequired: Partial<Record<WorkerType, number>> = getEventWorkersModification.value(activity);
+    workersRequired = {
+      labour: (workersRequired.labour || 0) + (activity.requirements.workers?.labour || 0),
+      skilled: (workersRequired.skilled || 0) + (activity.requirements.workers?.skilled || 0),
+      electrician: (workersRequired.electrician || 0) + (activity.requirements.workers?.electrician || 0),
+    };
+
+    Object.entries(workersRequired).forEach(([key, value]) => {
+      if (value !== 0) {
+        multiplier = Math.min(multiplier, activity.allocation[key as unknown as WorkerType] / value);
+      }
+    });
+
+    return Math.floor(multiplier);
+  }
+
+  function isActivityResourceDependant(activity: Activity, week?: number): boolean {
+    week ??= gameStore.week;
+
+    return config.events.some(
+      (event) =>
+        event.week <= week! &&
+        event.effects?.some(
+          (effect) => effect.activityLabels.includes(activity.label) && effect.resourceDependant === true,
+        ),
+    );
   }
 
   // Logic

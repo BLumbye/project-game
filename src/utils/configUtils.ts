@@ -12,19 +12,10 @@ function addWorkers(labels: string[], wt: WorkerType[], n: number, activities: C
   labels.forEach((l) => {
     eventEffects.push({
       activityLabels: [l],
-      newWorkers: {
-        labour:
-          wt.indexOf('labour') !== -1
-            ? (activities.find((activity) => activity.label === l)!.requirements.workers!.labour || 0) + n
-            : undefined,
-        skilled:
-          wt.indexOf('skilled') !== -1
-            ? (activities.find((activity) => activity.label === l)!.requirements.workers!.skilled || 0) + n
-            : undefined,
-        electrician:
-          wt.indexOf('electrician') !== -1
-            ? (activities.find((activity) => activity.label === l)!.requirements.workers!.electrician || 0) + n
-            : undefined,
+      workersModification: {
+        labour: wt.includes('labour') ? n : undefined,
+        skilled: wt.includes('skilled') ? n : undefined,
+        electrician: wt.includes('electrician') ? n : undefined,
       },
     });
   });

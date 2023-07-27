@@ -9,7 +9,7 @@
   <div class="allocation boxed">
     <span class="activities-label">Activity</span>
     <span class="progress-label">Progress</span>
-    <span class="component-title">Allocate workers to activities</span>
+    <span class="component-title">Allocation</span>
     <span>%</span>
     <span>LAB</span>
     <span>SKI</span>

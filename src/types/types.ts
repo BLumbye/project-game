@@ -42,8 +42,8 @@ export interface Event {
 
 export interface EventEffect {
   activityLabels: string[]; // An array of activity labels to be affected
-  newWorkers?: Partial<Record<WorkerType, number>>; // The new number of workers needed
-  newDuration?: number; // The new duration of the activity
+  workersModification?: Partial<Record<WorkerType, number>>; // The new number of workers needed
+  durationModification?: number; // The new duration of the activity
   resourceDependant?: boolean; // Whether the activitity can be sped up by using more workers
 }
 

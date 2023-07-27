@@ -200,15 +200,15 @@ const events: Event[] = [
     effects: [
       {
         activityLabels: ['A'],
-        newDuration: activities.find((activity) => activity.label === 'A')!.duration + 1,
+        durationModification: 1,
       },
       {
         activityLabels: ['B'],
-        newDuration: activities.find((activity) => activity.label === 'B')!.duration + 1,
+        durationModification: 1,
       },
       {
         activityLabels: ['C'],
-        newDuration: activities.find((activity) => activity.label === 'C')!.duration + 1,
+        durationModification: 1,
       },
     ],
     showTitle: true,
@@ -223,7 +223,7 @@ const events: Event[] = [
     effects: [
       {
         activityLabels: ['J'],
-        newDuration: activities.find((activity) => activity.label === 'J')!.duration + 1,
+        durationModification: 1,
       },
     ],
     showTitle: true,
