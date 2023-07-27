@@ -52,7 +52,7 @@ export const useWorkersStore = defineStore('workers', () => {
 
   // Logic
   async function connectWithDatabase() {
-    if (!gameStore.synchronized) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid) {
       loading.value = false;
       return;
     }
@@ -116,5 +116,6 @@ export const useWorkersStore = defineStore('workers', () => {
     currentWorkers,
     change,
     updateDatabase,
+    connectWithDatabase,
   };
 });

@@ -1,7 +1,7 @@
 <template>
   <main>
     <h1>Project Game</h1>
-    <template v-if="gameStore.synchronized">
+    <template v-if="gameStore.synchronized || adminLogin">
       <h2>Log In</h2>
       <form @submit.prevent="handleLogin"
             class="login-form">
@@ -30,7 +30,7 @@
                :disabled="loading">
       </form>
     </template>
-    <template v-else>
+    <template v-if="!gameStore.synchronized">
       <h2>Freeplay mode</h2>
       <p>
         You are currently in freeplay mode. This means that you are not connected to a game server.
@@ -38,6 +38,9 @@
       </p>
       <router-link class="button-link"
                    to="/bid">Start Game</router-link>
+      <button v-if="!adminLogin"
+              class="link-button admin-button"
+              @click="adminLogin = true">Log in as admin</button>
     </template>
   </main>
   <footer>
@@ -51,24 +54,30 @@
 
 <script setup lang="ts">
 import { ClientResponseError } from 'pocketbase';
-import { collections } from '../pocketbase';
+import { collections, pocketbase } from '../pocketbase';
 
 const loading = ref(false);
 const username = ref("");
 const password = ref("");
 const errorMessage = ref<string | null>(null);
+const adminLogin = ref(false);
 
 const gameStore = useGameStore();
-
-const router = useRouter();
 
 const handleLogin = async () => {
   try {
     loading.value = true;
     errorMessage.value = null;
 
-    await collections.users.authWithPassword(username.value, password.value);
+    const user = await collections.users.authWithPassword(username.value, password.value);
 
+    if (!user.record.admin && (user.record.game_id !== gameStore.gameID || !gameStore.synchronized)) {
+      errorMessage.value = "This user cannot be used for the current game.";
+      pocketbase.authStore.clear();
+      return;
+    }
+
+    gameStore.connectAllDatabases();
     gameStore.routeCorrectly();
   } catch (error) {
     if (!(error instanceof ClientResponseError)) {
@@ -145,6 +154,15 @@ const handleLogin = async () => {
   display: block;
   margin-top: 1em;
   margin-inline: 5em;
+}
+
+.admin-button {
+  margin-top: 1em;
+  opacity: 0.9;
+}
+
+form+h2 {
+  margin-top: 2em;
 }
 
 main {

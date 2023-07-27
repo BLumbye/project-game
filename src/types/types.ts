@@ -51,3 +51,8 @@ export interface Equipment {
   status: EquipmentStatus;
   deliveryType?: DeliveryType;
 }
+
+export interface User {
+  id: string;
+  username: string;
+}

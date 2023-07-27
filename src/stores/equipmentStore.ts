@@ -56,7 +56,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
 
   // Logic
   async function connectWithDatabase() {
-    if (!gameStore.synchronized) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid) {
       loading.value = false;
       return;
     }
@@ -135,5 +135,6 @@ export const useEquipmentStore = defineStore('equipment', () => {
     unorder,
     finishDelivery,
     updateDatabase,
+    connectWithDatabase,
   };
 });

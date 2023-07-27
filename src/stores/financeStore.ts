@@ -214,7 +214,7 @@ export const useFinanceStore = defineStore('finance', () => {
   };
 
   async function connectWithDatabase() {
-    if (!gameStore.synchronized) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid) {
       loading.value = false;
       return;
     }
@@ -286,5 +286,6 @@ export const useFinanceStore = defineStore('finance', () => {
     takeLoan,
     repayLoan,
     applyWeeklyFinances,
+    connectWithDatabase,
   };
 });

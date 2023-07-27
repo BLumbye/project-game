@@ -8,6 +8,7 @@ import { collections, pocketbase, updateExistingOrCreate } from '../pocketbase';
  */
 export const useGameStore = defineStore('game', () => {
   const router = useRouter();
+  const bidStore = useBidStore();
   const activitiesStore = useActivitiesStore();
   const financeStore = useFinanceStore();
   const workersStore = useWorkersStore();
@@ -17,6 +18,7 @@ export const useGameStore = defineStore('game', () => {
   // State
   const week = ref(0);
   const settingsLoaded = ref(false);
+  const settingsRecordID = ref<string | undefined>(undefined);
   /**
    * Whether a not the server is running in synchronized mode.
    * Synchronized mode means that the player can only progress to the next week when allowed by the admins.
@@ -62,33 +64,45 @@ export const useGameStore = defineStore('game', () => {
   async function connectWithDatabase() {
     const settingsRecord = (await collections.settings.getList(1, 1)).items[0];
     synchronized.value = settingsRecord.synchronized;
+    settingsRecordID.value = settingsRecord.id;
     if (synchronized.value) {
       gameID.value = settingsRecord.game_id;
       bidsAccepted.value = settingsRecord.bids_accepted;
       week.value = settingsRecord.current_week;
 
-      collections.settings.subscribe(settingsRecord.id, (data) => {
-        if (data.record.bids_accepted !== bidsAccepted.value) bidsAccepted.value = data.record.bids_accepted;
-        if (data.record.current_week !== week.value) {
-          for (let i = week.value; i < data.record.current_week; i++) {
-            ready.value = false;
-            nextWeek();
-          }
-        }
-      });
-
       routeCorrectly();
     }
+
+    collections.settings.subscribe(settingsRecord.id, (data) => {
+      if (data.record.synchronized !== synchronized.value) synchronized.value = data.record.synchronized;
+      if (data.record.game_id !== gameID.value) gameID.value = data.record.game_id;
+      if (data.record.bids_accepted !== bidsAccepted.value) bidsAccepted.value = data.record.bids_accepted;
+      if (data.record.current_week !== week.value) {
+        for (let i = week.value; i < data.record.current_week; i++) {
+          if (!ready.value) nextWeek();
+          else week.value++;
+          ready.value = false;
+        }
+      }
+    });
+
     settingsLoaded.value = true;
   }
 
   function routeCorrectly() {
-    if (!pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth') {
-      router.push({ name: 'auth' });
-    } else {
-      if (router.currentRoute.value.name !== 'game' && bidsAccepted.value) router.push({ name: 'game' });
-      if (router.currentRoute.value.name !== 'bid' && !bidsAccepted.value) router.push({ name: 'bid' });
-    }
+    if (!pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth') router.push({ name: 'auth' });
+    else if (router.currentRoute.value.name !== 'admin' && pocketbase.authStore.model?.admin)
+      router.push({ name: 'admin' });
+    else if (router.currentRoute.value.name !== 'game' && bidsAccepted.value) router.push({ name: 'game' });
+    else if (router.currentRoute.value.name !== 'bid' && !bidsAccepted.value) router.push({ name: 'bid' });
+  }
+
+  function connectAllDatabases() {
+    activitiesStore.connectWithDatabase();
+    financeStore.connectWithDatabase();
+    workersStore.connectWithDatabase();
+    equipmentStore.connectWithDatabase();
+    bidStore.connectWithDatabase();
   }
 
   connectWithDatabase();
@@ -101,8 +115,11 @@ export const useGameStore = defineStore('game', () => {
     toggleReady,
     synchronized,
     settingsLoaded,
+    settingsRecordID,
     gameID,
     bidsAccepted,
     routeCorrectly,
+    connectWithDatabase,
+    connectAllDatabases,
   };
 });

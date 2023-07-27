@@ -28,18 +28,25 @@ export const useBidStore = defineStore('bid', () => {
   const ready = ref(false);
 
   // Getters
-  const isBidValid = computed(() => bidPrice.value !== undefined && bidPrice.value > 0
-                                    && bidDuration.value !== undefined && bidDuration.value > 0
-                                    && expectedPrice.value !== undefined && expectedPrice.value > 0
-                                    && expectedDuration.value !== undefined && expectedDuration.value > 0);
+  const isBidValid = computed(
+    () =>
+      bidPrice.value !== undefined &&
+      bidPrice.value > 0 &&
+      bidDuration.value !== undefined &&
+      bidDuration.value > 0 &&
+      expectedPrice.value !== undefined &&
+      expectedPrice.value > 0 &&
+      expectedDuration.value !== undefined &&
+      expectedDuration.value > 0,
+  );
 
   //ACTIONS
-  function updateBid(bidLabel: bidType, n: number){
+  function updateBid(bidLabel: bidType, n: number) {
     const bidVars = {
-      'bidPrice': bidPrice,
-      'bidDuration': bidDuration,
-      'expectedDuration': expectedDuration,
-      'expectedPrice': expectedPrice
+      bidPrice: bidPrice,
+      bidDuration: bidDuration,
+      expectedDuration: expectedDuration,
+      expectedPrice: expectedPrice,
     };
 
     const bidVar = bidVars[bidLabel];
@@ -63,7 +70,7 @@ export const useBidStore = defineStore('bid', () => {
       bid_duration: bidDuration.value,
       expected_duration: expectedDuration.value,
       expected_price: expectedPrice.value,
-      ready: ready.value
+      ready: ready.value,
     });
   }
 
@@ -78,7 +85,7 @@ export const useBidStore = defineStore('bid', () => {
 
   // Logic
   async function connectWithDatabase() {
-    if (!gameStore.synchronized) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid) {
       loading.value = false;
       return;
     }
@@ -100,7 +107,7 @@ export const useBidStore = defineStore('bid', () => {
           expected_duration: expectedDuration.value,
           expected_price: expectedPrice.value,
           game_id: gameStore.gameID,
-          ready: ready.value
+          ready: ready.value,
         });
         recordID = record.id;
       } else {
@@ -115,18 +122,32 @@ export const useBidStore = defineStore('bid', () => {
       expectedDuration.value = data.record['expected_duration'];
       expectedPrice.value = data.record['expected_price'];
     });
-    
+
     loading.value = false;
   }
 
   if (gameStore.settingsLoaded) {
     connectWithDatabase();
   } else {
-    const synchronizedWatcher = watch(() => gameStore.settingsLoaded, () => {
-      if (gameStore.settingsLoaded) synchronizedWatcher();
-      connectWithDatabase();
-    });
+    const synchronizedWatcher = watch(
+      () => gameStore.settingsLoaded,
+      () => {
+        if (gameStore.settingsLoaded) synchronizedWatcher();
+        connectWithDatabase();
+      },
+    );
   }
-  
-  return { loading, bidPrice, bidDuration, expectedDuration, expectedPrice, ready, isBidValid, updateBid, toggleReady };
+
+  return {
+    loading,
+    bidPrice,
+    bidDuration,
+    expectedDuration,
+    expectedPrice,
+    ready,
+    isBidValid,
+    updateBid,
+    toggleReady,
+    connectWithDatabase,
+  };
 });

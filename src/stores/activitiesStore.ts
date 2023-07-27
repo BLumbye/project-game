@@ -227,7 +227,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
   // Logic
   async function connectWithDatabase() {
-    if (!gameStore.synchronized) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid) {
       loading.value = false;
       return;
     }
@@ -339,5 +339,6 @@ export const useActivitiesStore = defineStore('activities', () => {
     requirementsMet,
     allocateWorker,
     progressActivities,
+    connectWithDatabase,
   };
 });
