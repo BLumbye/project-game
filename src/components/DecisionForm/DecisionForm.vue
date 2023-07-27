@@ -19,8 +19,7 @@
     <DFEquipment class="equipment boxed" />
     <DFAllocation class="allocation boxed" />
     <DFLoan class="loan boxed" />
-    <DFNextWeek class="next-week-button"
-                @week-progressed="gameStore.nextWeek()" />
+    <DFDoneButton class="done-button" />
   </div>
 </template>
 
@@ -52,7 +51,7 @@ const gameStore = useGameStore();
 }
 
 .allocation,
-.next-week-button,
+.done-button,
 .bid,
 .loan {
   grid-column: span 2;

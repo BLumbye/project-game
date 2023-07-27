@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
 import config from '../config';
-import { Activity, WorkerType } from '../types/types';
+import { Activity, Equipment, EquipmentType, WorkerType } from '../types/types';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
+import { ClientResponseError } from 'pocketbase';
+import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 
 const generateProgressTimelines = () => {
   const timelines: Record<string, ReturnType<typeof createWeeklyTimeline<number>>> = {};
@@ -29,6 +31,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const equipmentStore = useEquipmentStore();
 
   // State
+  const loading = ref(true);
   const progressTimelines = generateProgressTimelines();
   const allocations = ref(generateAllocationState());
 
@@ -120,7 +123,9 @@ export const useActivitiesStore = defineStore('activities', () => {
       week ??= gameStore.week;
       return (
         !activity.requirements.activities ||
-        activity.requirements.activities.every((requiredActivity) => isActivityDone.value(activityFromLabel.value(requiredActivity, week)))
+        activity.requirements.activities.every((requiredActivity) =>
+          isActivityDone.value(activityFromLabel.value(requiredActivity, week)),
+        )
       );
     };
   });
@@ -172,7 +177,6 @@ export const useActivitiesStore = defineStore('activities', () => {
   const requirementsMet = computed(() => {
     return (activity: Activity, week?: number) => {
       week ??= gameStore.week;
-      const activities = activitiesAtWeek.value(week);
       return (
         !!activity &&
         activityRequirementMet.value(activity, week) &&
@@ -196,27 +200,125 @@ export const useActivitiesStore = defineStore('activities', () => {
    */
   function progressActivities() {
     for (const activity of activities.value) {
-      if (!isActivityDone.value(activity) && requirementsMet.value(activity, gameStore.week - 1)) {
-        progressTimelines[activity.label].set(1, gameStore.week);
-        if (activity.requirements.equipment && isActivityDone.value(activity)) {
+      if (!isActivityDone.value(activity) && requirementsMet.value(activity, gameStore.week)) {
+        progressTimelines[activity.label].set(1, gameStore.week + 1);
+        if (
+          activity.requirements.equipment &&
+          isActivityDone.value(activityFromLabel.value(activity.label, gameStore.week + 1))
+        ) {
+          console.log('finish delivery');
           const equipmentStore = useEquipmentStore();
           activity.requirements.equipment.forEach((equipment) => equipmentStore.finishDelivery(equipment));
         }
       }
     }
+
+    if (gameStore.synchronized) updateDatabase();
   }
 
-  // Watch week store to progress activities
+  // Logic
+  async function connectWithDatabase() {
+    if (!gameStore.synchronized) {
+      loading.value = false;
+      return;
+    }
 
-  /**
-   * Every time the week progresses, elligible activities are progressed.
-   */
-  watch(
-    () => gameStore.week,
-    progressActivities,
-  );
+    // Get existing allocation from database
+    try {
+      const records = await collections.allocation.getFullList({
+        filter: `user.username="${pocketbase.authStore.model!.username}"`,
+      });
+      for (let record of records) {
+        allocations.value[record.activity][record.week][record.worker_type as WorkerType] = record.value || 0;
+      }
+    } catch (error) {
+      if (!(error instanceof ClientResponseError) || error.status !== 404) {
+        throw error;
+      }
+    }
+
+    // Get existing progress from database
+    try {
+      const records = await collections.progress.getFullList({
+        filter: `user.username="${pocketbase.authStore.model!.username}"`,
+      });
+      for (let record of records) {
+        progressTimelines[record.activity].set(record.progress, record.week);
+      }
+    } catch (error) {
+      if (!(error instanceof ClientResponseError) || error.status !== 404) {
+        throw error;
+      }
+    }
+
+    loading.value = false;
+  }
+
+  async function updateDatabase() {
+    activities.value.forEach((activity) => {
+      // Update allocation
+      ['labour', 'skilled', 'electrician'].forEach((type) => {
+        updateExistingOrCreate(
+          collections.allocation,
+          `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${
+            activity.label
+          }" && worker_type="${type}"`,
+          {
+            user: pocketbase.authStore.model!.id,
+            game_id: gameStore.gameID,
+            week: gameStore.week,
+            activity: activity.label,
+            worker_type: type,
+            value: allocations.value[activity.label][gameStore.week][type as WorkerType],
+          },
+        );
+      });
+
+      // Update progress
+      updateExistingOrCreate(
+        collections.progress,
+        `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${
+          activity.label
+        }"`,
+        {
+          user: pocketbase.authStore.model!.id,
+          game_id: gameStore.gameID,
+          week: gameStore.week,
+          activity: activity.label,
+          progress: progressTimelines[activity.label].get.value(),
+        },
+      );
+    });
+  }
+
+  if (gameStore.settingsLoaded) {
+    connectWithDatabase();
+    // Every time the week progresses, elligible activities are progressed.
+    watch(
+      () => gameStore.ready,
+      () => {
+        if (gameStore.ready) progressActivities();
+      },
+    );
+  } else {
+    const synchronizedWatcher = watch(
+      () => gameStore.settingsLoaded,
+      () => {
+        if (gameStore.settingsLoaded) synchronizedWatcher();
+        connectWithDatabase();
+        // Every time the week progresses, elligible activities are progressed.
+        watch(
+          () => gameStore.ready,
+          () => {
+            if (gameStore.ready) progressActivities();
+          },
+        );
+      },
+    );
+  }
 
   return {
+    loading,
     activitiesAtWeek,
     activities,
     activityFromLabel,

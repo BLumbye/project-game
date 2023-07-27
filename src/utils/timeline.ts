@@ -22,7 +22,7 @@ function createTimeline<T>(defaultValue: T, reducer: (accumulator: T, currentVal
   const getReduced = computed(() => {
     return (index?: number) => {
       index ??= timeline.value.length - 1;
-      return timeline.value.slice(0, index + 1).reduce(reducer, initialValue);
+      return timeline.value.slice(0, index + 1).reduce(reducer, structuredClone(initialValue));
     };
   });
 

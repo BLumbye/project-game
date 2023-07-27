@@ -21,27 +21,28 @@
            class="equipment-input"
            name="steelwork-input"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-           :disabled="previousEquipment.steelwork!.status !== 'unordered'" />
+           :disabled="previousEquipment.steelwork!.status !== 'unordered' || gameStore.ready" />
     <label for="interior-input"
            class="equipment-label">Interior (Task B)</label>
     <input v-model="interior"
            class="equipment-input"
            name="interior-input"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-           :disabled="previousEquipment.interior!.status !== 'unordered'" />
+           :disabled="previousEquipment.interior!.status !== 'unordered' || gameStore.ready" />
     <label for="tbs-input"
            class="equipment-label">TBS (Task C)</label>
     <input v-model="tbs"
            class="equipment-input"
            name="tbs-input"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-           :disabled="previousEquipment.tbs!.status !== 'unordered'" />
+           :disabled="previousEquipment.tbs!.status !== 'unordered' || gameStore.ready" />
   </div>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
+import { WatchStopHandle } from 'vue';
 import { EquipmentType } from '../../types/types';
 import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
 
@@ -69,9 +70,9 @@ const makeEquipmentWatcher = (input: Ref<string>, type: EquipmentType) => {
   });
 };
 
-const stopSteelworkWatcher = makeEquipmentWatcher(steelwork, 'steelwork');
-const stopInteriorWatcher = makeEquipmentWatcher(interior, 'interior');
-const stopTBSWatcher = makeEquipmentWatcher(tbs, 'tbs');
+let stopSteelworkWatcher: WatchStopHandle;
+let stopInteriorWatcher: WatchStopHandle;
+let stopTBSWatcher: WatchStopHandle;
 
 watch([() => equipmentStore.timeline, () => gameStore.week], () => {
   if (previousEquipment.value.steelwork!.status !== 'unordered') {
@@ -87,6 +88,34 @@ watch([() => equipmentStore.timeline, () => gameStore.week], () => {
     tbs.value = equipmentStore.equipment.tbs!.status!;
   }
 }, { deep: true });
+
+if (gameStore.synchronized) {
+  watch(() => equipmentStore.loading, () => {
+    if (previousEquipment.value.steelwork!.status !== 'unordered') {
+      steelwork.value = equipmentStore.equipment.steelwork!.status!;
+    } else if (equipmentStore.equipment.steelwork!.status === 'ordered') {
+      steelwork.value = equipmentStore.equipment.steelwork!.deliveryType === 'regular' ? '1' : '2';
+    }
+    if (previousEquipment.value.interior!.status !== 'unordered') {
+      interior.value = equipmentStore.equipment.interior!.status!;
+    } else if (equipmentStore.equipment.interior!.status === 'ordered') {
+      interior.value = equipmentStore.equipment.interior!.deliveryType === 'regular' ? '1' : '2';
+    }
+    if (previousEquipment.value.tbs!.status !== 'unordered') {
+      tbs.value = equipmentStore.equipment.tbs!.status!;
+    } else if (equipmentStore.equipment.tbs!.status === 'ordered') {
+      tbs.value = equipmentStore.equipment.tbs!.deliveryType === 'regular' ? '1' : '2';
+    }
+
+    stopSteelworkWatcher = makeEquipmentWatcher(steelwork, 'steelwork');
+    stopInteriorWatcher = makeEquipmentWatcher(interior, 'interior');
+    stopTBSWatcher = makeEquipmentWatcher(tbs, 'tbs');
+  });
+} else {
+  stopSteelworkWatcher = makeEquipmentWatcher(steelwork, 'steelwork');
+  stopInteriorWatcher = makeEquipmentWatcher(interior, 'interior');
+  stopTBSWatcher = makeEquipmentWatcher(tbs, 'tbs');
+}
 </script>
 
 <!-- Styling -->

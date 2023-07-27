@@ -14,6 +14,7 @@
            class="loan-label">New loan:</label>
     <input v-model="newLoan"
            type="text"
+           :disabled="gameStore.ready"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
            class="loan-input"
            name="new-loan-input" />
@@ -21,6 +22,7 @@
            class="loan-label">Repay amount:</label>
     <input type="text"
            v-model="repay"
+           :disabled="gameStore.ready"
            class="loan-input"
            name="repay-input" />
   </div>
@@ -49,6 +51,11 @@ watch(() => gameStore.week, () => {
   newLoan.value = 0;
   repay.value = 0;
 })
+
+watch(() => financeStore.loading, () => {
+  newLoan.value = financeStore.loanTimeline.get() || 0;
+  repay.value = financeStore.loanRepayTimeline.get() || 0;
+});
 </script>
 
 <!-- Styling -->

@@ -5,19 +5,16 @@
 -->
 
 <template>
-  <button class="next-week-button"
-          @click="emit('week-progressed')"
-          :disabled="gameDone || gameOver">{{ gameDone ? "Game Done" : gameOver ? "Game Over" : "Next Week ->" }}</button>
+  <button class="done-button"
+          @click="handleClick"
+          :disabled="gameDone || gameOver">{{ gameDone ? "Game Done" : gameOver ? "Game Over" : gameStore.synchronized ?
+            gameStore.ready ? "Not ready" : "Ready" : "Next Week ->" }}</button>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
 import config from '../../config';
-
-const emit = defineEmits<{
-  (e: 'week-progressed'): void
-}>();
 
 const gameDone = ref(false);
 const gameOver = ref(false);
@@ -26,6 +23,14 @@ const gameStore = useGameStore();
 const workersStore = useWorkersStore();
 const activitiesStore = useActivitiesStore();
 const financeStore = useFinanceStore();
+
+const handleClick = () => {
+  if (gameStore.synchronized) {
+    gameStore.toggleReady();
+  } else {
+    gameStore.nextWeek();
+  }
+}
 
 /**
  * Checks whether the game is done (win) or over (lose) whenever a week progresses. The game is done if the following requirements are met:
@@ -36,7 +41,6 @@ const financeStore = useFinanceStore();
  * You lose if more weeks have passed then allowed by the project duration defined in Config
  */
 watch(() => gameStore.week, () => {
-
   const noWorkers = Object.values(workersStore.currentWorkers).every(worker => worker === 0);
   const activitiesDone = activitiesStore.allActivitiesDone();
   const loanRepaid = financeStore.loan === 0;
@@ -57,7 +61,7 @@ watch(() => gameStore.week, () => {
 <!-- Styling -->
 
 <style scoped lang="postcss">
-.next-week-button {
+.done-button {
   text-align: center;
   font-size: 1rem;
 }

@@ -13,24 +13,27 @@
     <span>LAB</span>
     <span>SKI</span>
     <span>ELE</span>
-    <template v-for="activity in activities">
+    <template v-for="activity in activityStore.activities">
       <span>{{ activity.label }}</span>
       <input type="text"
              class="worker-input"
              name="LAB-input"
              ref="lab"
+             :disabled="gameStore.ready"
              @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'labour')" />
       <input type="text"
              class="worker-input"
              name="SKI-input"
              ref="ski"
+             :disabled="gameStore.ready"
              @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'skilled')" />
       <input type="text"
              class="worker-input"
              name="ELE-input"
              ref="ele"
+             :disabled="gameStore.ready"
              @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'electrician')" />
     </template>
@@ -60,7 +63,18 @@ watch(() => gameStore.week, () => {
   lab.value.forEach(input => input.value = '');
   ski.value.forEach(input => input.value = '');
   ele.value.forEach(input => input.value = '');
-})
+});
+
+watch(
+  () => activityStore.loading,
+  () => {
+    activityStore.activities.forEach((activity, i) => {
+      lab.value[i].value = activity.allocation.labour !== 0 ? activity.allocation.labour?.toString() : '';
+      ski.value[i].value = activity.allocation.skilled !== 0 ? activity.allocation.skilled?.toString() : '';
+      ele.value[i].value = activity.allocation.electrician !== 0 ? activity.allocation.electrician?.toString() : '';
+    });
+  },
+);
 </script>
 
 <!-- Styling -->

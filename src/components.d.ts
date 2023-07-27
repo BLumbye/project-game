@@ -13,6 +13,7 @@ declare module '@vue/runtime-core' {
     DecisionForm: typeof import('./components/DecisionForm/DecisionForm.vue')['default']
     DFAllocation: typeof import('./components/DecisionForm/DF-Allocation.vue')['default']
     DFBid: typeof import('./components/DecisionForm/DF-Bid.vue')['default']
+    DFDoneButton: typeof import('./components/DecisionForm/DF-DoneButton.vue')['default']
     DFEquipment: typeof import('./components/DecisionForm/DF-Equipment.vue')['default']
     DFLoan: typeof import('./components/DecisionForm/DF-Loan.vue')['default']
     DFNextWeek: typeof import('./components/DecisionForm/DF-NextWeek.vue')['default']

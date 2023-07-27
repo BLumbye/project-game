@@ -15,6 +15,7 @@
            class="worker-label">Labour</label>
     <input v-model="labour"
            type="text"
+           :disabled="gameStore.ready"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber()))(evt as InputEvent)"
            class="worker-input"
            name="labour-input" />
@@ -22,6 +23,7 @@
            class="worker-label">Skilled</label>
     <input v-model="skilled"
            type="text"
+           :disabled="gameStore.ready"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber()))(evt as InputEvent)"
            class="worker-input"
            name="skilled-input" />
@@ -29,6 +31,7 @@
            class="worker-label">Electrician</label>
     <input v-model="electrician"
            type="text"
+           :disabled="gameStore.ready"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber()))(evt as InputEvent)"
            class="worker-input"
            name="electrician-input" />
@@ -71,6 +74,15 @@ watch(
     labour.value = '';
     skilled.value = '';
     electrician.value = '';
+  },
+);
+
+watch(
+  () => workersStore.loading,
+  () => {
+    labour.value = workersStore.workers[gameStore.week].labour !== 0 ? workersStore.workers[gameStore.week].labour.toString() : '';
+    skilled.value = workersStore.workers[gameStore.week].skilled !== 0 ? workersStore.workers[gameStore.week].skilled.toString() : '';
+    electrician.value = workersStore.workers[gameStore.week].electrician !== 0 ? workersStore.workers[gameStore.week].electrician.toString() : '';
   },
 );
 </script>
