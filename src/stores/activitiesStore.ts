@@ -216,7 +216,6 @@ export const useActivitiesStore = defineStore('activities', () => {
           activity.requirements.equipment &&
           isActivityDone.value(activityFromLabel.value(activity.label, gameStore.week + 1))
         ) {
-          console.log('finish delivery');
           const equipmentStore = useEquipmentStore();
           activity.requirements.equipment.forEach((equipment) => equipmentStore.finishDelivery(equipment));
         }

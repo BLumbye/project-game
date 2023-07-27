@@ -30,7 +30,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
   /**
    * Returns equipment for the current week.
    */
-  const equipment = computed(() => timeline.getReduced.value(gameStore.week));
+  const equipment = computed(() => timeline.getReduced.value(gameStore.week) as EquipmentState);
 
   // Actions
   /**
@@ -51,7 +51,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
    * Sets the status of an equipment to 'delivered' which completes the delivery.
    */
   function finishDelivery(type: EquipmentType) {
-    timeline.set({ ...timeline.get.value(), [type]: { ...timeline.get.value()![type], status: 'delivered' } });
+    timeline.set({ ...timeline.get.value(), [type]: { ...timeline.getReduced.value()![type], status: 'delivered' } });
   }
 
   // Logic
