@@ -16,7 +16,6 @@ declare module '@vue/runtime-core' {
     DFDoneButton: typeof import('./components/DecisionForm/DF-DoneButton.vue')['default']
     DFEquipment: typeof import('./components/DecisionForm/DF-Equipment.vue')['default']
     DFLoan: typeof import('./components/DecisionForm/DF-Loan.vue')['default']
-    DFNextWeek: typeof import('./components/DecisionForm/DF-NextWeek.vue')['default']
     DFWorkers: typeof import('./components/DecisionForm/DF-Workers.vue')['default']
     Event: typeof import('./components/Event/Event.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

@@ -42,6 +42,12 @@
               class="link-button admin-button"
               @click="adminLogin = true">Log in as admin</button>
     </template>
+    <template v-if="devMode">
+      <button @click="() => {
+        gameStore.synchronized = false;
+        $router.push('/bid');
+      }">Development Mode</button>
+    </template>
   </main>
   <footer>
     <span>
@@ -61,6 +67,8 @@ const username = ref("");
 const password = ref("");
 const errorMessage = ref<string | null>(null);
 const adminLogin = ref(false);
+
+const devMode = import.meta.env.MODE === 'development';
 
 const gameStore = useGameStore();
 
