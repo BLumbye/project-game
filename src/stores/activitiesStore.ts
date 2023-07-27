@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import config from '../config';
-import { Activity, Equipment, EquipmentType, WorkerType } from '../types/types';
+import { Activity, ConfigActivity, WorkerType } from '../types/types';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 import { ClientResponseError } from 'pocketbase';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
@@ -91,12 +91,20 @@ export const useActivitiesStore = defineStore('activities', () => {
   });
 
   /**
-   * Returns the duration of an activity. The duration is the time needed for an acitivty is done.
+   * Returns the duration of an activity. The duration is the time needed for an activity is done.
    */
   const getDuration = computed(() => {
-    return (activity: Pick<Activity, 'duration'>) => {
-      return activity.duration({ equipment: equipmentStore.equipmentAtWeek(gameStore.week - 1) });
+    return (activity: ConfigActivity) => {
+      if (
+        activity.expressDuration &&
+        activity.requirements.equipment?.every(
+          (equipment) => equipmentStore.equipment[equipment].deliveryType === 'express',
+        )
+      ) {
+        return activity.expressDuration;
+      } else return activity.duration;
     };
+    //TODO: Cycle through event effects to see if any should affect it
   });
 
   /**
@@ -164,6 +172,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
       return enoughWorkers('labour') && enoughWorkers('skilled') && enoughWorkers('electrician');
     };
+    //TODO: Add event effects in terms of workers
   });
 
   /**
@@ -199,6 +208,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    * An activity cannot progress if it already done.
    */
   function progressActivities() {
+    //TODO: Add event effects in terms of resource dependency
     for (const activity of activities.value) {
       if (!isActivityDone.value(activity) && requirementsMet.value(activity, gameStore.week)) {
         progressTimelines[activity.label].set(1, gameStore.week + 1);

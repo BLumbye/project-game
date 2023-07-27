@@ -16,7 +16,8 @@ export interface DurationParameters {
 
 export interface Activity {
   label: string;
-  duration: (parameters: DurationParameters) => number;
+  duration: number;
+  expressDuration?: number; //Only relevant for equipment
   progress: number;
   requirements: Partial<{
     workers: Partial<Record<WorkerType, number>>;
@@ -26,11 +27,24 @@ export interface Activity {
   allocation: Record<WorkerType, number>;
 }
 
-export interface Event{
+export type ConfigActivity = Pick<Activity, 'label' | 'duration' | 'expressDuration' | 'requirements'>;
+export type ConfigActivities = ConfigActivity[];
+
+export interface Event {
   week: number;
   image: string;
   title: string;
   description: string;
+  effects?: EventEffect[];
+  showTitle: boolean;
+  showDescription: boolean;
+}
+
+export interface EventEffect {
+  activityLabels: string[]; // An array of activity labels to be affected
+  newWorkers?: Partial<Record<WorkerType, number>>; // The new number of workers needed
+  newDuration?: number; // The new duration of the activity
+  resourceDependant?: boolean; // Whether the activitity can be sped up by using more workers
 }
 
 export interface Equipment {
