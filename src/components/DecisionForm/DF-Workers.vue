@@ -12,7 +12,7 @@
     <span class="workers-column-label">Worker</span>
     <span class="workers-column-label">Amount</span>
     <label for="labour-input"
-           class="worker-label">Labour</label>
+           class="worker-label">Student</label>
     <input v-model="labour"
            type="text"
            :disabled="gameStore.ready"
@@ -20,21 +20,13 @@
            class="worker-input"
            name="labour-input" />
     <label for="skilled-input"
-           class="worker-label">Skilled</label>
+           class="worker-label">Technician</label>
     <input v-model="skilled"
            type="text"
            :disabled="gameStore.ready"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber()))(evt as InputEvent)"
            class="worker-input"
            name="skilled-input" />
-    <label for="electrician-input"
-           class="worker-label">Electrician</label>
-    <input v-model="electrician"
-           type="text"
-           :disabled="gameStore.ready"
-           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber()))(evt as InputEvent)"
-           class="worker-input"
-           name="electrician-input" />
   </div>
 </template>
 

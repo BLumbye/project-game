@@ -8,7 +8,7 @@
 
 <template>
   <div class="weekly-report">
-    <h2 class="boxed section-title">Weekly report for week: {{ gameStore.week - 1 }}</h2>
+    <h2 class="boxed section-title">Daily report for day: {{ gameStore.week - 1 }}</h2>
     <WRAllocation v-if="gameStore.week > 1" />
     <WRWorkers v-if="gameStore.week > 1" />
     <WRFinances />

@@ -11,9 +11,8 @@
     <span class="progress-label">Progress</span>
     <span class="component-title">Allocation</span>
     <span>%</span>
-    <span>LAB</span>
-    <span>SKI</span>
-    <span>ELE</span>
+    <span>Student</span>
+    <span>Technician</span>
     <template v-for="(activity, index) in activities">
       <span>{{ activity.label }}</span>
       <span>{{ (progressActivities[index].progress /
@@ -28,7 +27,6 @@
       activityStore.getDuration(activity)), 0) / activities.length * 100).toFixed(0) }}%</span>
     <span>{{ activityStore.totalWorkersAssigned('labour', gameStore.week - 2) }}</span>
     <span>{{ activityStore.totalWorkersAssigned('skilled', gameStore.week - 2) }}</span>
-    <span>{{ activityStore.totalWorkersAssigned('electrician', gameStore.week - 2) }}</span>
   </div>
 </template>
 

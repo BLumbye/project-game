@@ -16,26 +16,14 @@
     <span class="equipment-column-label">Equipment</span>
     <span class="equipment-column-label">Order</span>
     <label for="steelwork-input"
-           class="equipment-label">Steelwork (Task A)</label>
+           class="equipment-label">Fridges (Task D)</label>
     <input v-model="steelwork"
            class="equipment-input"
            name="steelwork-input"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
            :disabled="previousEquipment.steelwork!.status !== 'unordered' || gameStore.ready" />
     <label for="interior-input"
-           class="equipment-label">Interior (Task B)</label>
-    <input v-model="interior"
-           class="equipment-input"
-           name="interior-input"
-           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-           :disabled="previousEquipment.interior!.status !== 'unordered' || gameStore.ready" />
-    <label for="tbs-input"
-           class="equipment-label">TBS (Task C)</label>
-    <input v-model="tbs"
-           class="equipment-input"
-           name="tbs-input"
-           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-           :disabled="previousEquipment.tbs!.status !== 'unordered' || gameStore.ready" />
+           class="equipment-label">Drinks (Task E)</label>
   </div>
 </template>
 

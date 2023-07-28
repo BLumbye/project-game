@@ -7,12 +7,10 @@
 <template>
   <div class="workers boxed">
     <span class="workers-title">Total workers on site:</span>
-    <span class="workers-label">LAB</span>
-    <span class="workers-label">SKI</span>
-    <span class="workers-label">ELE</span>
+    <span class="workers-label">Students</span>
+    <span class="workers-label">Technicians</span>
     <span>{{ workers.labour }}</span>
     <span>{{ workers.skilled }}</span>
-    <span>{{ workers.electrician }}</span>
   </div>
 </template>
 
