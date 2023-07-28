@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { useAsyncState } from '@vueuse/core';
 import { collections, pocketbase, updateExistingOrCreate } from '../pocketbase';
+import { GameState } from '~/types/types';
 
 /**
  * This store contains overall information about the game, and also controls the flow
@@ -25,7 +26,7 @@ export const useGameStore = defineStore('game', () => {
    */
   const synchronized = ref<boolean | undefined>(undefined);
   const gameID = ref<number | undefined>(undefined);
-  const bidsAccepted = ref<boolean | undefined>(undefined);
+  const gameState = ref<GameState | undefined>(undefined);
   const ready = ref(false);
 
   // Getters
@@ -65,9 +66,9 @@ export const useGameStore = defineStore('game', () => {
     const settingsRecord = (await collections.settings.getList(1, 1)).items[0];
     synchronized.value = settingsRecord.synchronized;
     settingsRecordID.value = settingsRecord.id;
+    gameID.value = settingsRecord.game_id;
     if (synchronized.value) {
-      gameID.value = settingsRecord.game_id;
-      bidsAccepted.value = settingsRecord.bids_accepted;
+      gameState.value = settingsRecord.game_state;
       week.value = settingsRecord.current_week;
 
       routeCorrectly();
@@ -76,7 +77,7 @@ export const useGameStore = defineStore('game', () => {
     collections.settings.subscribe(settingsRecord.id, (data) => {
       if (data.record.synchronized !== synchronized.value) synchronized.value = data.record.synchronized;
       if (data.record.game_id !== gameID.value) gameID.value = data.record.game_id;
-      if (data.record.bids_accepted !== bidsAccepted.value) bidsAccepted.value = data.record.bids_accepted;
+      if (data.record.game_state !== gameState.value) gameState.value = data.record.game_state;
       if (data.record.current_week !== week.value) {
         for (let i = week.value; i < data.record.current_week; i++) {
           if (!ready.value) nextWeek();
@@ -93,8 +94,7 @@ export const useGameStore = defineStore('game', () => {
     if (!pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth') router.push({ name: 'auth' });
     else if (router.currentRoute.value.name !== 'admin' && pocketbase.authStore.model?.admin)
       router.push({ name: 'admin' });
-    else if (router.currentRoute.value.name !== 'game' && bidsAccepted.value) router.push({ name: 'game' });
-    else if (router.currentRoute.value.name !== 'bid' && !bidsAccepted.value) router.push({ name: 'bid' });
+    else if (router.currentRoute.value.name !== 'game' && synchronized.value) router.push({ name: 'game' });
   }
 
   function connectAllDatabases() {
@@ -117,7 +117,7 @@ export const useGameStore = defineStore('game', () => {
     settingsLoaded,
     settingsRecordID,
     gameID,
-    bidsAccepted,
+    gameState,
     routeCorrectly,
     connectWithDatabase,
     connectAllDatabases,

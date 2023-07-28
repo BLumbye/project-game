@@ -17,7 +17,6 @@ router.beforeEach(async (to, from) => {
 
   if (to.name === 'auth' && pocketbase.authStore.isValid) return { name: 'game' };
   if (to.name === 'game' && gameStore.synchronized && !pocketbase.authStore.isValid) return { name: 'auth' };
-  if (to.name === 'bid' && gameStore.synchronized && !pocketbase.authStore.isValid) return { name: 'auth' };
   if (to.name === 'admin' && (!pocketbase.authStore.isValid || !pocketbase.authStore.model!.admin))
     return { name: 'auth' };
 });

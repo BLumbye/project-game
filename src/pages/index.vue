@@ -37,7 +37,7 @@
         You can still play the game, but your progress will not be saved.
       </p>
       <router-link class="button-link"
-                   to="/bid">Start Game</router-link>
+                   to="/game">Start Game</router-link>
       <button v-if="!adminLogin"
               class="link-button admin-button"
               @click="adminLogin = true">Log in as admin</button>
@@ -45,7 +45,7 @@
     <template v-if="devMode">
       <button @click="() => {
         gameStore.synchronized = false;
-        $router.push('/bid');
+        $router.push('/game');
       }">Development Mode</button>
     </template>
   </main>
@@ -71,6 +71,7 @@ const adminLogin = ref(false);
 const devMode = import.meta.env.MODE === 'development';
 
 const gameStore = useGameStore();
+const router = useRouter();
 
 const handleLogin = async () => {
   try {
@@ -152,10 +153,6 @@ const handleLogin = async () => {
   & input[type="submit"] {
     padding-inline: 1.5em;
   }
-
-  & .error-message {
-    color: #ff6464;
-  }
 }
 
 .button-link {
@@ -190,6 +187,7 @@ main {
 
   & footer {
     font-size: 0.875rem;
+    font-weight: 300;
     opacity: 0.75;
   }
 }

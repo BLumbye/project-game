@@ -338,7 +338,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
   // Logic
   async function connectWithDatabase() {
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
       loading.value = false;
       return;
     }
@@ -364,6 +364,20 @@ export const useActivitiesStore = defineStore('activities', () => {
       });
       for (let record of records) {
         progressTimelines[record.activity].set(record.progress, record.week);
+      }
+    } catch (error) {
+      if (!(error instanceof ClientResponseError) || error.status !== 404) {
+        throw error;
+      }
+    }
+
+    // Get existing activity completion from database
+    try {
+      const records = await collections.activityCompletion.getFullList({
+        filter: `user.username="${pocketbase.authStore.model!.username}"`,
+      });
+      for (let record of records) {
+        weekActivityDone.value[record.activity] = record.week;
       }
     } catch (error) {
       if (!(error instanceof ClientResponseError) || error.status !== 404) {
@@ -408,6 +422,9 @@ export const useActivitiesStore = defineStore('activities', () => {
           progress: progressTimelines[activity.label].get.value(),
         },
       );
+
+      // Update activity completion
+      // TODO
     });
   }
 

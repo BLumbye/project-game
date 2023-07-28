@@ -23,7 +23,6 @@ function logout() {
   pocketbase.authStore.clear();
   router.push('/');
 }
-
 </script>
   
 <style scoped lang="postcss">

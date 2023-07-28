@@ -9,7 +9,14 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AddUsersDialog: typeof import('./components/Admin/AddUsersDialog.vue')['default']
+    AdminAddingUsers: typeof import('./components/Admin/AdminAddingUsers.vue')['default']
+    AdminBids: typeof import('./components/Admin/AdminBids.vue')['default']
+    AdminInProgress: typeof import('./components/Admin/AdminInProgress.vue')['default']
+    AdminNotStarted: typeof import('./components/Admin/AdminNotStarted.vue')['default']
     BBid: typeof import('./components/Bid/B-Bid.vue')['default']
+    Bid: typeof import('./components/Bid/Bid.vue')['default']
+    BidTable: typeof import('./components/Admin/BidTable.vue')['default']
     DecisionForm: typeof import('./components/DecisionForm/DecisionForm.vue')['default']
     DFAllocation: typeof import('./components/DecisionForm/DF-Allocation.vue')['default']
     DFBid: typeof import('./components/DecisionForm/DF-Bid.vue')['default']
@@ -18,6 +25,8 @@ declare module '@vue/runtime-core' {
     DFLoan: typeof import('./components/DecisionForm/DF-Loan.vue')['default']
     DFWorkers: typeof import('./components/DecisionForm/DF-Workers.vue')['default']
     Event: typeof import('./components/Event/Event.vue')['default']
+    GameHeader: typeof import('./components/GameHeader.vue')['default']
+    Header: typeof import('./components/Header.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TopBar: typeof import('./components/TopBar/TopBar.vue')['default']

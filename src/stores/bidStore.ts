@@ -21,10 +21,10 @@ export const useBidStore = defineStore('bid', () => {
 
   // State
   const loading = ref(true);
-  const bidPrice = ref(1000000);
-  const bidDuration = ref(9);
-  const expectedPrice = ref(1000000);
-  const expectedDuration = ref(9);
+  const bidPrice = ref<number>(0);
+  const bidDuration = ref<number>(0);
+  const expectedPrice = ref<number>(0);
+  const expectedDuration = ref<number>(0);
   const ready = ref(false);
 
   // Getters
@@ -85,7 +85,7 @@ export const useBidStore = defineStore('bid', () => {
 
   // Logic
   async function connectWithDatabase() {
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
       loading.value = false;
       return;
     }
@@ -99,20 +99,7 @@ export const useBidStore = defineStore('bid', () => {
       expectedDuration.value = record.expected_duration;
       expectedPrice.value = record.expected_price;
     } catch (error) {
-      if (error instanceof ClientResponseError && error.status === 404) {
-        const record = await collections.bids.create({
-          user: pocketbase.authStore.model!.id,
-          bid_price: bidPrice.value,
-          bid_duration: bidDuration.value,
-          expected_duration: expectedDuration.value,
-          expected_price: expectedPrice.value,
-          game_id: gameStore.gameID,
-          ready: ready.value,
-        });
-        recordID = record.id;
-      } else {
-        throw error;
-      }
+      throw error;
     }
 
     // Subscribe to bid record

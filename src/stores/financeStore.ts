@@ -214,7 +214,7 @@ export const useFinanceStore = defineStore('finance', () => {
   };
 
   async function connectWithDatabase() {
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
       loading.value = false;
       return;
     }

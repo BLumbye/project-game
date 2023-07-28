@@ -19,7 +19,7 @@
                class="bid-input"
                id="bid-price"
                name="bid-price"
-               :disabled="bidStore.ready"
+               :disabled="bidStore.ready || gameStore.gameState === 'reviewing_bids'"
                @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
                @input="(evt) => change(evt, 'bidPrice')"
                :value="bidStore.bidPrice" />
@@ -28,7 +28,7 @@
                class="bid-input"
                id="bid-duration"
                name="bid-duration"
-               :disabled="bidStore.ready"
+               :disabled="bidStore.ready || gameStore.gameState === 'reviewing_bids'"
                @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
                @input="(evt) => change(evt, 'bidDuration')"
                :value="bidStore.bidDuration" />
@@ -37,7 +37,7 @@
                class="bid-input"
                id="expected-price"
                name="expected-price"
-               :disabled="bidStore.ready"
+               :disabled="bidStore.ready || gameStore.gameState === 'reviewing_bids'"
                @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
                @input="(evt) => change(evt, 'expectedPrice')"
                :value="bidStore.expectedPrice" />
@@ -46,7 +46,7 @@
                class="bid-input"
                id="expected-duration"
                name="expected-duration"
-               :disabled="bidStore.ready"
+               :disabled="bidStore.ready || gameStore.gameState === 'reviewing_bids'"
                @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
                @input="(evt) => change(evt, 'expectedDuration')"
                :value="bidStore.expectedDuration" />
@@ -54,10 +54,12 @@
     </div>
     <button @click="handleContinue"
             class="ready-button"
+            v-if="gameStore.gameState === 'getting_bids'"
             :disabled="!bidStore.isBidValid">{{ gameStore.synchronized ? bidStore.ready ? 'Not Ready' : 'Ready' :
               'Continue'
             }}</button>
-    <p v-if="bidStore.ready">Wait for the admins to accept your bid and continue the game</p>
+    <p v-if="bidStore.ready && gameStore.gameState === 'getting_bids'">Wait for the admins start reviewing bids</p>
+    <p v-if="gameStore.gameState === 'reviewing_bids'">Wait for the admins review your bids and start the game</p>
   </template>
 </template>
 
@@ -80,15 +82,9 @@ const handleContinue = () => {
   if (gameStore.synchronized) {
     bidStore.toggleReady();
   } else {
-    router.push('/game');
+    gameStore.gameState = 'in_progress';
   }
 }
-
-watch(() => gameStore.bidsAccepted, () => {
-  if (gameStore.bidsAccepted) {
-    router.push('/game');
-  }
-});
 </script>
 
 <!-- Styling -->
