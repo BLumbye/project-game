@@ -42,7 +42,6 @@ const gameStore = useGameStore();
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1em;
-  overflow: auto;
   max-height: 100%;
 
   .section-title {

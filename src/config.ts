@@ -174,15 +174,6 @@ const events: Event[] = [
     showDescription: true,
   },
   {
-    week: 2,
-    image: '/images/NONEWS.png',
-    title: 'NOTHING TO REPORT',
-    description: 'Nothing new to report this week.',
-    // NO EFFECT!
-    showTitle: false,
-    showDescription: false,
-  },
-  {
     week: 3,
     image: '/images/Week3.png',
     title: 'NEW CORONA WAVE?',
@@ -248,51 +239,6 @@ const events: Event[] = [
     effects: [...addWorkers(['K', 'G', 'L'], ['labour'], 1, activities)],
     showTitle: true,
     showDescription: true,
-  },
-  {
-    week: 8,
-    image: '/images/NONEWS.png',
-    title: 'NOTHING TO REPORT',
-    description: 'Nothing to report this week.',
-    // NO EFFECT!
-    showTitle: false,
-    showDescription: false,
-  },
-  {
-    week: 9,
-    image: '/images/NONEWS.png',
-    title: 'NOTHING TO REPORT',
-    description: 'Nothing to report this week.',
-    // NO EFFECT!
-    showTitle: false,
-    showDescription: false,
-  },
-  {
-    week: 10,
-    image: '/images/NONEWS.png',
-    title: 'NOTHING TO REPORT',
-    description: 'Nothing to report this week.',
-    // NO EFFECT!
-    showTitle: false,
-    showDescription: false,
-  },
-  {
-    week: 11,
-    image: '/images/NONEWS.png',
-    title: 'NOTHING TO REPORT',
-    description: 'Nothing to report this week.',
-    // NO EFFECT!
-    showTitle: false,
-    showDescription: false,
-  },
-  {
-    week: 12,
-    image: '/images/NONEWS.png',
-    title: 'NOTHING TO REPORT',
-    description: 'Nothing to report this week.',
-    // NO EFFECT!
-    showTitle: false,
-    showDescription: false,
   },
 ];
 

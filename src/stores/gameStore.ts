@@ -74,6 +74,10 @@ export const useGameStore = defineStore('game', () => {
       routeCorrectly();
     }
 
+    if (!synchronized.value && pocketbase.authStore.isValid && !pocketbase.authStore.model?.admin) {
+      pocketbase.authStore.clear();
+    }
+
     collections.settings.subscribe(settingsRecord.id, (data) => {
       if (data.record.synchronized !== synchronized.value) synchronized.value = data.record.synchronized;
       if (data.record.game_id !== gameID.value) gameID.value = data.record.game_id;
