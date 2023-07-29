@@ -10,9 +10,8 @@
   <div class="allocation">
     <span class="activities-label">Activity</span>
     <span class="component-title">Allocate workers to activities</span>
-    <span>LAB</span>
-    <span>SKI</span>
-    <span>ELE</span>
+    <span>Student</span>
+    <span>Technician</span>
     <template v-for="activity in activityStore.activities">
       <span>{{ activity.label }}</span>
       <input type="text"
@@ -29,13 +28,6 @@
              :disabled="gameStore.ready"
              @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'skilled')" />
-      <input type="text"
-             class="worker-input"
-             name="ELE-input"
-             ref="ele"
-             :disabled="gameStore.ready"
-             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-             @input="(evt) => change(evt, activity.label, 'electrician')" />
     </template>
   </div>
 </template>
@@ -86,12 +78,12 @@ watch(
 }
 
 .component-title {
-  grid-column: span 3;
+  grid-column: span 2;
 }
 
 .allocation {
   display: grid;
-  grid-template-columns: repeat(4, auto);
+  grid-template-columns: repeat(3, auto);
   grid-template-rows: repeat(v-bind('activities.length'), auto);
 
   /* v-bind takes setup language */

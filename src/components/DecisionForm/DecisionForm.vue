@@ -18,7 +18,6 @@
     <DFWorkers class="workers boxed" />
     <DFEquipment class="equipment boxed" />
     <DFAllocation class="allocation boxed" />
-    <DFLoan class="loan boxed" />
     <DFDoneButton class="done-button" />
   </div>
 </template>

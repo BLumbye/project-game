@@ -24,6 +24,11 @@
            :disabled="previousEquipment.steelwork!.status !== 'unordered' || gameStore.ready" />
     <label for="interior-input"
            class="equipment-label">Drinks (Task E)</label>
+    <input v-model="interior"
+           class="equipment-label"
+           name="interior-input"
+           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
+           :disabled="previousEquipment.interior!.status !== 'unordered' || gameStore.ready" />
   </div>
 </template>
 

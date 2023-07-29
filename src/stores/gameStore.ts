@@ -18,13 +18,13 @@ export const useGameStore = defineStore('game', () => {
   //Uses setup store
   // State
   const week = ref(0);
-  const settingsLoaded = ref(false);
+  const settingsLoaded = ref(true);
   const settingsRecordID = ref<string | undefined>(undefined);
   /**
    * Whether a not the server is running in synchronized mode.
    * Synchronized mode means that the player can only progress to the next week when allowed by the admins.
    */
-  const synchronized = ref<boolean | undefined>(undefined);
+  const synchronized = ref<boolean | undefined>(false);
   const gameID = ref<number | undefined>(undefined);
   const gameState = ref<GameState | undefined>(undefined);
   const ready = ref(false);
@@ -109,7 +109,7 @@ export const useGameStore = defineStore('game', () => {
     bidStore.connectWithDatabase();
   }
 
-  connectWithDatabase();
+  //connectWithDatabase();
 
   return {
     week,

@@ -21,8 +21,8 @@ export const useBidStore = defineStore('bid', () => {
 
   // State
   const loading = ref(true);
-  const bidPrice = ref<number>(0);
-  const bidDuration = ref<number>(0);
+  const bidPrice = ref<number>(5000);
+  const bidDuration = ref<number>(8);
   const expectedPrice = ref<number>(0);
   const expectedDuration = ref<number>(0);
   const ready = ref(false);

@@ -13,26 +13,28 @@ import { addWorkers } from './utils/configUtils';
 const loanInterest: number = 0.01;
 const overdraftInterest: number = 0.1;
 
-const consumables: number = 50000;
-const overhead: number = 10000;
+const consumables: number = 100;
+const overhead: number = 0;
 
 const projectDelayPenalty: number = 20000;
 
+const equipmentPrices: number[] = [3000, 1000, 130000]; //last not used in light version
+
 //Salary
-const labourPay: number = 100; //student
+const labourPay: number = 30; //student
 const skilledPay: number = 200; //technician
 const electricianPay: number = 2000; //NOT USED IN LIGHT VERSION
 
 //Payments
-const startBudget: number = 0.2; //Money at start of the project
-const allActivitesCompleteReward: number = 0.3;
+const startBudget: number = 0.; //Money at start of the project
+const allActivitesCompleteReward: number = 0.0;
 const milestoneReward: number = 0.; //Percentage paid on a certain activity completion
 
 //Milestone activity
 const milestoneActivity: (typeof activities)[number]['label'] = 'A'; //NO MILESTONE
 
 //Time limit
-const projectDuration: number = 13;
+const projectDuration: number = 8;
 
 // Currency
 const currency: string = '€';
@@ -137,4 +139,5 @@ export default {
   skilledPay,
   electricianPay,
   currency,
+  equipmentPrices,
 };
