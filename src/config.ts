@@ -26,10 +26,10 @@ const electricianPay: number = 2000; //NOT USED IN LIGHT VERSION
 //Payments
 const startBudget: number = 0.2; //Money at start of the project
 const allActivitesCompleteReward: number = 0.3;
-const milestoneReward: number = 0.5; //Percentage paid on a certain activity completion
+const milestoneReward: number = 0.; //Percentage paid on a certain activity completion
 
 //Milestone activity
-const milestoneActivity: (typeof activities)[number]['label'] = 'X'; //NO MILESTONE
+const milestoneActivity: (typeof activities)[number]['label'] = 'A'; //NO MILESTONE
 
 //Time limit
 const projectDuration: number = 13;
