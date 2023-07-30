@@ -148,13 +148,15 @@
 <!-- Script -->
 
 <script setup lang="ts">
-const gameStore = useGameStore();
-const week = computed(() => gameStore.week);
 const financeStore = useFinanceStore();
 
 const currencyFormat = new Intl.NumberFormat('en-UK', {
   style: 'currency', currency: 'EUR'
 });
+
+const props = defineProps<{
+  week: number;
+}>();
 </script>
 
 <!-- Styling -->
