@@ -41,6 +41,7 @@ watch(() => gameStore.week, () => {
   display: flex;
   flex-direction: column;
   gap: 1em;
+  overflow: auto;
   max-height: 100%;
 
   .section-title {
