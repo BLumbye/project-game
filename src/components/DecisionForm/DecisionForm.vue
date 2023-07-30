@@ -13,7 +13,7 @@
 
 <template>
   <div class="decision-form">
-    <h2 class="boxed section-title">Decision form for week: {{ gameStore.decisionForm }}</h2>
+    <h2 class="boxed section-title">Decision form for day {{ gameStore.decisionForm }}</h2>
     <DFWorkers class="workers boxed" />
     <DFEquipment class="equipment boxed" />
     <DFAllocation class="allocation boxed" />

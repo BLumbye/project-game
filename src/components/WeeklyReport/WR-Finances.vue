@@ -11,7 +11,7 @@
   <div class="finances boxed">
     <h3>Finance</h3>
     <div class="weekly">
-      <h4>Weekly</h4>
+      <h4>Daily</h4>
       <div class="outgoing">
         <h5>Outgoing</h5>
         <div class="finance-item">
@@ -70,7 +70,7 @@
         </div>
       </div>
       <div class="finance-item summary-item">
-        <span class="finance-item-label">Weekly balance:</span>
+        <span class="finance-item-label">Daily balance:</span>
         <span class="finance-item-value">{{ currencyFormat.format(financeStore.weeklyBalanceAtWeek(week - 1)) }}</span>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <template>
   <header>
     <span>Project Game</span>
-    <span>Current week: {{ gameStore.week }}</span>
+    <span>Current day: {{ gameStore.week }}</span>
     <div class="right-side"
          v-if="gameStore.synchronized">
       <div class="text">{{ pocketbase.authStore.model!.username }}</div>

@@ -8,7 +8,7 @@
   <button class="done-button"
           @click="handleClick"
           :disabled="gameDone || gameOver">{{ gameDone ? "Game Done" : gameOver ? "Game Over" : gameStore.synchronized ?
-            gameStore.ready ? "Not ready" : "Ready" : "Next Week ->" }}</button>
+            gameStore.ready ? "Not ready" : "Ready" : "Next Day ->" }}</button>
 </template>
 
 <!-- Script -->
