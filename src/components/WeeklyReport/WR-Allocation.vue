@@ -20,7 +20,6 @@
         100).toFixed(0) }}%</span>
       <span>{{ activity.allocation.labour }}</span>
       <span>{{ activity.allocation.skilled }}</span>
-      <span>{{ activity.allocation.electrician }}</span>
     </template>
     <span>Total</span>
     <span>{{ (progressActivities.reduce((completion, activity) => completion + (activity.progress /
@@ -47,12 +46,12 @@ const activities = computed(() => activityStore.activitiesAtWeek(gameStore.week 
 }
 
 .component-title {
-  grid-column: span 3;
+  grid-column: span 2;
 }
 
 .allocation {
   display: grid;
-  grid-template-columns: repeat(5, auto);
+  grid-template-columns: repeat(4, auto);
   grid-template-rows: repeat(v-bind('activities.length'), auto);
   column-gap: 1em;
 }

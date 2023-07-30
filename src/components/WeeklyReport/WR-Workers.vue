@@ -27,7 +27,7 @@ const workers = computed(() => workersStore.workersAtWeek(gameStore.week - 2));
 <style scoped lang="postcss">
 .workers {
   display: grid;
-  grid-template-columns: repeat(4, auto);
+  grid-template-columns: repeat(3, auto);
 }
 
 .workers-title {

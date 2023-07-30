@@ -71,7 +71,6 @@ export const useGameStore = defineStore('game', () => {
       gameState.value = settingsRecord.game_state;
       week.value = settingsRecord.current_week;
 
-      routeCorrectly();
     }
 
     if (!synchronized.value && pocketbase.authStore.isValid && !pocketbase.authStore.model?.admin) {
@@ -94,12 +93,6 @@ export const useGameStore = defineStore('game', () => {
     settingsLoaded.value = true;
   }
 
-  function routeCorrectly() {
-    if (!pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth') router.push({ name: 'auth' });
-    else if (router.currentRoute.value.name !== 'admin' && pocketbase.authStore.model?.admin)
-      router.push({ name: 'admin' });
-    else if (router.currentRoute.value.name !== 'game' && synchronized.value) router.push({ name: 'game' });
-  }
 
   function connectAllDatabases() {
     activitiesStore.connectWithDatabase();
@@ -122,7 +115,6 @@ export const useGameStore = defineStore('game', () => {
     settingsRecordID,
     gameID,
     gameState,
-    routeCorrectly,
     connectWithDatabase,
     connectAllDatabases,
   };

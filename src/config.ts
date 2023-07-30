@@ -26,7 +26,7 @@ const skilledPay: number = 200; //technician
 const electricianPay: number = 2000; //NOT USED IN LIGHT VERSION
 
 //Payments
-const startBudget: number = 0.; //Money at start of the project
+const startBudget: number = 1.; //Money at start of the project
 const allActivitesCompleteReward: number = 0.0;
 const milestoneReward: number = 0.; //Percentage paid on a certain activity completion
 
@@ -78,33 +78,36 @@ const activities: ConfigActivities = [
 ];
 
 //Events
-TODO: 'Add images';
-
 const events: Event[] = [
   {
     week: 1,
     image: '/images/Week1.jpg',
     title: 'OPPORTUNITY',
     description:
-      "You receive a call from the company delivering the fridges. It is possible to bring them in in one day for an extra 500€. Enter '2' in the Fridge box (equipment section) for taking advantage of this opportunity. Note: The activity cannot take less than 1 day.",
+      "You receive a call from the company delivering the fridges. It is possible to bring them in in one day for an extra 300€. Choose 'Express Delivery' in the Fridges drop-down box (equipment section) to take advantage of this opportunity. Note: The activity cannot take less than 1 day.",
     //NO EFFECT! But reminds of express delivery
     showTitle: true,
     showDescription: true,
   },
   {
     week: 2,
-    image: '/images/Week3.png',
-    title: 'POSSIBLE DELAY',
+    image: '/images/install.jpg',
+    title: 'SLOW INSTALLATION',
     description:
-      "The delivery company notified you that one of the fridges got damaged during the transport. They will send a new one at no extra cost, but it will take one day longer. You just need to place the order (input '1' in the order equipment box to the right) Note: if you already received the fridges, this will not apply.",
-    //TODO: IMPLEMENT EFFECT
+      "The delivery company notified you that the fridges are of a new model and you should expect them to take longer to install. Note: Activity 'D' now takes 2 days instead of 1.",
+    effects: [
+      {
+        activityLabels: ['D'],
+        durationModification: 1,
+      },
+    ],
     showTitle: true,
     showDescription: true,
   },
   {
     week: 3,
-    image: '/images/Week5.jpg',
-    title: 'STUDEN PARTY',
+    image: '/images/rumour.jpg',
+    title: 'STUDENT PARTY',
     description: 'During lunch, you overhear a few students planning to go partying tonight...',
     //NO EFFECT
     showTitle: true,
@@ -112,11 +115,11 @@ const events: Event[] = [
   },
   {
     week: 4,
-    image: '/images/Week6.jpg',
+    image: '/images/hungover.jpg',
     title: 'HANGOVERS',
     description:
-      'Some of the student volunteers that went partying last night are too hungover to work today. Note: 2 of the students hired for today are unavailable, but you still need to pay them.',
-    //TODO: "Implement effect",
+      'All of the students are very hungover and are planning on keeping the party going all through the week. Every student volunteer activity will need an extra student volunteer as they are not working at their full potential.',
+    effects: [...addWorkers(['B', 'C', 'E'], ['labour'], 1, activities)],
     showTitle: true,
     showDescription: true,
   },
