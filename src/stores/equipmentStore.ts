@@ -50,8 +50,11 @@ export const useEquipmentStore = defineStore('equipment', () => {
   /**
    * Sets the status of an equipment to 'delivered' which completes the delivery.
    */
-  function finishDelivery(type: EquipmentType) {
-    timeline.set({ ...timeline.get.value(), [type]: { ...timeline.getReduced.value()![type], status: 'delivered' } });
+  function finishDelivery(type: EquipmentType, week?: number) {
+    timeline.set(
+      { ...timeline.get.value(), [type]: { ...timeline.getReduced.value()![type], status: 'delivered' } },
+      week,
+    );
   }
 
   // Logic

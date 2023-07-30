@@ -17,25 +17,43 @@
     <span class="equipment-column-label">Order</span>
     <label for="steelwork-input"
            class="equipment-label">Steelwork (Task A)</label>
-    <input v-model="steelwork"
-           class="equipment-input"
-           name="steelwork-input"
-           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-           :disabled="previousEquipment.steelwork!.status !== 'unordered' || gameStore.ready" />
+    <select v-model="steelwork"
+            name="steelwork-input"
+            id="steelwork-input"
+            class="equipment-input"
+            :disabled="previousEquipment.steelwork.status !== 'unordered' || gameStore.ready">
+      <option value="0">Not ordered</option>
+      <option value="1">Regular delivery</option>
+      <option value="2">Express delivery</option>
+      <option v-if="equipmentStore.equipment.steelwork.status === 'delivered'"
+              value="3">Delivered</option>
+    </select>
     <label for="interior-input"
            class="equipment-label">Interior (Task B)</label>
-    <input v-model="interior"
-           class="equipment-input"
-           name="interior-input"
-           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-           :disabled="previousEquipment.interior!.status !== 'unordered' || gameStore.ready" />
+    <select v-model="interior"
+            name="interior-input"
+            id="interior-input"
+            class="equipment-input"
+            :disabled="previousEquipment.interior.status !== 'unordered' || gameStore.ready">
+      <option value="0">Not ordered</option>
+      <option value="1">Regular delivery</option>
+      <option value="2">Express delivery</option>
+      <option v-if="equipmentStore.equipment.interior.status === 'delivered'"
+              value="3">Delivered</option>
+    </select>
     <label for="tbs-input"
            class="equipment-label">TBS (Task C)</label>
-    <input v-model="tbs"
-           class="equipment-input"
-           name="tbs-input"
-           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-           :disabled="previousEquipment.tbs!.status !== 'unordered' || gameStore.ready" />
+    <select v-model="tbs"
+            name="tbs-input"
+            id="tbs-input"
+            class="equipment-input"
+            :disabled="previousEquipment.tbs.status !== 'unordered' || gameStore.ready">
+      <option value="0">Not ordered</option>
+      <option value="1">Regular delivery</option>
+      <option value="2">Express delivery</option>
+      <option v-if="equipmentStore.equipment.tbs.status === 'delivered'"
+              value="3">Delivered</option>
+    </select>
   </div>
 </template>
 
@@ -44,11 +62,10 @@
 <script setup lang="ts">
 import { WatchStopHandle } from 'vue';
 import { EquipmentType } from '../../types/types';
-import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
 
-const steelwork = ref('');
-const interior = ref('');
-const tbs = ref('');
+const steelwork = ref<'0' | '1' | '2' | '3'>('0');
+const interior = ref<'0' | '1' | '2' | '3'>('0');
+const tbs = ref<'0' | '1' | '2' | '3'>('0');
 
 const gameStore = useGameStore();
 const equipmentStore = useEquipmentStore();
@@ -60,14 +77,29 @@ const previousEquipment = computed(() => equipmentStore.equipmentAtWeek(gameStor
  * @param input The input in the field
  * @param type The type of equipment
  */
-const makeEquipmentWatcher = (input: Ref<string>, type: EquipmentType) => {
+const makeEquipmentWatcher = (input: Ref<'0' | '1' | '2' | '3'>, type: EquipmentType) => {
   return watch(input, () => {
-    if (['1', '2'].includes(input.value)) {
-      equipmentStore.order(type, input.value === '1' ? 'regular' : 'express');
-    } else {
+    console.log(input.value)
+    if (input.value === '0') {
       equipmentStore.unorder(type);
+    } else if (input.value === '1') {
+      equipmentStore.order(type, 'regular');
+    } else {
+      equipmentStore.order(type, 'express');
     }
   });
+};
+
+const setInput = (input: Ref<'0' | '1' | '2' | '3'>, type: EquipmentType) => {
+  if (previousEquipment.value[type].status !== 'unordered') {
+    if (equipmentStore.equipment[type].status === 'ordered') {
+      input.value = equipmentStore.equipment[type].deliveryType === 'regular' ? '1' : '2';
+    } else {
+      input.value = '3';
+    }
+    return true;
+  }
+  return false;
 };
 
 let stopSteelworkWatcher: WatchStopHandle;
@@ -75,37 +107,22 @@ let stopInteriorWatcher: WatchStopHandle;
 let stopTBSWatcher: WatchStopHandle;
 
 watch([() => equipmentStore.timeline, () => gameStore.week], () => {
-  if (previousEquipment.value.steelwork!.status !== 'unordered') {
+  if (setInput(steelwork, 'steelwork')) {
     stopSteelworkWatcher();
-    steelwork.value = equipmentStore.equipment.steelwork!.status!;
   }
-  if (previousEquipment.value.interior!.status !== 'unordered') {
+  if (setInput(interior, 'interior')) {
     stopInteriorWatcher();
-    interior.value = equipmentStore.equipment.interior!.status!;
   }
-  if (previousEquipment.value.tbs!.status !== 'unordered') {
+  if (setInput(tbs, 'tbs')) {
     stopTBSWatcher();
-    tbs.value = equipmentStore.equipment.tbs!.status!;
   }
 }, { deep: true });
 
 if (gameStore.synchronized) {
   watch(() => equipmentStore.loading, () => {
-    if (previousEquipment.value.steelwork!.status !== 'unordered') {
-      steelwork.value = equipmentStore.equipment.steelwork!.status!;
-    } else if (equipmentStore.equipment.steelwork!.status === 'ordered') {
-      steelwork.value = equipmentStore.equipment.steelwork!.deliveryType === 'regular' ? '1' : '2';
-    }
-    if (previousEquipment.value.interior!.status !== 'unordered') {
-      interior.value = equipmentStore.equipment.interior!.status!;
-    } else if (equipmentStore.equipment.interior!.status === 'ordered') {
-      interior.value = equipmentStore.equipment.interior!.deliveryType === 'regular' ? '1' : '2';
-    }
-    if (previousEquipment.value.tbs!.status !== 'unordered') {
-      tbs.value = equipmentStore.equipment.tbs!.status!;
-    } else if (equipmentStore.equipment.tbs!.status === 'ordered') {
-      tbs.value = equipmentStore.equipment.tbs!.deliveryType === 'regular' ? '1' : '2';
-    }
+    setInput(steelwork, 'steelwork');
+    setInput(interior, 'interior');
+    setInput(tbs, 'tbs');
 
     stopSteelworkWatcher = makeEquipmentWatcher(steelwork, 'steelwork');
     stopInteriorWatcher = makeEquipmentWatcher(interior, 'interior');
