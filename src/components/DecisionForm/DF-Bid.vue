@@ -24,9 +24,14 @@ const bidStore = useBidStore();
 .bid {
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
 .bid-label {
   text-align: left;
+}
+
+.bid-column-label {
+  margin-bottom: .5rem;
 }
 </style>

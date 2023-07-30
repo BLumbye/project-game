@@ -8,7 +8,7 @@
 
 <template>
   <div class="weekly-report">
-    <h2 class="boxed section-title">Weekly report for week: {{ week - 1 }}</h2>
+    <h2 class="boxed section-title">Weekly report for week {{ week - 1 }}</h2>
     <div class="week-buttons">
       <button @click="week--"
               :disabled="week <= 2">&lt;- Back</button>
@@ -41,7 +41,6 @@ watch(() => gameStore.week, () => {
   display: flex;
   flex-direction: column;
   gap: 1em;
-  overflow: auto;
   max-height: 100%;
 
   .section-title {

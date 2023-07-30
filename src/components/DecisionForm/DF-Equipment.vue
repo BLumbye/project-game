@@ -142,10 +142,13 @@ if (gameStore.synchronized) {
   display: grid;
   grid-template-columns: repeat(2, auto);
   grid-template-rows: repeat(5, auto);
+  column-gap: 0.5rem;
+  row-gap: 4px;
 }
 
 .component-title {
   grid-column: span 2;
+  margin-bottom: 0.5rem;
 }
 
 .equipment-label {

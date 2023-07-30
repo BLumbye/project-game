@@ -6,6 +6,8 @@ import App from './App.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { pocketbase } from './pocketbase';
 import routes from '~pages';
+import FloatingVue from 'floating-vue';
+import 'floating-vue/dist/style.css';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -24,6 +26,7 @@ router.beforeEach(async (to, from) => {
 const pinia = createPinia();
 const app = createApp(App);
 
+app.use(FloatingVue);
 app.use(router);
 app.use(pinia);
 

@@ -33,6 +33,7 @@ const props = defineProps<{
 .workers {
   display: grid;
   grid-template-columns: repeat(4, auto);
+  column-gap: 1em;
 }
 
 .workers-title {

@@ -9,30 +9,48 @@
 <template>
   <div class="allocation">
     <span class="activities-label">Activity</span>
-    <span class="component-title">Allocate workers to activities</span>
-    <span>LAB</span>
-    <span>SKI</span>
-    <span>ELE</span>
-    <template v-for="activity in activityStore.activities">
+    <VTooltip class="component-title">
+      <span>Allocate workers to activities</span>
+      <Info width="20"
+            height="20"
+            class="icon" />
+      <template #popper>
+        <p>Remember to allocate workers again in every week's 'Decision Form'.</p>
+        <p>Remember to allocate a sufficient amount of workers for the task to progress.</p>
+      </template>
+    </VTooltip>
+    <span :class="{ 'error-message': tooManyLab }"
+          v-tooltip="{ content: 'Because you are trying to use more labourers than you have hired some activities will not progress.', disabled: !tooManyLab }">LAB</span>
+    <span :class="{ 'error-message': tooManySki }"
+          v-tooltip="{ content: 'Because you are trying to use more skilled workers than you have hired some activities will not progress.', disabled: !tooManySki }">SKI</span>
+    <span :class="{ 'error-message': tooManyEle }"
+          v-tooltip="{ content: 'Because you are trying to use more electricians than you have hired some activities will not progress.', disabled: !tooManyEle }">ELE</span>
+    <template v-for="(activity, index) in activityStore.activities">
       <span>{{ activity.label }}</span>
       <input type="text"
              class="worker-input"
+             :class="{ 'last-row': index === activityStore.activities.length - 1, 'input-error': tooManyLab && Number(lab[index]) > 0 }"
+             v-tooltip="{ content: 'Because you are trying to use more labourers than you have hired this activity will not progress.', disabled: !tooManyLab || Number(lab[index]) === 0 }"
              name="LAB-input"
-             ref="lab"
+             v-model="lab[index]"
              :disabled="gameStore.ready"
              @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'labour')" />
       <input type="text"
              class="worker-input"
+             :class="{ 'last-row': index === activityStore.activities.length - 1, 'input-error': tooManySki && Number(ski[index]) > 0 }"
+             v-tooltip="{ content: 'Because you are trying to use more skilled workers than you have hired this activity will not progress.', disabled: !tooManySki || Number(ski[index]) === 0 }"
              name="SKI-input"
-             ref="ski"
+             v-model="ski[index]"
              :disabled="gameStore.ready"
              @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'skilled')" />
       <input type="text"
              class="worker-input"
+             :class="{ 'last-row': index === activityStore.activities.length - 1, 'input-error': tooManyEle && Number(ele[index]) > 0 }"
+             v-tooltip="{ content: 'Because you are trying to use more electricians than you have hired this activity will not progress.', disabled: !tooManyEle || Number(ele[index]) === 0 }"
              name="ELE-input"
-             ref="ele"
+             v-model="ele[index]"
              :disabled="gameStore.ready"
              @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
              @input="(evt) => change(evt, activity.label, 'electrician')" />
@@ -46,32 +64,38 @@
 import { WorkerType } from '../../types/types';
 import config from '../../config';
 import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
+import Info from '~/assets/info-small.svg';
 
 const gameStore = useGameStore();
+const workersStore = useWorkersStore();
 const activityStore = useActivitiesStore();
 const activities = config.activities;
 
-const lab = ref<HTMLInputElement[]>([]);
-const ski = ref<HTMLInputElement[]>([]);
-const ele = ref<HTMLInputElement[]>([]);
+const lab = ref<string[]>([]);
+const ski = ref<string[]>([]);
+const ele = ref<string[]>([]);
+
+const tooManyLab = computed(() => workersStore.currentWorkers.labour < lab.value.reduce((acc, input) => acc + Number(input), 0));
+const tooManySki = computed(() => workersStore.currentWorkers.skilled < ski.value.reduce((acc, input) => acc + Number(input), 0));
+const tooManyEle = computed(() => workersStore.currentWorkers.electrician < ele.value.reduce((acc, input) => acc + Number(input), 0));
 
 const change = (evt: Event, activityLabel: string, workerType: WorkerType) => {
   activityStore.allocateWorker(activityLabel, workerType, Number((evt.target as HTMLInputElement).value));
 }
 
 watch(() => gameStore.week, () => {
-  lab.value.forEach(input => input.value = '');
-  ski.value.forEach(input => input.value = '');
-  ele.value.forEach(input => input.value = '');
+  lab.value.forEach(input => input = '');
+  ski.value.forEach(input => input = '');
+  ele.value.forEach(input => input = '');
 });
 
 watch(
   () => activityStore.loading,
   () => {
     activityStore.activities.forEach((activity, i) => {
-      lab.value[i].value = activity.allocation.labour !== 0 ? activity.allocation.labour?.toString() : '';
-      ski.value[i].value = activity.allocation.skilled !== 0 ? activity.allocation.skilled?.toString() : '';
-      ele.value[i].value = activity.allocation.electrician !== 0 ? activity.allocation.electrician?.toString() : '';
+      lab.value[i] = activity.allocation.labour !== 0 ? activity.allocation.labour?.toString() : '';
+      ski.value[i] = activity.allocation.skilled !== 0 ? activity.allocation.skilled?.toString() : '';
+      ele.value[i] = activity.allocation.electrician !== 0 ? activity.allocation.electrician?.toString() : '';
     });
   },
 );
@@ -87,13 +111,29 @@ watch(
 
 .component-title {
   grid-column: span 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25em;
 }
 
 .allocation {
   display: grid;
   grid-template-columns: repeat(4, auto);
   grid-template-rows: repeat(v-bind('activities.length'), auto);
+}
 
-  /* v-bind takes setup language */
+input {
+  &+input {
+    border-left: transparent;
+  }
+
+  &:not(.last-row) {
+    border-bottom-color: transparent;
+  }
+
+  &:hover {
+    border-color: #646cff;
+  }
 }
 </style>

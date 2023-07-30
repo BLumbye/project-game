@@ -6,6 +6,7 @@ import autoprefixer from 'autoprefixer';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import Pages from 'vite-plugin-pages';
+import svgLoader from 'vite-svg-loader';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -26,6 +27,12 @@ export default defineConfig({
     }),
     Components({
       dts: 'src/components.d.ts',
+    }),
+    svgLoader({
+      svgoConfig: {
+        multipass: true,
+      },
+      defaultImport: 'component',
     }),
   ],
 

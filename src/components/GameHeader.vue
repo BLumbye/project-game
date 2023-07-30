@@ -1,15 +1,15 @@
 <template>
   <header>
-    <span>Project Game</span>
-    <span>Current week: {{ gameStore.week }}</span>
+    <span class="title">Project Game</span>
+    <span class="week">Week {{ gameStore.week }}</span>
     <div class="right-side"
          v-if="gameStore.synchronized">
-      <div class="text">{{ pocketbase.authStore.model!.username }}</div>
+      <span>{{ pocketbase.authStore.model!.username }}</span>
       <button class="logout-button"
               @click="logout()">Logout</button>
     </div>
-    <div class="right-side"
-         v-else>Guest</div>
+    <span class="right-side"
+          v-else>Guest</span>
   </header>
 </template>
 
@@ -29,8 +29,9 @@ function logout() {
 .right-side {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: right;
   align-items: center;
+  gap: 1rem;
 }
 
 header {
@@ -41,11 +42,20 @@ header {
   padding: 1rem;
   width: 100%;
   background-color: var(--boxed-background-color);
+
+  &>* {
+    flex: 1;
+  }
 }
 
 span {
   font-size: 20px;
+  font-weight: 500;
+}
+
+.title {
   font-weight: bold;
+  text-align: left;
 }
 </style>
   

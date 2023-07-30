@@ -1,24 +1,27 @@
 <template>
-  <div class="events-content">
-    <span class="news-label">NEWS:</span>
-    <div class="events">
+  <div class="events">
+    <span class="news-label">
+      NEWS:
+      <span v-if="config.events.filter(event => event.week <= gameStore.week).length === 0">No news yet</span>
+    </span>
+    <div class="event-items">
       <div v-for="(event, i) in config.events"
            :key="event.week">
         <button @click="eventDialog![i].showModal()"
-                class="event"
+                class="event-button"
                 v-if="event.week <= gameStore.week && event.title != 'NOTHING TO REPORT'">
           Week {{ event.week }}: {{ event.title }}
         </button>
         <dialog ref="eventDialog"
                 @click="backgroundClickClose">
-          <img class="event-image"
-               :src="event.image"
-               :alt="event.title" />
-          <div v-if="event.showTitle">
-            <h2>{{ event.title }}</h2>
-          </div>
-          <div v-if="event.showDescription">
-            <p>{{ event.description }}</p>
+          <div class="event-content">
+            <img :src="event.image"
+                 :alt="event.title" />
+            <div class="text"
+                 v-if="event.showTitle || event.showDescription">
+              <h2 v-if="event.showTitle">{{ event.title }}</h2>
+              <p v-if="event.showDescription">{{ event.description }}</p>
+            </div>
           </div>
         </dialog>
       </div>
@@ -43,12 +46,7 @@ watch(() => gameStore.week, () => {
 </script>
 
 <style scoped lang="postcss">
-.event-image {
-  max-width: 80vw;
-  max-height: 80vh;
-}
-
-.events {
+.event-items {
   display: flex;
   height: 100%;
   flex: 1;
@@ -56,11 +54,11 @@ watch(() => gameStore.week, () => {
   gap: 10px;
 }
 
-.event {
+.event-button {
   white-space: nowrap;
 }
 
-.events-content {
+.events {
   display: flex;
   align-items: center;
   width: 100%;
@@ -71,5 +69,29 @@ watch(() => gameStore.week, () => {
   font-size: 20px;
   font-weight: bold;
   margin-right: 10px;
+}
+
+dialog {
+  padding: 0;
+}
+
+.event-content {
+  display: table;
+
+  & img {
+    max-width: 60vw;
+    max-height: 60vh;
+  }
+
+  & .text {
+    display: table-caption;
+    caption-side: bottom;
+    padding: .5rem;
+
+    & p {
+      max-width: 600px;
+      margin: auto;
+    }
+  }
 }
 </style>

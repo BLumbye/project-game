@@ -82,7 +82,7 @@ export const useFinanceStore = defineStore('finance', () => {
    */
   function takeLoan(value: number, week?: number) {
     week ??= gameStore.week;
-    if (loanTimeline.get.value(gameStore.week - 1) || 0 != 0) return;
+    if (loan.value !== 0) return;
     loanTimeline.set(value, week + 1);
   }
 

@@ -13,12 +13,12 @@
 
 <template>
   <div class="decision-form">
-    <h2 class="boxed section-title">Decision form for week: {{ gameStore.decisionForm }}</h2>
-    <DFBid class="bid boxed" />
+    <h2 class="boxed section-title">Decision form for week {{ gameStore.decisionForm }}</h2>
     <DFWorkers class="workers boxed" />
     <DFEquipment class="equipment boxed" />
     <DFAllocation class="allocation boxed" />
     <DFLoan class="loan boxed" />
+    <DFBid class="bid boxed" />
     <DFDoneButton class="done-button" />
   </div>
 </template>
@@ -50,9 +50,7 @@ const gameStore = useGameStore();
 }
 
 .allocation,
-.done-button,
-.bid,
-.loan {
+.done-button {
   grid-column: span 2;
 }
 </style>

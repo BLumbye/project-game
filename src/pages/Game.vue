@@ -12,6 +12,7 @@
       <WeeklyReport v-if="gameStore.week > 1" />
       <h2 v-else>No weekly report in week {{ gameStore.week }}</h2>
       <DecisionForm />
+      <GameFinishDialog />
     </div>
   </template>
   <template v-else>

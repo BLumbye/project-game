@@ -40,12 +40,12 @@
           }}</span>
         </div>
         <div class="finance-item">
-          <span class="finance-item-label">Interest loan</span>
+          <span class="finance-item-label">Loan interest</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanInterestTimeline.get(week - 1) || 0)
           }}</span>
         </div>
         <div class="finance-item">
-          <span class="finance-item-label">Interest overdraft</span>
+          <span class="finance-item-label">Overdraft interest</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.overdraftInterestTimeline.get(week - 1)
             || 0)
           }}</span>
@@ -107,13 +107,13 @@
           }}</span>
         </div>
         <div class="finance-item">
-          <span class="finance-item-label">Interest loan</span>
+          <span class="finance-item-label">Loan interest</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanInterestTimeline.getReduced(week - 1)
             || 0)
           }}</span>
         </div>
         <div class="finance-item">
-          <span class="finance-item-label">Interest overdraft</span>
+          <span class="finance-item-label">Overdraft interest</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.overdraftInterestTimeline.getReduced(week
             - 1) || 0)
           }}</span>
@@ -133,7 +133,7 @@
             0) }}</span>
         </div>
         <div class="finance-item">
-          <span class="finance-item-label">Loan</span>
+          <span class="finance-item-label">Loan (with interest)</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanAtWeek(week - 1) || 0) }}</span>
         </div>
       </div>
@@ -165,6 +165,7 @@ const props = defineProps<{
 .finance-item {
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
 
   &.summary-item {
     font-weight: bold;
