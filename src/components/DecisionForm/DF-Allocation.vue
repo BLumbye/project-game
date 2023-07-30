@@ -116,7 +116,7 @@ watch(
 
 input {
   &+input {
-    border-left: transparent;
+    border-left-color: transparent;
   }
 
   &:not(.last-row) {

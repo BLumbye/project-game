@@ -35,24 +35,9 @@
           }}</span>
         </div>
         <div class="finance-item">
-          <span class="finance-item-label">Project delay penalty</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.delayPenaltyTimeline.get(week - 1) || 0)
-          }}</span>
-        </div>
-        <div class="finance-item">
-          <span class="finance-item-label">Loan interest</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanInterestTimeline.get(week - 1) || 0)
-          }}</span>
-        </div>
-        <div class="finance-item">
           <span class="finance-item-label">Overdraft interest</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.overdraftInterestTimeline.get(week - 1)
             || 0)
-          }}</span>
-        </div>
-        <div class="finance-item">
-          <span class="finance-item-label">Loan repayment</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanRepayTimeline.get(week - 1) || 0)
           }}</span>
         </div>
       </div>
@@ -62,11 +47,6 @@
           <span class="finance-item-label">Income</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.incomingTimeline.get(week - 1) || 0)
           }}</span>
-        </div>
-        <div class="finance-item">
-          <span class="finance-item-label">Loan</span>
-          <span class="finance-item-value">{{ currencyFormat.format((financeStore.loanTimeline.get(week - 1) || 0) -
-            (financeStore.loanInterestTimeline.get(week - 1) || 0)) }}</span>
         </div>
       </div>
       <div class="finance-item summary-item">
@@ -101,27 +81,9 @@
           }}</span>
         </div>
         <div class="finance-item">
-          <span class="finance-item-label">Project delay penalty</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.delayPenaltyTimeline.getReduced(week - 1)
-            || 0)
-          }}</span>
-        </div>
-        <div class="finance-item">
-          <span class="finance-item-label">Loan interest</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanInterestTimeline.getReduced(week - 1)
-            || 0)
-          }}</span>
-        </div>
-        <div class="finance-item">
           <span class="finance-item-label">Overdraft interest</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.overdraftInterestTimeline.getReduced(week
             - 1) || 0)
-          }}</span>
-        </div>
-        <div class="finance-item">
-          <span class="finance-item-label">Loan repayment</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanRepayTimeline.getReduced(week - 1) ||
-            0)
           }}</span>
         </div>
       </div>
@@ -131,10 +93,6 @@
           <span class="finance-item-label">Income</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.incomingTimeline.getReduced(week - 1) ||
             0) }}</span>
-        </div>
-        <div class="finance-item">
-          <span class="finance-item-label">Loan (with interest)</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanAtWeek(week - 1) || 0) }}</span>
         </div>
       </div>
       <div class="finance-item summary-item">
