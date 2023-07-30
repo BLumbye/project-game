@@ -24,6 +24,7 @@ declare module '@vue/runtime-core' {
     DFLoan: typeof import('./components/DecisionForm/DF-Loan.vue')['default']
     DFWorkers: typeof import('./components/DecisionForm/DF-Workers.vue')['default']
     Event: typeof import('./components/Event/Event.vue')['default']
+    GameFinishDialog: typeof import('./components/GameFinishDialog.vue')['default']
     GameHeader: typeof import('./components/GameHeader.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

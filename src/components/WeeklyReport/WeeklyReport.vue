@@ -8,10 +8,18 @@
 
 <template>
   <div class="weekly-report">
-    <h2 class="boxed section-title">Daily report for day: {{ gameStore.week - 1 }}</h2>
-    <WRAllocation v-if="gameStore.week > 1" />
-    <WRWorkers v-if="gameStore.week > 1" />
-    <WRFinances />
+    <h2 class="boxed section-title">Daily report for week {{ week - 1 }}</h2>
+    <div class="week-buttons">
+      <button @click="week--"
+              :disabled="week <= 2">&lt;- Back</button>
+      <button @click="week++"
+              :disabled="week >= gameStore.week">Forward -></button>
+    </div>
+    <WRAllocation v-if="week > 1"
+                  :week="week" />
+    <WRWorkers v-if="week > 1"
+               :week="week" />
+    <WRFinances :week="week" />
   </div>
 </template>
 
@@ -19,6 +27,11 @@
 
 <script setup lang="ts">
 const gameStore = useGameStore();
+const week = ref(gameStore.week);
+
+watch(() => gameStore.week, () => {
+  week.value = gameStore.week;
+})
 </script>
 
 <!-- Styling -->
@@ -32,6 +45,17 @@ const gameStore = useGameStore();
 
   .section-title {
     width: 100%;
+  }
+}
+
+.week-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+
+  & button {
+    flex-grow: 1;
   }
 }
 </style>

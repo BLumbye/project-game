@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import { useAsyncState } from '@vueuse/core';
 import { collections, pocketbase, updateExistingOrCreate } from '../pocketbase';
 import { GameState } from '~/types/types';
+import config from '~/config';
 
 /**
  * This store contains overall information about the game, and also controls the flow
@@ -31,6 +31,16 @@ export const useGameStore = defineStore('game', () => {
 
   // Getters
   const decisionForm = computed(() => week.value + 1);
+
+  const gameWon = computed(() => {
+    const noWorkers = Object.values(workersStore.currentWorkers).every((worker) => worker === 0);
+    const activitiesDone = activitiesStore.allActivitiesDone();
+    const loanRepaid = financeStore.loan === 0;
+
+    return noWorkers && activitiesDone && loanRepaid;
+  });
+
+  const gameOver = computed(() => gameWon.value || week.value >= config.duration);
 
   // Actions
 
@@ -70,7 +80,6 @@ export const useGameStore = defineStore('game', () => {
     if (synchronized.value) {
       gameState.value = settingsRecord.game_state;
       week.value = settingsRecord.current_week;
-
     }
 
     if (!synchronized.value && pocketbase.authStore.isValid && !pocketbase.authStore.model?.admin) {
@@ -93,7 +102,6 @@ export const useGameStore = defineStore('game', () => {
     settingsLoaded.value = true;
   }
 
-
   function connectAllDatabases() {
     activitiesStore.connectWithDatabase();
     financeStore.connectWithDatabase();
@@ -108,13 +116,15 @@ export const useGameStore = defineStore('game', () => {
     week,
     decisionForm,
     ready,
-    nextWeek,
-    toggleReady,
     synchronized,
     settingsLoaded,
     settingsRecordID,
     gameID,
     gameState,
+    gameWon,
+    gameOver,
+    nextWeek,
+    toggleReady,
     connectWithDatabase,
     connectAllDatabases,
   };

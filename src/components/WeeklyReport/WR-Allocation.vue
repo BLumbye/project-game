@@ -24,18 +24,21 @@
     <span>Total</span>
     <span>{{ (progressActivities.reduce((completion, activity) => completion + (activity.progress /
       activityStore.getDuration(activity)), 0) / activities.length * 100).toFixed(0) }}%</span>
-    <span>{{ activityStore.totalWorkersAssigned('labour', gameStore.week - 2) }}</span>
-    <span>{{ activityStore.totalWorkersAssigned('skilled', gameStore.week - 2) }}</span>
+    <span>{{ activityStore.totalWorkersAssigned('labour', week - 2) }}</span>
+    <span>{{ activityStore.totalWorkersAssigned('skilled', week - 2) }}</span>
   </div>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-const gameStore = useGameStore();
 const activityStore = useActivitiesStore();
-const progressActivities = computed(() => activityStore.activitiesAtWeek(gameStore.week - 1));
-const activities = computed(() => activityStore.activitiesAtWeek(gameStore.week - 2));
+const progressActivities = computed(() => activityStore.activitiesAtWeek(props.week - 1));
+const activities = computed(() => activityStore.activitiesAtWeek(props.week - 2));
+
+const props = defineProps<{
+  week: number;
+}>();
 </script>
 
 <!-- Styling -->

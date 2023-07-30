@@ -9,9 +9,10 @@
   <template v-else-if="gameStore.gameState === 'in_progress'">
     <Event />
     <div class="container">
-      <WeeklyReport v-if="gameStore.week > 0" />
-      <h2 v-else>No weekly report in week {{ gameStore.week }}</h2>
+      <WeeklyReport v-if="gameStore.week > 1" />
+      <h2 v-else>No daily report in day {{ gameStore.week }}</h2>
       <DecisionForm />
+      <GameFinishDialog />
     </div>
   </template>
   <template v-else>

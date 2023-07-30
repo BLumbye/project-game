@@ -8,8 +8,16 @@
 
 <template>
   <div class="loan">
-    <h3 class="component-title">Bank loan</h3>
-    <!-- header, css, fysisk title -->
+    <VTooltip class="component-title">
+      <h3>Bank loan</h3>
+      <Info width="24"
+            height="24"
+            class="icon" />
+      <template #popper>
+        <p>Only one loan can be taken at a time.</p>
+        <p>You can repay loan in percentages, and can never repay more than you have loaned.</p>
+      </template>
+    </VTooltip>
     <label for="new-loan-input"
            class="loan-label">New loan:</label>
     <input v-model="newLoan"
@@ -17,6 +25,9 @@
            :disabled="gameStore.ready"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
            class="loan-input"
+           :class="{ 'input-error': newLoan > 0 && currentLoan > 0 }"
+           v-tooltip="{ content: 'You can only take one loan at a time.', disabled: newLoan === 0 || currentLoan === 0 }"
+           id="new-loan-input"
            name="new-loan-input" />
     <label for="repay-input"
            class="loan-label">Repay amount:</label>
@@ -24,6 +35,7 @@
            v-model="repay"
            :disabled="gameStore.ready"
            class="loan-input"
+           id="repay-input"
            name="repay-input" />
   </div>
 </template>
@@ -32,9 +44,12 @@
 
 <script setup lang="ts">
 import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
+import Info from '~/assets/info-large.svg';
 
 const gameStore = useGameStore();
 const financeStore = useFinanceStore();
+
+const currentLoan = computed(() => financeStore.loanAtWeek(gameStore.week));
 
 const newLoan = ref(0);
 const repay = ref(0);
@@ -65,14 +80,20 @@ watch(() => financeStore.loading, () => {
   display: grid;
   grid-template-columns: repeat(2, auto);
   grid-template-rows: repeat(3, auto);
+  row-gap: 4px;
+  column-gap: 0.5rem;
 }
 
 .component-title {
   grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.5rem;
 }
 
 .loan-label {
-  text-align: right;
-  font-weight: bold;
+  text-align: left;
 }
 </style>

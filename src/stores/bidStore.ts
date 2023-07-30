@@ -16,7 +16,7 @@ const dbUpdateCooldown = 2000;
 
 export const useBidStore = defineStore('bid', () => {
   const gameStore = useGameStore();
-  let dbUpdateTimeout: number | undefined = undefined;
+  let dbUpdateTimeout: NodeJS.Timeout | undefined = undefined;
   let recordID: string | undefined = undefined;
 
   // State

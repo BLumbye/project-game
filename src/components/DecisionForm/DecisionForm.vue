@@ -48,9 +48,7 @@ const gameStore = useGameStore();
 }
 
 .allocation,
-.done-button,
-.bid,
-.loan {
+.done-button {
   grid-column: span 2;
 }
 </style>

@@ -15,7 +15,6 @@ export const useFinanceStore = defineStore('finance', () => {
   const loading = ref(true);
   //Timelines keep track of the finance through the weeks.
   const incomingTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  incomingTimeline.set(bidStore.bidPrice * config.startBudget, 0); //Set the starting budget
   const workersTimeline = createWeeklyTimeline(0, sumReducer, 0);
   const equipmentTimeline = createWeeklyTimeline(0, sumReducer, 0);
   const overheadTimeline = createWeeklyTimeline(0, sumReducer, 0);
@@ -83,7 +82,7 @@ export const useFinanceStore = defineStore('finance', () => {
    */
   function takeLoan(value: number, week?: number) {
     week ??= gameStore.week;
-    if (loanTimeline.get.value(gameStore.week - 1) || 0 != 0) return;
+    if (loan.value !== 0) return;
     loanTimeline.set(value, week + 1);
   }
 
@@ -175,8 +174,18 @@ export const useFinanceStore = defineStore('finance', () => {
     },
   );
 
-  /** When the milestone activity is completed, the the milestone payment is added to the incoming timeline only once
-   * */
+  // When the game starts, give the player the initial starting budget
+  const gameStartWatcher = watch(
+    () => gameStore.gameState,
+    () => {
+      if (gameStore.gameState === 'in_progress') {
+        gameStartWatcher();
+        incomingTimeline.set(bidStore.bidPrice * config.startBudget, 0);
+      }
+    },
+  );
+
+  /** When the milestone activity is completed, the the milestone payment is added to the incoming timeline only once */
   const stopMilestoneWatcher = watch(
     () => activityStore.isActivityDone(activityStore.activityFromLabel(config.milestoneActivity)),
     () => {
