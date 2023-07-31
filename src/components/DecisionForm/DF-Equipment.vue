@@ -26,7 +26,7 @@
       <option value="1">Regular delivery</option>
       <option value="2">Express delivery</option>
       <option v-if="equipmentStore.equipment.steelwork.status === 'delivered'"
-              value="3">Delivered</option>
+              value="3">Installed</option>
     </select>
     <label for="interior-input"
            class="equipment-label">Drinks (Task E)</label>
@@ -38,7 +38,7 @@
       <option value="0">Not ordered</option>
       <option value="1">Regular delivery</option>
       <option v-if="equipmentStore.equipment.interior.status === 'delivered'"
-              value="3">Delivered</option>
+              value="3">Used</option>
     </select>
   </div>
 </template>
