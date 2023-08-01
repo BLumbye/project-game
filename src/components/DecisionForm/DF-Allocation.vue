@@ -15,7 +15,7 @@
             height="20"
             class="icon" />
       <template #popper>
-        <p>Remember to allocate workers again in every week's 'Decision Form'.</p>
+        <p>Remember to allocate workers again in every day's 'Decision Form'.</p>
         <p>Remember to allocate a sufficient amount of workers for the task to progress.</p>
       </template>
     </VTooltip>

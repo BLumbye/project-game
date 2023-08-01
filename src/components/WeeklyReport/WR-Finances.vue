@@ -25,11 +25,6 @@
           }}</span>
         </div>
         <div class="finance-item">
-          <span class="finance-item-label">Overhead</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.overheadTimeline.get(week - 1) || 0)
-          }}</span>
-        </div>
-        <div class="finance-item">
           <span class="finance-item-label">Consumables</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.consumablesTimeline.get(week - 1) || 0)
           }}</span>
@@ -67,11 +62,6 @@
         <div class="finance-item">
           <span class="finance-item-label">Equipment</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.equipmentTimeline.getReduced(week - 1) ||
-            0) }}</span>
-        </div>
-        <div class="finance-item">
-          <span class="finance-item-label">Overhead</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.overheadTimeline.getReduced(week - 1) ||
             0) }}</span>
         </div>
         <div class="finance-item">
