@@ -84,9 +84,11 @@ const change = (evt: Event, activityLabel: string, workerType: WorkerType) => {
 }
 
 watch(() => gameStore.week, () => {
-  lab.value.forEach(input => input = '');
-  ski.value.forEach(input => input = '');
-  ele.value.forEach(input => input = '');
+  for (let i = 0; i < activities.length; i++) {
+    lab.value[i] = '';
+    ski.value[i] = '';
+    ele.value[i] = '';
+  }
 });
 
 watch(

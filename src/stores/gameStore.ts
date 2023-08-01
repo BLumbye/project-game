@@ -28,17 +28,10 @@ export const useGameStore = defineStore('game', () => {
   const gameID = ref<number | undefined>(undefined);
   const gameState = ref<GameState | undefined>(undefined);
   const ready = ref(false);
+  const gameWon = ref(false);
 
   // Getters
   const decisionForm = computed(() => week.value + 1);
-
-  const gameWon = computed(() => {
-    const noWorkers = Object.values(workersStore.currentWorkers).every((worker) => worker === 0);
-    const activitiesDone = activitiesStore.allActivitiesDone();
-    const loanRepaid = financeStore.loan === 0;
-
-    return noWorkers && activitiesDone && loanRepaid;
-  });
 
   const gameOver = computed(() => gameWon.value || week.value >= config.duration);
 
@@ -120,6 +113,14 @@ export const useGameStore = defineStore('game', () => {
   }
 
   connectWithDatabase();
+
+  watchEffect(() => {
+    const noWorkers = Object.values(workersStore.currentWorkers).every((worker) => worker === 0);
+    const activitiesDone = activitiesStore.allActivitiesDone();
+    const loanRepaid = financeStore.loan === 0;
+
+    gameWon.value = noWorkers && activitiesDone && loanRepaid;
+  });
 
   return {
     week,
