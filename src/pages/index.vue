@@ -38,6 +38,16 @@ if (!gameStore.synchronized) {
   display: flex;
   justify-content: space-evenly;
   align-items: flex-start;
+
+  @media (max-width: 1050px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+
+    &>.decision-form {
+      order: -1;
+    }
+  }
 }
 </style>
 

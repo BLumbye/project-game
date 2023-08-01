@@ -1,6 +1,6 @@
 <template>
   <header>
-    <span>Project Game</span>
+    <span class="title">Project Game</span>
     <span>Day {{ gameStore.week }}</span>
     <div class="right-side"
          v-if="gameStore.synchronized">
