@@ -79,7 +79,6 @@ const previousEquipment = computed(() => equipmentStore.equipmentAtWeek(gameStor
  */
 const makeEquipmentWatcher = (input: Ref<'0' | '1' | '2' | '3'>, type: EquipmentType) => {
   return watch(input, () => {
-    console.log(input.value)
     if (input.value === '0') {
       equipmentStore.unorder(type);
     } else if (input.value === '1') {

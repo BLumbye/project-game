@@ -16,6 +16,7 @@ declare module '@vue/runtime-core' {
     AdminNotStarted: typeof import('./components/Admin/AdminNotStarted.vue')['default']
     Bid: typeof import('./components/Bid/Bid.vue')['default']
     BidTable: typeof import('./components/Admin/BidTable.vue')['default']
+    Confetti: typeof import('./components/Confetti.vue')['default']
     DecisionForm: typeof import('./components/DecisionForm/DecisionForm.vue')['default']
     DFAllocation: typeof import('./components/DecisionForm/DF-Allocation.vue')['default']
     DFBid: typeof import('./components/DecisionForm/DF-Bid.vue')['default']
