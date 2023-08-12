@@ -7,11 +7,11 @@
 <template>
   <template v-if="!answered">
     <form @submit.prevent="handleSubmit">
-      <Section1 v-show="section === 1"
+      <Section1 :show="section === 1"
                 ref="section1" />
-      <Section2 v-show="section === 2"
+      <Section2 :show="section === 2"
                 ref="section2" />
-      <Section3 v-show="section === 3"
+      <Section3 :show="section === 3"
                 ref="section3" />
       <div class="buttons">
         <button class="text-button"

@@ -1,6 +1,8 @@
 <template>
-  <h2 class="section-title">Project team</h2>
-  <div class="question">
+  <h2 class="section-title"
+      v-show="show">Project team</h2>
+  <div class="question"
+       v-show="show">
     <label class="prompt"
            for="project-type">
       What type of project are you studying?
@@ -17,7 +19,8 @@
     <span class="error-message"
           v-if="projectTypeError">{{ projectTypeError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <p class="prompt"
        for="case-industry">
       In what industry does your case company (and project) mainly work?
@@ -34,7 +37,8 @@
     <span class="error-message"
           v-if="caseIndustryError">{{ caseIndustryError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <label class="prompt"
            for="location">
       Location: Where will you be playing the game (online / hybrid / in class)? If in class, which room?
@@ -99,6 +103,10 @@ const location = ref<string | undefined>();
 const projectTypeError = ref<string | undefined>();
 const caseIndustryError = ref<string | undefined>();
 const locationError = ref<string | undefined>();
+
+defineProps<{
+  show: boolean;
+}>();
 
 defineExpose({
   getData() {

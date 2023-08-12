@@ -1,6 +1,8 @@
 <template>
-  <h2 class="section-title">Bid information</h2>
-  <div class="question">
+  <h2 class="section-title"
+      v-show="show">Bid information</h2>
+  <div class="question"
+       v-show="show">
     <label class="prompt"
            for="price">
       Price (in EUR):
@@ -15,7 +17,8 @@
     <span class="error-message"
           v-if="priceError">{{ priceError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <label class="prompt"
            for="promised-duration">
       Promised duration (number of weeks, i.e. you promise your client that project will be completed by the end of
@@ -31,7 +34,8 @@
     <span class="error-message"
           v-if="promisedDurationError">{{ promisedDurationError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <label class="prompt"
            for="expected-cost">
       Expected cost (in EUR) - This will not influence the measurement of success, and it is only used so we know
@@ -47,7 +51,8 @@
     <span class="error-message"
           v-if="expectedCostError">{{ expectedCostError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <label class="prompt"
            for="expected-duration">
       Expected duration (in weeks) - This will not influence the measurement of success:
@@ -76,6 +81,10 @@ const priceError = ref<string | undefined>();
 const promisedDurationError = ref<string | undefined>();
 const expectedCostError = ref<string | undefined>();
 const expectedDurationError = ref<string | undefined>();
+
+defineProps<{
+  show: boolean;
+}>();
 
 defineExpose({
   getData() {

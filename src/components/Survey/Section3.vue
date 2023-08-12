@@ -1,6 +1,8 @@
 <template>
-  <h2 class="section-title">Project Game confidence</h2>
-  <div class="question">
+  <h2 class="section-title"
+      v-show="show">Project Game confidence</h2>
+  <div class="question"
+       v-show="show">
     <label class="prompt"
            for="profit-confidence">
       How confident are you that your team will complete the project with your expected profit margin?
@@ -17,7 +19,8 @@
     <span class="error-message"
           v-if="profitConfidenceError">{{ profitConfidenceError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <label class="prompt"
            for="time-confidence">
       How confident are you that your team will complete the project on time?
@@ -34,7 +37,8 @@
     <span class="error-message"
           v-if="timeConfidenceError">{{ timeConfidenceError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <label class="prompt"
            for="top-performer-confidence">
       How confident are you that your team will be on the top 10% performers in the class? (50%: not really, only if the
@@ -52,7 +56,8 @@
     <span class="error-message"
           v-if="topPerformerConfidenceError">{{ topPerformerConfidenceError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <p class="prompt"
        for="project-ability">
       I think our team will be pretty good at doing this project.
@@ -74,7 +79,8 @@
     <span class="error-message"
           v-if="projectAbilityError">{{ projectAbilityError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <p class="prompt"
        for="project-knowledge">
       I think our team knows how to do this project.
@@ -96,7 +102,8 @@
     <span class="error-message"
           v-if="projectKnowledgeError">{{ projectKnowledgeError }}</span>
   </div>
-  <div class="question">
+  <div class="question"
+       v-show="show">
     <p class="prompt"
        for="superior-knowledge">
       I think our team knows more about doing this project than most other teams.
@@ -142,6 +149,10 @@ const topPerformerConfidenceError = ref<string | undefined>();
 const projectAbilityError = ref<string | undefined>();
 const projectKnowledgeError = ref<string | undefined>();
 const superiorKnowledgeError = ref<string | undefined>();
+
+defineProps<{
+  show: boolean;
+}>();
 
 defineExpose({
   getData() {
