@@ -23,6 +23,9 @@ const overhead: number = 10000;
 
 const projectDelayPenalty: number = 20000;
 
+const equipmentCost = [38000, 28000, 130000];
+const expressMultiplier = 1.1; // 10% increase in cost
+
 //Salary
 const labourPay: number = 800;
 const skilledPay: number = 1500;
@@ -241,6 +244,15 @@ const events: Event[] = [
     title: 'UNION REQUEST',
     description:
       'Workers formed a strong union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 5 instead of 4 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from week 9 onwards.',
+    showTitle: true,
+    showDescription: true,
+  },
+  {
+    week: 9,
+    image: '/images/Week9.jpg',
+    title: 'UNION REQUEST',
+    description:
+      'The union has now been formed and is in effect.',
     effects: [...addWorkers(['K', 'G', 'L'], ['labour'], 1, activities)],
     showTitle: true,
     showDescription: true,
@@ -267,4 +279,6 @@ export default {
   skilledPay,
   electricianPay,
   currency,
+  equipmentCost,
+  expressMultiplier,
 };

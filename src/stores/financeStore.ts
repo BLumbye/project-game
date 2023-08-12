@@ -110,8 +110,8 @@ export const useFinanceStore = defineStore('finance', () => {
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
       previousWorkers.labour * config.labourPay +
-        previousWorkers.skilled * config.skilledPay +
-        previousWorkers.electrician * config.electricianPay,
+      previousWorkers.skilled * config.skilledPay +
+      previousWorkers.electrician * config.electricianPay,
     );
 
     // Equipment costs
@@ -119,13 +119,13 @@ export const useFinanceStore = defineStore('finance', () => {
     const equipment = equipmentStore.equipmentAtWeek(gameStore.week);
     let equipmentCost = 0;
     if (equipment.steelwork.status === 'ordered' && previousEquipment.steelwork.status !== 'ordered') {
-      equipmentCost += equipment.steelwork.deliveryType! === 'regular' ? 38000 : 41800;
+      equipmentCost += equipment.steelwork.deliveryType! === 'regular' ? config.equipmentCost[0] : config.equipmentCost[0] * config.expressMultiplier;
     }
     if (equipment.interior.status === 'ordered' && previousEquipment.interior.status !== 'ordered') {
-      equipmentCost += equipment.interior.deliveryType! === 'regular' ? 28000 : 30800;
+      equipmentCost += equipment.interior.deliveryType! === 'regular' ? config.equipmentCost[1] : config.equipmentCost[1] * config.expressMultiplier;
     }
     if (equipment.tbs.status === 'ordered' && previousEquipment.tbs.status !== 'ordered') {
-      equipmentCost += equipment.tbs.deliveryType! === 'regular' ? 130000 : 143000;
+      equipmentCost += equipment.tbs.deliveryType! === 'regular' ? config.equipmentCost[2] : config.equipmentCost[2] * config.expressMultiplier;
     }
     equipmentTimeline.set(equipmentCost);
 
@@ -249,8 +249,7 @@ export const useFinanceStore = defineStore('finance', () => {
     Object.keys(timelines).forEach((timelineName) => {
       updateExistingOrCreate(
         collections.finance,
-        `user.username="${pocketbase.authStore.model!.username}" && week=${
-          gameStore.week
+        `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week
         } && timeline="${timelineName}"`,
         {
           user: pocketbase.authStore.model!.id,

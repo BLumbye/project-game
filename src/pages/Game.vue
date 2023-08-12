@@ -1,5 +1,8 @@
 <template>
   <GameHeader />
+  <template v-if="gameStore.gameWon">
+    <ConfettiExplosion :duration="4000" :stageHeight="1200" />
+  </template>
   <template v-if="gameStore.gameState === 'adding_users'">
     <h2>Wait for the game to start</h2>
   </template>
@@ -23,7 +26,11 @@
 <!-- Script -->
 
 <script setup lang="ts">
+<<<<<<< HEAD
 import { isAdmin, pocketbase } from '~/pocketbase';
+=======
+import ConfettiExplosion from 'vue-confetti-explosion';
+>>>>>>> 11685fd69fec8f919ed8d8f13b453c01d39198a5
 
 const gameStore = useGameStore();
 
@@ -53,7 +60,7 @@ if (!gameStore.synchronized) {
     align-items: center;
     gap: 2rem;
 
-    &>.decision-form {
+    & > .decision-form {
       order: -1;
     }
   }
