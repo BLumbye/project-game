@@ -116,7 +116,7 @@ export const useFinanceStore = defineStore('finance', () => {
       numberValue = (Number(value.slice(0, -1)) / 100) * loan.value * (1 + config.loanInterest);
     }
     if (isNaN(numberValue)) return;
-    numberValue = Math.min(numberValue, loan.value * (1 + config.loanInterest));
+    numberValue = Math.max(0, Math.min(numberValue, loan.value * (1 + config.loanInterest)));
     loanRepayTimeline.set(numberValue, week + 1);
   }
 
@@ -170,7 +170,10 @@ export const useFinanceStore = defineStore('finance', () => {
 
     //Loan increase
     addInterestToLoan(
-      hasActiveLoan.value(gameStore.week + 1) ? config.loanInterest * loanAtWeek.value(gameStore.week + 1) : 0,
+      hasActiveLoan.value(gameStore.week + 1)
+        ? config.loanInterest *
+            (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
+        : 0,
     );
 
     //Overdraft

@@ -98,7 +98,7 @@ const setInput = (input: Ref<'0' | '1' | '2' | '3'>, type: EquipmentType) => {
     }
     return true;
   } else {
-    input.value = equipmentStore.equipment[type].deliveryType === 'regular' ? '1' : '2';
+    input.value = equipmentStore.equipment[type].status === 'unordered' ? '0' : equipmentStore.equipment[type].deliveryType === 'regular' ? '1' : '2';
   }
   return false;
 };
