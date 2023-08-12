@@ -117,7 +117,7 @@ export const useGameStore = defineStore('game', () => {
   watchEffect(() => {
     const noWorkers = Object.values(workersStore.currentWorkers).every((worker) => worker === 0);
     const activitiesDone = activitiesStore.allActivitiesDone();
-    const loanRepaid = financeStore.loan === 0;
+    const loanRepaid = !financeStore.hasActiveLoan();
 
     gameWon.value = noWorkers && activitiesDone && loanRepaid;
   });

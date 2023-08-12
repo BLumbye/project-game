@@ -40,6 +40,7 @@ export const useFinanceStore = defineStore('finance', () => {
       );
     };
   });
+
   const loanAtWeek = computed(() => {
     return (week?: number) => {
       week ??= gameStore.week - 1;
@@ -50,12 +51,14 @@ export const useFinanceStore = defineStore('finance', () => {
       );
     };
   });
+
   const balanceAtWeek = computed(() => {
     return (week?: number) => {
       week ??= gameStore.week - 1;
       return incomingTimeline.getReduced.value(week) + loanAtWeek.value(week) - outgoingAtWeek.value(week);
     };
   });
+
   const weeklyBalanceAtWeek = computed(() => {
     return (week?: number) => {
       week ??= gameStore.week - 1;
@@ -73,7 +76,14 @@ export const useFinanceStore = defineStore('finance', () => {
       );
     };
   });
+
   const loan = computed(() => loanAtWeek.value());
+  const hasActiveLoan = computed(() => {
+    return (week?: number) => {
+      week ??= gameStore.week - 1;
+      return Math.abs(loan.value).toFixed(2) !== '0.00';
+    };
+  });
 
   // Actions
   /**
@@ -82,7 +92,7 @@ export const useFinanceStore = defineStore('finance', () => {
    */
   function takeLoan(value: number, week?: number) {
     week ??= gameStore.week;
-    if (loan.value !== 0) return;
+    if (hasActiveLoan.value()) return;
     loanTimeline.set(value, week + 1);
   }
 
@@ -99,10 +109,15 @@ export const useFinanceStore = defineStore('finance', () => {
    * Adds money spent on repaying a loan payments to the loanRepay timeline for the given week.
    * If no week is given, it is added to the current week.
    */
-  function repayLoan(value: number, week?: number) {
+  function repayLoan(value: string, week?: number) {
     week ??= gameStore.week;
-    value = Math.min(value, loan.value * (1 + config.loanInterest));
-    loanRepayTimeline.set(value, week + 1);
+    let numberValue = Number(value);
+    if (/^[0-9]{1,3}%$/.test(value)) {
+      numberValue = (Number(value.slice(0, -1)) / 100) * loan.value * (1 + config.loanInterest);
+    }
+    if (isNaN(numberValue)) return;
+    numberValue = Math.min(numberValue, loan.value * (1 + config.loanInterest));
+    loanRepayTimeline.set(numberValue, week + 1);
   }
 
   function applyWeeklyFinances() {
@@ -110,8 +125,8 @@ export const useFinanceStore = defineStore('finance', () => {
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
       previousWorkers.labour * config.labourPay +
-      previousWorkers.skilled * config.skilledPay +
-      previousWorkers.electrician * config.electricianPay,
+        previousWorkers.skilled * config.skilledPay +
+        previousWorkers.electrician * config.electricianPay,
     );
 
     // Equipment costs
@@ -119,13 +134,22 @@ export const useFinanceStore = defineStore('finance', () => {
     const equipment = equipmentStore.equipmentAtWeek(gameStore.week);
     let equipmentCost = 0;
     if (equipment.steelwork.status === 'ordered' && previousEquipment.steelwork.status !== 'ordered') {
-      equipmentCost += equipment.steelwork.deliveryType! === 'regular' ? config.equipmentCost[0] : config.equipmentCost[0] * config.expressMultiplier;
+      equipmentCost +=
+        equipment.steelwork.deliveryType! === 'regular'
+          ? config.equipmentCost[0]
+          : config.equipmentCost[0] * config.expressMultiplier;
     }
     if (equipment.interior.status === 'ordered' && previousEquipment.interior.status !== 'ordered') {
-      equipmentCost += equipment.interior.deliveryType! === 'regular' ? config.equipmentCost[1] : config.equipmentCost[1] * config.expressMultiplier;
+      equipmentCost +=
+        equipment.interior.deliveryType! === 'regular'
+          ? config.equipmentCost[1]
+          : config.equipmentCost[1] * config.expressMultiplier;
     }
     if (equipment.tbs.status === 'ordered' && previousEquipment.tbs.status !== 'ordered') {
-      equipmentCost += equipment.tbs.deliveryType! === 'regular' ? config.equipmentCost[2] : config.equipmentCost[2] * config.expressMultiplier;
+      equipmentCost +=
+        equipment.tbs.deliveryType! === 'regular'
+          ? config.equipmentCost[2]
+          : config.equipmentCost[2] * config.expressMultiplier;
     }
     equipmentTimeline.set(equipmentCost);
 
@@ -145,7 +169,7 @@ export const useFinanceStore = defineStore('finance', () => {
     }
 
     // Project delayed penalty
-    if (gameStore.week > bidStore.bidDuration) {
+    if (gameStore.week > bidStore.promisedDuration) {
       delayPenaltyTimeline.set(config.projectDelayPenalty);
     }
 
@@ -180,7 +204,7 @@ export const useFinanceStore = defineStore('finance', () => {
     () => {
       if (gameStore.gameState === 'in_progress') {
         gameStartWatcher();
-        incomingTimeline.set(bidStore.bidPrice * config.startBudget, 0);
+        incomingTimeline.set(bidStore.price * config.startBudget, 0);
       }
     },
   );
@@ -191,7 +215,7 @@ export const useFinanceStore = defineStore('finance', () => {
     () => {
       if (activityStore.isActivityDone(activityStore.activityFromLabel(config.milestoneActivity))) {
         stopMilestoneWatcher();
-        incomingTimeline.add(bidStore.bidPrice * config.milestoneReward, gameStore.week - 1);
+        incomingTimeline.add(bidStore.price * config.milestoneReward, gameStore.week - 1);
       }
     },
   );
@@ -204,7 +228,7 @@ export const useFinanceStore = defineStore('finance', () => {
     () => {
       if (activityStore.allActivitiesDone()) {
         stopFinishedWatcher();
-        incomingTimeline.add(bidStore.bidPrice * config.allActivitesCompleteReward, gameStore.week - 1);
+        incomingTimeline.add(bidStore.price * config.allActivitesCompleteReward, gameStore.week - 1);
       }
     },
   );
@@ -249,7 +273,8 @@ export const useFinanceStore = defineStore('finance', () => {
     Object.keys(timelines).forEach((timelineName) => {
       updateExistingOrCreate(
         collections.finance,
-        `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week
+        `user.username="${pocketbase.authStore.model!.username}" && week=${
+          gameStore.week
         } && timeline="${timelineName}"`,
         {
           user: pocketbase.authStore.model!.id,
@@ -291,6 +316,7 @@ export const useFinanceStore = defineStore('finance', () => {
     balanceAtWeek,
     weeklyBalanceAtWeek,
     loan,
+    hasActiveLoan,
     takeLoan,
     repayLoan,
     applyWeeklyFinances,

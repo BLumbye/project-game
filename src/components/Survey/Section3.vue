@@ -186,7 +186,7 @@ defineExpose({
 </script>
 
 <style scoped lang="postcss">
-.question>>>.v-input__details {
+.question:deep(.v-input__details) {
   display: none;
 }
 </style>

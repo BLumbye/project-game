@@ -96,7 +96,7 @@ form {
   width: clamp(250px, 80%, 768px);
   gap: 1rem;
 
-  &>>>.question {
+  &:deep(.question) {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;

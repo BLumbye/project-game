@@ -4,8 +4,9 @@ import './style.pcss';
 import '@csstools/normalize.css';
 import App from './App.vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import { pocketbase } from './pocketbase';
 import routes from '~pages';
+import FloatingVue from 'floating-vue';
+import 'floating-vue/dist/style.css';
 import { createVuetify } from 'vuetify';
 
 const router = createRouter({
@@ -16,6 +17,7 @@ const router = createRouter({
 const pinia = createPinia();
 const app = createApp(App);
 
+app.use(FloatingVue);
 app.use(router);
 app.use(pinia);
 app.use(createVuetify());

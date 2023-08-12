@@ -53,24 +53,24 @@ const financeStore = useFinanceStore();
 const currentLoan = computed(() => financeStore.loanAtWeek(gameStore.week));
 
 const newLoan = ref(0);
-const repay = ref(0);
+const repay = ref('0');
 
 watch(newLoan, () => {
   financeStore.takeLoan(Number(newLoan.value));
 });
 
 watch(repay, () => {
-  financeStore.repayLoan(Number(repay.value));
+  financeStore.repayLoan(repay.value);
 });
 
 watch(() => gameStore.week, () => {
   newLoan.value = 0;
-  repay.value = 0;
+  repay.value = '0';
 })
 
 watch(() => financeStore.loading, () => {
   newLoan.value = financeStore.loanTimeline.get() || 0;
-  repay.value = financeStore.loanRepayTimeline.get() || 0;
+  repay.value = financeStore.loanRepayTimeline.get()?.toString() || '0';
 });
 </script>
 
