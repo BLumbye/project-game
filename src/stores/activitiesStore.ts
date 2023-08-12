@@ -245,9 +245,9 @@ export const useActivitiesStore = defineStore('activities', () => {
           ),
         );
       }
-      if (activityDone) {
+      if (activityDone && !weekActivityDone.value[activity.label]) {
         weekActivityDone.value = { ...weekActivityDone.value, [activity.label]: gameStore.week + 1 };
-      } else {
+      } else if (!activityDone) {
         // @ts-expect-error
         weekActivityDone.value = { ...weekActivityDone.value, [activity.label]: undefined };
       }
