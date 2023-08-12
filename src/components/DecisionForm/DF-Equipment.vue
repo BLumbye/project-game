@@ -80,11 +80,11 @@ const previousEquipment = computed(() => equipmentStore.equipmentAtWeek(gameStor
 const makeEquipmentWatcher = (input: Ref<'0' | '1' | '2' | '3'>, type: EquipmentType) => {
   return watch(input, () => {
     if (input.value === '0') {
-      equipmentStore.unorder(type);
+      equipmentStore.setDeliveryStatus(type, 'unordered');
     } else if (input.value === '1') {
-      equipmentStore.order(type, 'regular');
+      equipmentStore.setDeliveryStatus(type, 'ordered', 'regular');
     } else {
-      equipmentStore.order(type, 'express');
+      equipmentStore.setDeliveryStatus(type, 'ordered', 'express');
     }
   });
 };
@@ -97,6 +97,8 @@ const setInput = (input: Ref<'0' | '1' | '2' | '3'>, type: EquipmentType) => {
       input.value = '3';
     }
     return true;
+  } else {
+    input.value = equipmentStore.equipment[type].deliveryType === 'regular' ? '1' : '2';
   }
   return false;
 };
@@ -126,7 +128,7 @@ if (gameStore.synchronized) {
     stopSteelworkWatcher = makeEquipmentWatcher(steelwork, 'steelwork');
     stopInteriorWatcher = makeEquipmentWatcher(interior, 'interior');
     stopTBSWatcher = makeEquipmentWatcher(tbs, 'tbs');
-  });
+  }, { immediate: true });
 } else {
   stopSteelworkWatcher = makeEquipmentWatcher(steelwork, 'steelwork');
   stopInteriorWatcher = makeEquipmentWatcher(interior, 'interior');

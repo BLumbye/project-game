@@ -40,7 +40,7 @@ const milestoneReward: number = 0.5; //Percentage paid on a certain activity com
 const milestoneActivity: (typeof activities)[number]['label'] = 'H';
 
 //Time limit
-const projectDuration: number = 13;
+const projectDuration: number = 12;
 
 // Currency
 const currency: string = '€';
@@ -251,8 +251,7 @@ const events: Event[] = [
     week: 9,
     image: '/images/Week9.jpg',
     title: 'UNION REQUEST',
-    description:
-      'The union has now been formed and is in effect.',
+    description: 'The union has now been formed and is in effect.',
     effects: [...addWorkers(['K', 'G', 'L'], ['labour'], 1, activities)],
     showTitle: true,
     showDescription: true,

@@ -100,7 +100,7 @@ watch(
       ski.value[i] = activity.allocation.skilled !== 0 ? activity.allocation.skilled?.toString() : '';
       ele.value[i] = activity.allocation.electrician !== 0 ? activity.allocation.electrician?.toString() : '';
     });
-  },
+  }, { immediate: true }
 );
 </script>
 

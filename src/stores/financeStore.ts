@@ -157,31 +157,26 @@ export const useFinanceStore = defineStore('finance', () => {
     overheadTimeline.set(config.overhead);
 
     // Consumables charge: charge only if any workers are working
-    if (
-      activityStore
-        .activitiesAtWeek(gameStore.week)
-        .some(
-          (activity) =>
-            activity.requirements.workers !== undefined && activityStore.workerRequirementMet(activity, gameStore.week),
-        )
-    ) {
-      consumablesTimeline.set(config.consumables);
-    }
+    const consumables = activityStore
+      .activitiesAtWeek(gameStore.week)
+      .some(
+        (activity) =>
+          activity.requirements.workers !== undefined && activityStore.workerRequirementMet(activity, gameStore.week),
+      );
+    consumablesTimeline.set(consumables ? config.consumables : 0);
 
     // Project delayed penalty
-    if (gameStore.week > bidStore.promisedDuration) {
-      delayPenaltyTimeline.set(config.projectDelayPenalty);
-    }
+    delayPenaltyTimeline.set(gameStore.week > bidStore.promisedDuration ? config.projectDelayPenalty : 0);
 
     //Loan increase
-    if (loanAtWeek.value(gameStore.week + 1) > 0) {
-      addInterestToLoan(config.loanInterest * loanAtWeek.value(gameStore.week + 1));
-    }
+    addInterestToLoan(
+      hasActiveLoan.value(gameStore.week + 1) ? config.loanInterest * loanAtWeek.value(gameStore.week + 1) : 0,
+    );
 
     //Overdraft
-    if (balanceAtWeek.value(gameStore.week) < 0) {
-      overdraftInterestTimeline.set(config.overdraftInterest * -balanceAtWeek.value(gameStore.week));
-    }
+    overdraftInterestTimeline.set(
+      balanceAtWeek.value(gameStore.week) < 0 ? config.overdraftInterest * -balanceAtWeek.value(gameStore.week) : 0,
+    );
 
     if (gameStore.synchronized) updateDatabase();
   }
@@ -199,23 +194,21 @@ export const useFinanceStore = defineStore('finance', () => {
   );
 
   // When the game starts, give the player the initial starting budget
-  const gameStartWatcher = watch(
-    () => gameStore.gameState,
-    () => {
-      if (gameStore.gameState === 'in_progress') {
-        gameStartWatcher();
-        incomingTimeline.set(bidStore.price * config.startBudget, 0);
-      }
-    },
-  );
+  const gameStartWatcher = watchEffect(() => {
+    if (gameStore.gameState === 'in_progress' && !bidStore.loading && !loading.value) {
+      gameStartWatcher();
+      incomingTimeline.set(bidStore.price * config.startBudget, 0);
+    }
+  });
 
   /** When the milestone activity is completed, the the milestone payment is added to the incoming timeline only once */
-  const stopMilestoneWatcher = watch(
-    () => activityStore.isActivityDone(activityStore.activityFromLabel(config.milestoneActivity)),
-    () => {
-      if (activityStore.isActivityDone(activityStore.activityFromLabel(config.milestoneActivity))) {
-        stopMilestoneWatcher();
-        incomingTimeline.add(bidStore.price * config.milestoneReward, gameStore.week - 1);
+  watch(
+    () => activityStore.weekActivityDone,
+    (newDone, oldDone) => {
+      if (oldDone[config.milestoneActivity] && !newDone[config.milestoneActivity]) {
+        incomingTimeline.add(-bidStore.price * config.milestoneReward, oldDone[config.milestoneActivity]);
+      } else if (!oldDone[config.milestoneActivity] && newDone[config.milestoneActivity]) {
+        incomingTimeline.add(bidStore.price * config.milestoneReward, newDone[config.milestoneActivity]);
       }
     },
   );
@@ -225,10 +218,11 @@ export const useFinanceStore = defineStore('finance', () => {
    */
   const stopFinishedWatcher = watch(
     () => activityStore.allActivitiesDone(),
-    () => {
-      if (activityStore.allActivitiesDone()) {
-        stopFinishedWatcher();
+    (finishedNow, finishedBefore) => {
+      if (!finishedBefore && finishedNow) {
         incomingTimeline.add(bidStore.price * config.allActivitesCompleteReward, gameStore.week - 1);
+      } else if (finishedBefore && !finishedNow) {
+        incomingTimeline.add(-bidStore.price * config.allActivitesCompleteReward, gameStore.week - 1);
       }
     },
   );
@@ -270,18 +264,26 @@ export const useFinanceStore = defineStore('finance', () => {
   }
 
   async function updateDatabase() {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
+      loading.value = false;
+      return;
+    }
+
     Object.keys(timelines).forEach((timelineName) => {
+      const week = [loanInterestTimeline, loanRepayTimeline, loanTimeline].includes(
+        timelines[timelineName as keyof typeof timelines],
+      )
+        ? gameStore.week + 1
+        : gameStore.week;
       updateExistingOrCreate(
         collections.finance,
-        `user.username="${pocketbase.authStore.model!.username}" && week=${
-          gameStore.week
-        } && timeline="${timelineName}"`,
+        `user.username="${pocketbase.authStore.model!.username}" && week=${week} && timeline="${timelineName}"`,
         {
           user: pocketbase.authStore.model!.id,
           game_id: gameStore.gameID,
-          week: gameStore.week,
+          week,
           timeline: timelineName,
-          value: timelines[timelineName as keyof typeof timelines].get.value() || 0,
+          value: timelines[timelineName as keyof typeof timelines].get.value(week) || 0,
         },
       );
     });
@@ -293,8 +295,10 @@ export const useFinanceStore = defineStore('finance', () => {
     const synchronizedWatcher = watch(
       () => gameStore.settingsLoaded,
       () => {
-        if (gameStore.settingsLoaded) synchronizedWatcher();
-        connectWithDatabase();
+        if (gameStore.settingsLoaded) {
+          synchronizedWatcher();
+          connectWithDatabase();
+        }
       },
     );
   }

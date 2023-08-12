@@ -66,8 +66,10 @@ export const useBidStore = defineStore('bid', () => {
     const synchronizedWatcher = watch(
       () => gameStore.settingsLoaded,
       () => {
-        if (gameStore.settingsLoaded) synchronizedWatcher();
-        connectWithDatabase();
+        if (gameStore.settingsLoaded) {
+          synchronizedWatcher();
+          connectWithDatabase();
+        }
       },
     );
   }

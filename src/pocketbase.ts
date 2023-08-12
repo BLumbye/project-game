@@ -19,13 +19,26 @@ export const collections = {
   surveyAnswers: pocketbase.collection('survey_answers'),
 };
 
-export const updateExistingOrCreate = async (collection: RecordService, filter: string, data: any) => {
+export const updateExistingOrCreate = async (collection: RecordService, filter: string, data: Record<string, any>) => {
   try {
     const existingRecord = await collection.getFirstListItem(filter);
     return await collection.update(existingRecord.id, data);
   } catch (error) {
     if (error instanceof ClientResponseError && error.status === 404) {
       return await collection.create(data);
+    } else {
+      throw error;
+    }
+  }
+};
+
+export const deleteExisting = async (collection: RecordService, filter: string) => {
+  try {
+    const existingRecord = await collection.getFirstListItem(filter);
+    return await collection.delete(existingRecord.id);
+  } catch (error) {
+    if (error instanceof ClientResponseError && error.status === 404) {
+      return;
     } else {
       throw error;
     }

@@ -69,9 +69,9 @@ watch(() => gameStore.week, () => {
 })
 
 watch(() => financeStore.loading, () => {
-  newLoan.value = financeStore.loanTimeline.get() || 0;
-  repay.value = financeStore.loanRepayTimeline.get()?.toString() || '0';
-});
+  newLoan.value = financeStore.loanTimeline.get(gameStore.week + 1) || 0;
+  repay.value = financeStore.loanRepayTimeline.get(gameStore.week + 1)?.toString() || '0';
+}, { immediate: true });
 </script>
 
 <!-- Styling -->

@@ -3,7 +3,7 @@ import config from '../config';
 import { Activity, ConfigActivity, WorkerType } from '../types/types';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 import { ClientResponseError } from 'pocketbase';
-import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
+import { collections, deleteExisting, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 
 const generateProgressTimelines = () => {
   const timelines: Record<string, ReturnType<typeof createWeeklyTimeline<number>>> = {};
@@ -218,29 +218,38 @@ export const useActivitiesStore = defineStore('activities', () => {
    * An activity cannot progress if it already done.
    */
   function progressActivities() {
+    const equipmentStore = useEquipmentStore();
+
     for (const activity of activities.value) {
+      // Calculate how much to progress the activity
+      let activityProgress = 0;
       if (!isActivityDone.value(activity) && requirementsMet.value(activity, gameStore.week)) {
         if (isActivityResourceDependant(activity)) {
           let max = getDuration.value(activity) - activity.progress;
-          progressTimelines[activity.label].set(
-            Math.min(max, getResourceDependancyMultiplier(activity)),
-            gameStore.week + 1,
-          );
+          activityProgress = Math.min(max, getResourceDependancyMultiplier(activity));
         } else {
-          progressTimelines[activity.label].set(1, gameStore.week + 1);
+          activityProgress = 1;
         }
-        if (
-          activity.requirements.equipment &&
-          isActivityDone.value(activityFromLabel.value(activity.label, gameStore.week + 1))
-        ) {
-          const equipmentStore = useEquipmentStore();
-          activity.requirements.equipment.forEach((equipment) =>
-            equipmentStore.finishDelivery(equipment, gameStore.week + 1),
-          );
-        }
-        if (isActivityDone.value(activityFromLabel.value(activity.label, gameStore.week + 1))) {
-          weekActivityDone.value[activity.label] = gameStore.week + 1;
-        }
+      }
+      // Progress the activity
+      progressTimelines[activity.label].set(activityProgress, gameStore.week + 1);
+      const activityDone = isActivityDone.value(activityFromLabel.value(activity.label, gameStore.week + 1));
+      // Set delivery status
+      if (activity.requirements.equipment) {
+        activity.requirements.equipment.forEach((equipment) =>
+          equipmentStore.setDeliveryStatus(
+            equipment,
+            activityDone ? 'delivered' : 'ordered',
+            undefined,
+            gameStore.week + 1,
+          ),
+        );
+      }
+      if (activityDone) {
+        weekActivityDone.value = { ...weekActivityDone.value, [activity.label]: gameStore.week + 1 };
+      } else {
+        // @ts-expect-error
+        weekActivityDone.value = { ...weekActivityDone.value, [activity.label]: undefined };
       }
     }
 
@@ -391,6 +400,11 @@ export const useActivitiesStore = defineStore('activities', () => {
   }
 
   async function updateDatabase() {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
+      loading.value = false;
+      return;
+    }
+
     activities.value.forEach((activity) => {
       // Update allocation
       ['labour', 'skilled', 'electrician'].forEach((type) => {
@@ -426,7 +440,23 @@ export const useActivitiesStore = defineStore('activities', () => {
       );
 
       // Update activity completion
-      // TODO
+      if (weekActivityDone.value[activity.label] !== undefined) {
+        updateExistingOrCreate(
+          collections.activityCompletion,
+          `user.username="${pocketbase.authStore.model!.username}" && activity="${activity.label}"`,
+          {
+            user: pocketbase.authStore.model!.id,
+            game_id: gameStore.gameID,
+            activity: activity.label,
+            week: weekActivityDone.value[activity.label],
+          },
+        );
+      } else {
+        deleteExisting(
+          collections.activityCompletion,
+          `user.username="${pocketbase.authStore.model!.username}" && activity="${activity.label}"`,
+        );
+      }
     });
   }
 
@@ -443,21 +473,24 @@ export const useActivitiesStore = defineStore('activities', () => {
     const synchronizedWatcher = watch(
       () => gameStore.settingsLoaded,
       () => {
-        if (gameStore.settingsLoaded) synchronizedWatcher();
-        connectWithDatabase();
-        // Every time the week progresses, elligible activities are progressed.
-        watch(
-          () => gameStore.ready,
-          () => {
-            if (gameStore.ready) progressActivities();
-          },
-        );
+        if (gameStore.settingsLoaded) {
+          synchronizedWatcher();
+          connectWithDatabase();
+          // Every time the week progresses, elligible activities are progressed.
+          watch(
+            () => gameStore.ready,
+            () => {
+              if (gameStore.ready) progressActivities();
+            },
+          );
+        }
       },
     );
   }
 
   return {
     loading,
+    weekActivityDone,
     activitiesAtWeek,
     activities,
     activityFromLabel,

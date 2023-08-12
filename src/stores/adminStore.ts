@@ -43,6 +43,10 @@ export const useAdminStore = defineStore('admin', () => {
     collections.settings.update(gameStore.settingsRecordID!, { game_state: 'in_progress' });
   }
 
+  function progressWeek() {
+    collections.settings.update(gameStore.settingsRecordID!, { current_week: gameStore.week + 1 });
+  }
+
   async function fetchUsers() {
     try {
       (await collections.users.getFullList({ filter: `game_id=${gameStore.gameID}` })).forEach((user) => {
@@ -179,5 +183,15 @@ export const useAdminStore = defineStore('admin', () => {
     );
   }
 
-  return { users, bids, startGame, startAcceptingBids, stopAcceptingBids, acceptBids, addUsers, updateBid };
+  return {
+    users,
+    bids,
+    startGame,
+    startAcceptingBids,
+    stopAcceptingBids,
+    acceptBids,
+    addUsers,
+    updateBid,
+    progressWeek,
+  };
 });

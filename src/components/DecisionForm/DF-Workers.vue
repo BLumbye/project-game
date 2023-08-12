@@ -105,7 +105,7 @@ watch(
     labour.value = workersStore.workers[gameStore.week].labour !== 0 ? workersStore.workers[gameStore.week].labour.toString() : '';
     skilled.value = workersStore.workers[gameStore.week].skilled !== 0 ? workersStore.workers[gameStore.week].skilled.toString() : '';
     electrician.value = workersStore.workers[gameStore.week].electrician !== 0 ? workersStore.workers[gameStore.week].electrician.toString() : '';
-  },
+  }, { immediate: true }
 );
 </script>
 

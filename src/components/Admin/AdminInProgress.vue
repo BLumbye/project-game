@@ -1,8 +1,10 @@
 <template>
-  Game in progress
+  <p>Current week: {{ gameStore.week }}</p>
+  <button @click="adminStore.progressWeek()">Go to next week</button>
 </template>
 
 <script setup lang="ts">
+const gameStore = useGameStore();
 const adminStore = useAdminStore();
 
 /**

@@ -82,6 +82,11 @@ export const useWorkersStore = defineStore('workers', () => {
   }
 
   async function updateDatabase() {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
+      loading.value = false;
+      return;
+    }
+
     ['labour', 'skilled', 'electrician'].forEach((type) => {
       updateExistingOrCreate(
         collections.workers,
@@ -103,8 +108,10 @@ export const useWorkersStore = defineStore('workers', () => {
     const synchronizedWatcher = watch(
       () => gameStore.settingsLoaded,
       () => {
-        if (gameStore.settingsLoaded) synchronizedWatcher();
-        connectWithDatabase();
+        if (gameStore.settingsLoaded) {
+          synchronizedWatcher();
+          connectWithDatabase();
+        }
       },
     );
   }

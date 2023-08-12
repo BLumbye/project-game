@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { collections, isAdmin, pocketbase, updateExistingOrCreate } from '../pocketbase';
 import { GameState } from '~/types/types';
 import config from '~/config';
+import { ClientResponseError } from 'pocketbase';
 
 /**
  * This store contains overall information about the game, and also controls the flow
@@ -48,20 +49,19 @@ export const useGameStore = defineStore('game', () => {
       equipmentStore.updateDatabase();
     }
     week.value++;
+    if (synchronized.value) {
+      toggleReady(false);
+    }
   }
 
-  function toggleReady() {
-    ready.value = !ready.value;
-    updateExistingOrCreate(
-      collections.ready,
-      `user.username="${pocketbase.authStore.model!.username}" && week=${week.value}`,
-      {
-        user: pocketbase.authStore.model!.id,
-        game_id: gameID.value,
-        week: week.value,
-        ready: ready.value,
-      },
-    );
+  function toggleReady(value?: boolean) {
+    ready.value = value || !ready.value;
+    updateExistingOrCreate(collections.ready, `user.username="${pocketbase.authStore.model!.username}"`, {
+      user: pocketbase.authStore.model!.id,
+      game_id: gameID.value,
+      week: week.value,
+      ready: ready.value,
+    });
   }
 
   // Logic
@@ -72,7 +72,6 @@ export const useGameStore = defineStore('game', () => {
     gameID.value = settingsRecord.game_id;
     if (synchronized.value) {
       gameState.value = settingsRecord.game_state;
-      week.value = settingsRecord.current_week;
     }
 
     if (!synchronized.value && pocketbase.authStore.isValid && !pocketbase.authStore.model?.admin) {
@@ -85,14 +84,62 @@ export const useGameStore = defineStore('game', () => {
       if (data.record.game_state !== gameState.value) gameState.value = data.record.game_state;
       if (data.record.current_week !== week.value) {
         for (let i = week.value; i < data.record.current_week; i++) {
-          if (!ready.value) nextWeek();
-          else week.value++;
-          ready.value = false;
+          nextWeek();
         }
       }
     });
 
+    if (synchronized.value) {
+      if (
+        !activitiesStore.loading &&
+        !financeStore.loading &&
+        !workersStore.loading &&
+        !equipmentStore.loading &&
+        !bidStore.loading
+      ) {
+        fastForward(settingsRecord.current_week);
+      } else {
+        const loadWatcher = watchEffect(() => {
+          if (
+            !activitiesStore.loading &&
+            !financeStore.loading &&
+            !workersStore.loading &&
+            !equipmentStore.loading &&
+            !bidStore.loading
+          ) {
+            loadWatcher();
+            fastForward(settingsRecord.current_week);
+          }
+        });
+      }
+    }
+
     settingsLoaded.value = true;
+  }
+
+  /**
+   * If the user has been disconnected, this will calculate finances and activities for the weeks that have been missed.
+   */
+  async function fastForward(gameWeek: number) {
+    let lastWeekOnline = 0;
+    let isReady = false;
+    try {
+      const readyRecord = await collections.ready.getFirstListItem(
+        `user.username="${pocketbase.authStore.model!.username}"`,
+      );
+      lastWeekOnline = readyRecord.week;
+      isReady = readyRecord.ready;
+    } catch (error) {
+      if (error instanceof ClientResponseError && error.status !== 404) {
+        throw error;
+      }
+    }
+
+    week.value = lastWeekOnline;
+    for (let i = week.value; i < gameWeek; i++) {
+      nextWeek();
+    }
+    ready.value = isReady;
   }
 
   function routeCorrectly() {
