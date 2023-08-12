@@ -4,7 +4,7 @@
     <h2>Wait for the game to start</h2>
   </template>
   <template v-else-if="gameStore.gameState === 'getting_bids' || gameStore.gameState === 'reviewing_bids'">
-    <Bid />
+    <Survey />
   </template>
   <template v-else-if="gameStore.gameState === 'in_progress'">
     <Event />
@@ -23,10 +23,17 @@
 <!-- Script -->
 
 <script setup lang="ts">
+import { isAdmin, pocketbase } from '~/pocketbase';
+
 const gameStore = useGameStore();
 
+if ((gameStore.synchronized && !pocketbase.authStore.isValid) || isAdmin()) {
+  console.log('redirecting from game...');
+  gameStore.routeCorrectly();
+}
+
 if (!gameStore.synchronized) {
-  gameStore.gameState = 'getting_bids';
+  gameStore.gameState = 'in_progress';
 }
 </script>
 

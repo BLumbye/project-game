@@ -16,6 +16,7 @@ export const collections = {
   progress: pocketbase.collection('progress'),
   ready: pocketbase.collection('ready'),
   activityCompletion: pocketbase.collection('activity_completion'),
+  surveyAnswers: pocketbase.collection('survey_answers'),
 };
 
 export const updateExistingOrCreate = async (collection: RecordService, filter: string, data: any) => {

@@ -165,14 +165,6 @@ dialog {
   fill: var(--text-color);
 }
 
-.v-popper__popper {
-  max-width: 350px;
-
-  & p + p {
-    margin-top: 0.5em;
-  }
-}
-
 input,
 select {
   border: 1px solid rgb(255 255 255 / 50%);
@@ -202,4 +194,8 @@ select {
 
 ::backdrop {
   background-color: rgba(0 0 0 / 50%);
+}
+
+.v-slider-thumb__label {
+  transform: translateX(-50%);
 }

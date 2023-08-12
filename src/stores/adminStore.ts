@@ -27,6 +27,8 @@ export const useAdminStore = defineStore('admin', () => {
       game_state: 'adding_users',
     });
     gameStore.gameID!++;
+    fetchUsers();
+    fetchBids();
   }
 
   function startAcceptingBids() {
@@ -73,11 +75,11 @@ export const useAdminStore = defineStore('admin', () => {
         {
           id: bid.id,
           userID: bid.user,
-          bidPrice: bid.bid_price,
-          bidDuration: bid.bid_duration,
-          expectedPrice: bid.expected_price,
+          price: bid.price,
+          promisedDuration: bid.promised_duration,
+          expectedCost: bid.expected_cost,
           expectedDuration: bid.expected_duration,
-          ready: bid.ready,
+          revisedPrice: bid.revised_price,
         },
       ];
     });
@@ -86,10 +88,11 @@ export const useAdminStore = defineStore('admin', () => {
       if (data.record.game_id !== gameStore.gameID) return;
       if (data.action === 'update') {
         const bid = bids.value.find((bid) => bid.id === data.record.id)!;
-        bid.bidPrice = data.record.bid_price;
-        bid.bidDuration = data.record.bid_duration;
-        bid.expectedPrice = data.record.expected_price;
+        bid.price = data.record.price;
+        bid.promisedDuration = data.record.promised_duration;
+        bid.expectedCost = data.record.expected_cost;
         bid.expectedDuration = data.record.expected_duration;
+        bid.revisedPrice = data.record.revised_price;
         bids.value = [...bids.value];
       } else if (data.action === 'create') {
         bids.value = [
@@ -97,11 +100,11 @@ export const useAdminStore = defineStore('admin', () => {
           {
             id: data.record.id,
             userID: data.record.user,
-            bidPrice: data.record.bid_price,
-            bidDuration: data.record.bid_duration,
-            expectedPrice: data.record.expected_price,
+            price: data.record.price,
+            promisedDuration: data.record.promised_duration,
+            expectedCost: data.record.expected_cost,
             expectedDuration: data.record.expected_duration,
-            ready: data.record.ready,
+            revisedPrice: data.record.revised_price,
           },
         ];
       }
@@ -131,11 +134,6 @@ export const useAdminStore = defineStore('admin', () => {
               game_id: gameStore.gameID,
             });
             usersCSV += `${username},${password}\n`;
-            await collections.bids.create({
-              user: user.id,
-              game_id: gameStore.gameID,
-              ready: false,
-            });
           })(),
         );
       } catch (error) {
@@ -163,7 +161,7 @@ export const useAdminStore = defineStore('admin', () => {
     collections.bids.update(bidID, { [camelToSnakeCase(field)]: value });
   }
 
-  if (gameStore.settingsLoaded) {
+  if (gameStore.settingsLoaded && gameStore.synchronized && isAdmin()) {
     if (gameStore.synchronized && isAdmin()) {
       fetchUsers();
       fetchBids();

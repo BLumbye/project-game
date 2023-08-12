@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { collections, pocketbase, updateExistingOrCreate } from '../pocketbase';
+import { collections, isAdmin, pocketbase, updateExistingOrCreate } from '../pocketbase';
 import { GameState } from '~/types/types';
 import config from '~/config';
 
@@ -73,8 +73,6 @@ export const useGameStore = defineStore('game', () => {
     if (synchronized.value) {
       gameState.value = settingsRecord.game_state;
       week.value = settingsRecord.current_week;
-
-      routeCorrectly();
     }
 
     if (!synchronized.value && pocketbase.authStore.isValid && !pocketbase.authStore.model?.admin) {
@@ -98,10 +96,12 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function routeCorrectly() {
-    if (!pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth') router.push({ name: 'auth' });
-    else if (router.currentRoute.value.name !== 'admin' && pocketbase.authStore.model?.admin)
-      router.push({ name: 'admin' });
-    else if (router.currentRoute.value.name !== 'game' && synchronized.value) router.push({ name: 'game' });
+    console.log('routing');
+    if (synchronized.value && !pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth')
+      router.push({ name: 'auth' });
+    else if (router.currentRoute.value.name !== 'admin' && isAdmin()) router.push({ name: 'admin' });
+    else if (router.currentRoute.value.name !== 'game' && synchronized.value && !isAdmin())
+      router.push({ name: 'game' });
   }
 
   function connectAllDatabases() {

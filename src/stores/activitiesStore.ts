@@ -87,7 +87,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const allActivitiesDone = computed(() => {
     return (week?: number) => {
       week ??= gameStore.week;
-      return activitiesAtWeek.value(week).every((activity) => isActivityDone.value(activity));
+      return activitiesAtWeek.value(week).every(isActivityDone.value);
     };
   });
 
@@ -97,7 +97,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const getDuration = computed(() => {
     return (activity: ConfigActivity, week?: number) => {
       week ??= gameStore.week;
-      var durationModification = getEventDurationModification.value(activity, week);
+      const durationModification = getEventDurationModification.value(activity, week);
       if (
         activity.expressDuration &&
         activity.requirements.equipment?.every(

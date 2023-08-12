@@ -1,12 +1,22 @@
 <template>
   <header>
     <span class="title">Project Game</span>
-    <span class="week">Week {{ gameStore.week }}</span>
+    <span v-if="$route.name === 'game' && gameStore.gameState === 'in_progress'">
+      Week {{ gameStore.week }}
+    </span>
+    <span v-if="$route.name === 'game' && ['getting_bids', 'reviewing_bids'].includes(gameStore.gameState!)">
+      Pre-Game Survey
+    </span>
+    <span v-if="$route.name === 'admin'">
+      Admin Panel
+    </span>
     <div class="right-side"
-         v-if="gameStore.synchronized">
+         v-if="pocketbase.authStore.isValid">
       <span>{{ pocketbase.authStore.model!.username }}</span>
       <button class="logout-button"
-              @click="logout()">Logout</button>
+              @click="logout()">
+        Log out
+      </button>
     </div>
     <span class="right-side"
           v-else>Guest</span>

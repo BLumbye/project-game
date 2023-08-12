@@ -8,16 +8,17 @@
 
 <template>
   <div class="loan">
-    <VTooltip class="component-title">
+    <div class="component-title">
       <h3>Bank loan</h3>
       <Info width="24"
             height="24"
             class="icon" />
-      <template #popper>
+      <v-tooltip activator="parent"
+                 location="top">
         <p>Only one loan can be taken at a time.</p>
         <p>You can repay loan in percentages, and can never repay more than you have loaned.</p>
-      </template>
-    </VTooltip>
+      </v-tooltip>
+    </div>
     <label for="new-loan-input"
            class="loan-label">New loan:</label>
     <input v-model="newLoan"

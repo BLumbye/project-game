@@ -8,15 +8,16 @@
 
 <template>
   <div class="workers">
-    <VTooltip class="component-title">
+    <div class="component-title">
       <h3>Hire or fire workers</h3>
       <Info width="24"
             height="24"
             class="icon" />
-      <template #popper>
+      <v-tooltip activator="parent"
+                 location="top">
         Positive = hire, negative = fire.
-      </template>
-    </VTooltip>
+      </v-tooltip>
+    </div>
     <span class="workers-column-label">Worker</span>
     <span class="workers-column-label">Amount</span>
     <label for="labour-input"

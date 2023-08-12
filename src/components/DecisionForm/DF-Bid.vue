@@ -7,8 +7,8 @@
 <template>
   <div class="bid">
     <h3 class="bid-column-label">Bid</h3>
-    <span class="bid-label">Price: {{ bidStore.bidPrice }}</span>
-    <span class="bid-label">Duration: {{ bidStore.bidDuration }}</span>
+    <span class="bid-label">Price: {{ bidStore.price }}</span>
+    <span class="bid-label">Duration: {{ bidStore.promisedDuration }}</span>
   </div>
 </template>
 

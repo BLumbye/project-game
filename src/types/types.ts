@@ -60,11 +60,11 @@ export interface User {
 export interface Bid {
   id: string;
   userID: string;
-  bidPrice: number;
-  bidDuration: number;
-  expectedPrice: number;
+  price: number;
+  promisedDuration: number;
+  expectedCost: number;
   expectedDuration: number;
-  ready: boolean;
+  revisedPrice: number;
 }
 
 export type GameState = 'adding_users' | 'getting_bids' | 'reviewing_bids' | 'in_progress' | 'finished';

@@ -71,7 +71,12 @@ const adminLogin = ref(false);
 const devMode = import.meta.env.MODE === 'development';
 
 const gameStore = useGameStore();
-const router = useRouter();
+
+if (pocketbase.authStore.isValid) {
+  console.log('redirecting from auth...');
+  gameStore.connectAllDatabases();
+  gameStore.routeCorrectly();
+}
 
 const handleLogin = async () => {
   try {

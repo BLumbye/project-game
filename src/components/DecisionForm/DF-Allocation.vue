@@ -9,16 +9,17 @@
 <template>
   <div class="allocation">
     <span class="activities-label">Activity</span>
-    <VTooltip class="component-title">
+    <div class="component-title">
       <span>Allocate workers to activities</span>
       <Info width="20"
             height="20"
             class="icon" />
-      <template #popper>
+      <v-tooltip activator="parent"
+                 location="top">
         <p>Remember to allocate workers again in every week's 'Decision Form'.</p>
         <p>Remember to allocate a sufficient amount of workers for the task to progress.</p>
-      </template>
-    </VTooltip>
+      </v-tooltip>
+    </div>
     <span :class="{ 'error-message': tooManyLab }"
           v-tooltip="{ content: 'Because you are trying to use more labourers than you have hired some activities will not progress.', disabled: !tooManyLab }">LAB</span>
     <span :class="{ 'error-message': tooManySki }"

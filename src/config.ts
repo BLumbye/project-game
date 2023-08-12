@@ -9,6 +9,11 @@
 import { ConfigActivities, Event } from './types/types';
 import { addWorkers } from './utils/configUtils';
 
+// Bid
+const maxBid: number = 1200000;
+const minBid: number = 800000;
+const defaultBid: number = 850000;
+
 //Prices
 const loanInterest: number = 0.01;
 const overdraftInterest: number = 0.1;
@@ -243,6 +248,9 @@ const events: Event[] = [
 ];
 
 export default {
+  maxBid,
+  minBid,
+  defaultBid,
   milestoneActivity,
   allActivitesCompleteReward,
   startBudget,

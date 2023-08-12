@@ -5,7 +5,7 @@
     <h2>Add Users</h2>
     <p>Enter the usernames of the users you want to add to the game. The "#" will be replaced by the users number.</p>
     <input type="text"
-           placeholder="#-mmmyy"
+           placeholder="#_mmmyy"
            v-model="usernamePattern" />
     <p>Enter the number of users you want to add.</p>
     <input type="number"

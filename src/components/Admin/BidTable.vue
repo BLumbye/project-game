@@ -57,31 +57,31 @@ const columns = [
     cell: info => info.getValue(),
     header: 'Username',
   }),
-  columnHelper.accessor(row => row.bidPrice, {
-    id: 'bidPrice',
-    cell: info => gameStore.gameState === 'getting_bids' ? info.getValue() : inputCell(info),
-    header: 'Bid Price',
+  columnHelper.accessor(row => row.price, {
+    id: 'price',
+    cell: info => info.getValue(),
+    header: 'Price',
   }),
-  columnHelper.accessor(row => row.bidDuration, {
-    id: 'bidDuration',
-    cell: info => gameStore.gameState === 'getting_bids' ? info.getValue() : inputCell(info),
-    header: 'Bid Duration',
+  columnHelper.accessor(row => row.promisedDuration, {
+    id: 'promisedDuration',
+    cell: info => info.getValue(),
+    header: 'Promised Duration',
   }),
-  columnHelper.accessor(row => row.expectedPrice, {
-    id: 'expectedPrice',
-    cell: info => gameStore.gameState === 'getting_bids' ? info.getValue() : inputCell(info),
-    header: 'Expected Price',
+  columnHelper.accessor(row => row.expectedCost, {
+    id: 'expectedCost',
+    cell: info => info.getValue(),
+    header: 'Expected Cost',
   }),
   columnHelper.accessor(row => row.expectedDuration, {
     id: 'expectedDuration',
-    cell: info => gameStore.gameState === 'getting_bids' ? info.getValue() : inputCell(info),
+    cell: info => info.getValue(),
     header: 'Expected Duration',
   }),
-  columnHelper.accessor(row => row.ready, {
-    id: 'ready',
-    cell: info => info.getValue() ? 'Yes' : 'No',
-    header: 'Ready',
-  }),
+  columnHelper.accessor(row => row.revisedPrice, {
+    id: 'revisedPrice',
+    cell: info => inputCell(info),
+    header: 'Revised Price',
+  })
 ];
 
 const sorting = ref<SortingState>([]);

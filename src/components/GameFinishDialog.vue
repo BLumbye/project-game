@@ -5,7 +5,7 @@
       <h2>{{ gameStore.gameWon ? 'Projected Completed' : 'Project not completed in time' }}</h2>
       <p v-if="gameStore.gameWon">You've successfully completed the project in {{ gameStore.week }} weeks with {{
         financeStore.balanceAtWeek()
-        >= 0 ? `${formattedBalance} left over.` : `${formattedBalance} in debt.` }}</p>
+        >= 0 ? `${formattedBalance} in profit.` : `${formattedBalance} over budget.` }}</p>
       <template v-else>
         <p>The project was not completed because you failed to {{ loseReasons }} in time.</p>
         <WRAllocation v-if="!activitiesStore.allActivitiesDone() && gameStore.week > 1"
