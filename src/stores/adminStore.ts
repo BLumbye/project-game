@@ -115,42 +115,40 @@ export const useAdminStore = defineStore('admin', () => {
     });
   }
 
-  async function addUsers(usernameTemplate: string, amount: number) {
+  async function addUsers(usernames: string[]) {
     if (!gameStore.synchronized) return 'Game has not been started yet';
-    if (!usernameTemplate.includes('#')) return 'Username template must include a "#"';
-    if (usernameTemplate.length < 3) return 'Username template must be at least 3 characters long';
-    if (amount < 1) return 'Amount must be greater than 0';
+    if (usernames.some((username) => username.length < 3)) return 'Usernames must be at least 3 characters long';
+    if (usernames.length === 0) return 'You must enter one or more usernames';
+
+    const usernamePassword: Record<(typeof usernames)[number], string> = {};
+
+    await Promise.all(
+      usernames.map(async (username) => {
+        const password = generatePassword(8);
+        try {
+          const user = await collections.users.create({
+            username,
+            password,
+            passwordConfirm: password,
+            verified: true,
+            game_id: gameStore.gameID,
+          });
+          usernamePassword[username] = password;
+        } catch (error) {
+          if (error instanceof ClientResponseError) {
+            console.error('error during creation of user', error);
+            throw error.message;
+          } else {
+            throw 'An unknown error occurred';
+          }
+        }
+      }),
+    ).catch((error) => {
+      return error;
+    });
 
     let usersCSV = 'username,password\n';
-    const promises = [];
-
-    for (let i = 0; i < amount; i++) {
-      const username = usernameTemplate.replace('#', (i + 1).toString());
-      const password = generatePassword(8);
-      try {
-        promises.push(
-          (async () => {
-            const user = await collections.users.create({
-              username,
-              password,
-              passwordConfirm: password,
-              verified: true,
-              game_id: gameStore.gameID,
-            });
-            usersCSV += `${username},${password}\n`;
-          })(),
-        );
-      } catch (error) {
-        if (error instanceof ClientResponseError) {
-          console.error('error during creation of user', error);
-          return error.message;
-        } else {
-          return 'An unknown error occurred';
-        }
-      }
-    }
-
-    await Promise.all(promises);
+    usernames.forEach((username) => (usersCSV += `${username},${usernamePassword[username]}\n`));
     const blob = new Blob([usersCSV], { type: 'text/csv;charset=utf-8' });
     saveAs(blob, 'users.csv');
 

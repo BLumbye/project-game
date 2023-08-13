@@ -121,6 +121,10 @@ export const useFinanceStore = defineStore('finance', () => {
   }
 
   function applyWeeklyFinances() {
+    if (gameStore.week === 0) {
+      incomingTimeline.set(bidStore.price * config.startBudget, 0);
+    }
+
     // Worker pay
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
@@ -195,14 +199,6 @@ export const useFinanceStore = defineStore('finance', () => {
       }
     },
   );
-
-  // When the game starts, give the player the initial starting budget
-  const gameStartWatcher = watchEffect(() => {
-    if (gameStore.gameState === 'in_progress' && !bidStore.loading && !loading.value) {
-      gameStartWatcher();
-      incomingTimeline.set(bidStore.price * config.startBudget, 0);
-    }
-  });
 
   /** When the milestone activity is completed, the the milestone payment is added to the incoming timeline only once */
   watch(

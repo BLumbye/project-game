@@ -83,13 +83,17 @@ export const useGameStore = defineStore('game', () => {
       if (data.record.game_id !== gameID.value) gameID.value = data.record.game_id;
       if (data.record.game_state !== gameState.value) gameState.value = data.record.game_state;
       if (data.record.current_week !== week.value) {
-        for (let i = week.value; i < data.record.current_week; i++) {
-          nextWeek();
+        if (isAdmin()) {
+          week.value = data.record.current_week;
+        } else {
+          for (let i = week.value; i < data.record.current_week; i++) {
+            nextWeek();
+          }
         }
       }
     });
 
-    if (synchronized.value) {
+    if (synchronized.value && !isAdmin()) {
       if (
         !activitiesStore.loading &&
         !financeStore.loading &&
@@ -112,6 +116,8 @@ export const useGameStore = defineStore('game', () => {
           }
         });
       }
+    } else if (synchronized.value) {
+      week.value = settingsRecord.current_week;
     }
 
     settingsLoaded.value = true;

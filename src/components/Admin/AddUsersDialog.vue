@@ -3,14 +3,12 @@
           class="add-users-modal"
           @click="backgroundClickClose">
     <h2>Add Users</h2>
-    <p>Enter the usernames of the users you want to add to the game. The "#" will be replaced by the users number.</p>
+    <label for="usernames">Enter a comma separated list of user names.</label>
     <input type="text"
-           placeholder="#_mmmyy"
-           v-model="usernamePattern" />
-    <p>Enter the number of users you want to add.</p>
-    <input type="number"
-           min="1"
-           v-model="numberOfUsers" />
+           placeholder="user1,user2..."
+           id="usernames"
+           v-model="usernames"
+           class="fancy-input" />
     <p v-if="errorMessage"
        class="error-message">{{ errorMessage }}</p>
     <div class="buttons">
@@ -32,20 +30,18 @@ const adminStore = useAdminStore();
 const modal = ref<HTMLDialogElement | null>(null);
 
 const loading = ref(false);
-const usernamePattern = ref("");
-const numberOfUsers = ref(1);
+const usernames = ref("");
 const errorMessage = ref<string | null>(null);
 
 const open = () => {
-  usernamePattern.value = "";
-  numberOfUsers.value = 1;
+  usernames.value = "";
   modal.value?.showModal();
 }
 
 const submit = async () => {
   loading.value = true;
   errorMessage.value = null;
-  const response = await adminStore.addUsers(usernamePattern.value, numberOfUsers.value);
+  const response = await adminStore.addUsers(usernames.value.split(",").map(s => s.trim()));
   if (response === true) modal.value?.close();
   else errorMessage.value = response;
   loading.value = false;
@@ -60,6 +56,10 @@ defineExpose({
 .add-users-modal {
   width: clamp(200px, 50%, 500px);
   text-align: left;
+
+  & input {
+    width: 100%;
+  }
 
   & h2 {
     text-align: center;

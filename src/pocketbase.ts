@@ -21,14 +21,10 @@ export const collections = {
 
 export const updateExistingOrCreate = async (collection: RecordService, filter: string, data: Record<string, any>) => {
   try {
-    const existingRecord = await collection.getFirstListItem(filter);
-    return await collection.update(existingRecord.id, data);
+    return await collection.create(data);
   } catch (error) {
-    if (error instanceof ClientResponseError && error.status === 404) {
-      // Not found - create a new
-      return await collection.create(data);
-    } else if (error instanceof ClientResponseError && error.status === 400) {
-      // Between the time we checked for the record and now, it was created - update instead
+    if (error instanceof ClientResponseError && error.status === 400) {
+      // We couldn't create because of a unique constraint - update the existing
       const existingRecord = await collection.getFirstListItem(filter);
       return await collection.update(existingRecord.id, data);
     } else {
