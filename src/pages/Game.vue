@@ -1,8 +1,8 @@
 <template>
   <GameHeader />
-  <ConfettiExplosion v-if="gameStore.gameWon"
+  <!-- <ConfettiExplosion v-if="gameStore.gameWon"
                      :duration="4000"
-                     :stageHeight="1200" />
+                     :stageHeight="1200" /> -->
   <template v-if="gameStore.gameState === 'adding_users'">
     <h2>Wait for the game to start</h2>
   </template>

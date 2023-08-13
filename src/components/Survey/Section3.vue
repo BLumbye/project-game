@@ -14,6 +14,7 @@
               v-model="profitConfidence">
       <template v-slot:prepend>50%</template>
       <template v-slot:append>100%</template>
+      <!-- @vue-expect-error -->
       <template v-slot:thumb-label="{ modelValue }">{{ modelValue }}%</template>
     </v-slider>
     <span class="error-message"
@@ -32,6 +33,7 @@
               v-model="timeConfidence">
       <template v-slot:prepend>50%</template>
       <template v-slot:append>100%</template>
+      <!-- @vue-expect-error -->
       <template v-slot:thumb-label="{ modelValue }">{{ modelValue }}%</template>
     </v-slider>
     <span class="error-message"
@@ -51,6 +53,7 @@
               v-model="topPerformerConfidence">
       <template v-slot:prepend>50%</template>
       <template v-slot:append>100%</template>
+      <!-- @vue-expect-error -->
       <template v-slot:thumb-label="{ modelValue }">{{ modelValue }}%</template>
     </v-slider>
     <span class="error-message"
