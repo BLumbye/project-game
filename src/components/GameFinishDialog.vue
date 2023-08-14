@@ -9,11 +9,11 @@
       <template v-else>
         <p>The project was not completed because you failed to {{ loseReasons }} in time.</p>
         <WRAllocation v-if="!activitiesStore.allActivitiesDone() && gameStore.week > 1"
-                      :week="gameStore.week + 1" />
+                      :week="gameStore.week + 2" />
         <WRWorkers v-if="workersLeft && gameStore.week > 1"
-                   :week="gameStore.week + 1" />
+                   :week="gameStore.week + 2" />
         <WRFinances v-if="financeStore.loan !== 0 && gameStore.week > 1"
-                    :week="gameStore.week + 1" />
+                    :week="gameStore.week + 2" />
       </template>
       <button @click="dialog?.close">Close</button>
     </div>

@@ -43,23 +43,31 @@ export const useGameStore = defineStore('game', () => {
    * Progresses the week when the player is done with the decision form
    */
   function nextWeek() {
-    if (useGameStore().gameWon && stopUpdates) return;
+    if (stopUpdates.value) return;
     activitiesStore.progressActivities();
     financeStore.applyWeeklyFinances();
     if (synchronized.value) {
       workersStore.updateDatabase();
       equipmentStore.updateDatabase();
+      updateSummary();
     }
     week.value++;
     if (synchronized.value) {
       toggleReady(false);
     }
 
-    if (useGameStore().gameWon) stopUpdates.value = true;
+    if (gameOver.value) {
+      activitiesStore.updateDatabase();
+      financeStore.updateDatabase();
+      workersStore.updateDatabase();
+      equipmentStore.updateDatabase();
+      updateSummary();
+      stopUpdates.value = true;
+    }
   }
 
   function toggleReady(value?: boolean) {
-    ready.value = value || !ready.value;
+    ready.value = value ?? !ready.value;
     updateExistingOrCreate(collections.ready, `user.username="${pocketbase.authStore.model!.username}"`, {
       user: pocketbase.authStore.model!.id,
       game_id: gameID.value,
@@ -124,6 +132,8 @@ export const useGameStore = defineStore('game', () => {
       week.value = settingsRecord.current_week;
     }
 
+    updateSummary();
+
     settingsLoaded.value = true;
   }
 
@@ -150,6 +160,21 @@ export const useGameStore = defineStore('game', () => {
       nextWeek();
     }
     ready.value = isReady;
+  }
+
+  function updateSummary() {
+    if (!synchronized.value || !pocketbase.authStore.isValid || isAdmin()) return;
+
+    console.log('updating summary', gameOver.value ? (gameWon.value ? 'won' : 'lost') : 'playing');
+    updateExistingOrCreate(collections.gameSummary, `user.username="${pocketbase.authStore.model!.username}"`, {
+      user: pocketbase.authStore.model!.id,
+      game_id: gameID.value,
+      week: gameWon.value ? week.value - 1 : week.value,
+      total_balance: financeStore.balanceAtWeek(),
+      total_loaned: financeStore.loanTimeline.getReduced(),
+      total_repaid: financeStore.loanRepayTimeline.getReduced(),
+      status: gameOver.value ? (gameWon.value ? 'won' : 'lost') : 'playing',
+    });
   }
 
   function routeCorrectly() {

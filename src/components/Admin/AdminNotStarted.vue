@@ -1,8 +1,8 @@
 <template>
   <div class="clamped">
-    <p>No synchronized game is currently in progress, click below to start a game. Doing
+    <p>No synchronized game is currently in progress, click below to create a game. Doing
       this will disallow free play while the game is in progress.</p>
-    <button @click="adminStore.startGame">Start Game</button>
+    <button @click="adminStore.createGame">Create Game</button>
   </div>
 </template>
 

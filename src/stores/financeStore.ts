@@ -129,8 +129,8 @@ export const useFinanceStore = defineStore('finance', () => {
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
       previousWorkers.labour * config.labourPay +
-      previousWorkers.skilled * config.skilledPay +
-      previousWorkers.electrician * config.electricianPay,
+        previousWorkers.skilled * config.skilledPay +
+        previousWorkers.electrician * config.electricianPay,
     );
 
     // Equipment costs
@@ -176,7 +176,7 @@ export const useFinanceStore = defineStore('finance', () => {
     addInterestToLoan(
       hasActiveLoan.value(gameStore.week + 1)
         ? config.loanInterest *
-        (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
+            (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
         : 0,
     );
 
@@ -219,9 +219,9 @@ export const useFinanceStore = defineStore('finance', () => {
     () => activityStore.allActivitiesDone(),
     (finishedNow, finishedBefore) => {
       if (!finishedBefore && finishedNow) {
-        incomingTimeline.add(bidStore.price * config.allActivitesCompleteReward, gameStore.week - 1);
+        incomingTimeline.add(bidStore.price * config.allActivitesCompleteReward, gameStore.week);
       } else if (finishedBefore && !finishedNow) {
-        incomingTimeline.add(-bidStore.price * config.allActivitesCompleteReward, gameStore.week - 1);
+        incomingTimeline.add(-bidStore.price * config.allActivitesCompleteReward, gameStore.week);
       }
     },
   );
@@ -263,7 +263,12 @@ export const useFinanceStore = defineStore('finance', () => {
   }
 
   async function updateDatabase() {
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin || gameStore.stopUpdates) {
+    if (
+      !gameStore.synchronized ||
+      !pocketbase.authStore.isValid ||
+      pocketbase.authStore.model!.admin ||
+      gameStore.stopUpdates
+    ) {
       loading.value = false;
       return;
     }
@@ -324,5 +329,6 @@ export const useFinanceStore = defineStore('finance', () => {
     repayLoan,
     applyWeeklyFinances,
     connectWithDatabase,
+    updateDatabase,
   };
 });

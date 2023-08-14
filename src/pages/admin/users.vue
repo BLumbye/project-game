@@ -6,7 +6,7 @@
   </div>
   <div v-else
        class="clamped">
-    <h3>Users ({{ adminStore.users.length }})</h3>
+    <h2>Users ({{ adminStore.users.length }})</h2>
     <div class="users">
       <div v-for="user in adminStore.users.sort((a, b) => a.username.localeCompare(b.username))"
            :key="user.id"
@@ -16,17 +16,15 @@
     </div>
     <div class="buttons">
       <button @click="addUsersModal?.open">Add More Users</button>
-      <button @click="adminStore.startAcceptingBids">Start Accepting Bids</button>
     </div>
   </div>
-  <AddUsersDialog ref="addUsersModal" />
 </template>
 
 <script setup lang="ts">
 import AddUsersDialog from '~/components/Admin/AddUsersDialog.vue';
 
 const adminStore = useAdminStore();
-const addUsersModal = ref<typeof AddUsersDialog | null>(null);
+const addUsersModal = inject('addUsersModal', ref<typeof AddUsersDialog | null>(null));
 </script>
 
 <style scoped lang="postcss">

@@ -8,6 +8,7 @@ import routes from '~pages';
 import FloatingVue from 'floating-vue';
 import 'floating-vue/dist/style.css';
 import { createVuetify } from 'vuetify';
+import { initializeChartjs } from '~/plugins/chartjs';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -21,5 +22,7 @@ app.use(FloatingVue);
 app.use(router);
 app.use(pinia);
 app.use(createVuetify());
+
+initializeChartjs();
 
 app.mount('#app');

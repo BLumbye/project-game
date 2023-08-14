@@ -39,7 +39,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
   function setDeliveryStatus(type: EquipmentType, status: EquipmentStatus, deliveryType?: DeliveryType, week?: number) {
     deliveryType ??= equipment.value[type].deliveryType;
     timeline.set(
-      { ...timeline.get.value(), [type]: { ...timeline.getReduced.value()![type], status, deliveryType } },
+      { ...timeline.get.value(week), [type]: { ...timeline.getReduced.value(week)![type], status, deliveryType } },
       week,
     );
   }

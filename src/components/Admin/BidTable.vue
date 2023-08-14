@@ -1,54 +1,98 @@
 <template>
-  <p v-if="loading">Loading...</p>
-  <table v-else>
-    <thead>
-      <tr v-for="headerGroup in table.getHeaderGroups()"
-          :key="headerGroup.id">
-        <th v-for="header in headerGroup.headers"
-            :key="header.id"
-            :colSpan="header.colSpan"
-            :class="header.column.getCanSort() ? 'th-sortable' : ''"
-            @click="header.column.getToggleSortingHandler()?.($event)">
-          <template v-if="!header.isPlaceholder">
-            <FlexRender :render="header.column.columnDef.header"
-                        :props="header.getContext()" />
-            {{
-              { asc: ' 🔼', desc: ' 🔽' }[
-                header.column.getIsSorted() as string
-              ]
-            }}
-          </template>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="row in table.getRowModel().rows"
-          :key="row.id">
-        <td v-for="cell in row.getVisibleCells()"
-            :key="cell.id">
-          <FlexRender :render="cell.column.columnDef.cell"
-                      :props="cell.getContext()" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <AdminTable :loading="loading"
+              :table="table">
+    <template #charts>
+      <details>
+        <summary>Price Distribution</summary>
+        <div class="content">
+          <Bar :options="priceDistributionOptions"
+               :data="priceDistributionData" />
+        </div>
+      </details>
+      <details>
+        <summary>Duration Distribution</summary>
+        <div class="content">
+          <Bar :options="durationDistributionOptions"
+               :data="durationDistributionData" />
+        </div>
+      </details>
+    </template>
+  </AdminTable>
 </template>
 
 <script setup lang="ts">
-import { useVueTable, createColumnHelper, getCoreRowModel, FlexRender, SortingState, getSortedRowModel, Table, CellContext } from '@tanstack/vue-table';
+import { useVueTable, createColumnHelper, getCoreRowModel, SortingState, getSortedRowModel, Table, CellContext } from '@tanstack/vue-table';
 import { Bid } from '~/types/types';
 import { validate, and, isNumber, isWholeNumber, asNumber, isPositive } from '~/utils/validation';
+import { Bar } from 'vue-chartjs';
+import { BarControllerChartOptions, ChartData, ChartOptions, CoreChartOptions, DatasetChartOptions, ElementChartOptions, PluginChartOptions, ScaleChartOptions, plugins } from 'chart.js'
+import { _DeepPartialObject } from 'chart.js/dist/types/utils';
 
-const gameStore = useGameStore();
 const adminStore = useAdminStore();
 
 const inputCell = (info: CellContext<Bid, number>) => {
   return h('input', {
     value: info.getValue(),
     onBeforeinput: (evt: InputEvent) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent),
-    onInput: (e: InputEvent) => adminStore.updateBid(info.row.original.id, Number((e.target as HTMLInputElement).value), info.column.id as 'bidPrice' | 'bidDuration' | 'expectedPrice' | 'expectedDuration')
+    onInput: (e: InputEvent) => adminStore.updateBid(info.row.original.id, Number((e.target as HTMLInputElement).value))
   });
 }
+
+type BarOptions = _DeepPartialObject<CoreChartOptions<"bar"> & ElementChartOptions<"bar"> & PluginChartOptions<"bar"> & DatasetChartOptions<"bar"> & ScaleChartOptions<"bar"> & BarControllerChartOptions>;
+type BarData = ChartData<"bar", (number | [number, number] | null)[], unknown>;
+
+const priceDistributionOptions: BarOptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+}
+
+const priceDistributionData = computed<BarData>(() => {
+  const sortedBids = adminStore.bids.sort((a, b) => a.price - b.price);
+  const labels = sortedBids.map(bid => adminStore.users.find(user => user.id === bid.userID)?.username);
+  const datasets = [{ data: sortedBids.map(bid => bid.price), backgroundColor: '#4285f4' }];
+  return { labels, datasets };
+});
+
+const durationDistributionOptions: BarOptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+  scales: {
+    x: {
+      type: 'linear',
+      ticks: {
+        precision: 0,
+      }
+    },
+    y: {
+      type: 'linear',
+      ticks: {
+        precision: 0,
+      }
+    },
+  }
+}
+
+const durationDistributionData = computed<BarData>(() => {
+  const data: { x: number, y: number }[] = [];
+  adminStore.bids.forEach(({ promisedDuration }) => {
+    const group = data.find(group => group.x === promisedDuration);
+    if (group) {
+      group.y++;
+    } else {
+      data.push({ x: promisedDuration, y: 1 });
+    }
+  });
+  const datasets = [{ data, backgroundColor: '#4285f4' }];
+  return { datasets } as unknown as BarData;
+});
 
 const columnHelper = createColumnHelper<Bid>();
 const columns = [
@@ -81,7 +125,12 @@ const columns = [
     id: 'revisedPrice',
     cell: info => inputCell(info),
     header: 'Revised Price',
-  })
+  }),
+  columnHelper.accessor(row => row.price === row.revisedPrice ? 'Yes' : 'Rejected', {
+    id: 'bidAccepted',
+    cell: info => info.getValue(),
+    header: 'Bid Accepted?',
+  }),
 ];
 
 const sorting = ref<SortingState>([]);
@@ -122,36 +171,4 @@ if (adminStore.users.length > 0) {
 }
 </script>
 
-<style scoped lang="postcss">
-.th-sortable {
-  cursor: pointer;
-  user-select: none;
-}
-
-table {
-  --table-border-color: #ccc;
-  --odd-row-color: #333;
-
-  border-collapse: collapse;
-  border: 1px solid var(--table-border-color);
-
-  & td,
-  & th {
-    padding: 0.5rem;
-    text-align: left;
-  }
-
-  & thead {
-    border-bottom: 1px solid var(--table-border-color);
-  }
-
-  & tbody tr:nth-child(odd) {
-    background-color: var(--odd-row-color);
-  }
-
-  @media (prefers-color-scheme: light) {
-    --table-border-color: #555;
-    --odd-row-color: #eee;
-  }
-}
-</style>
+<style scoped lang="postcss"></style>
