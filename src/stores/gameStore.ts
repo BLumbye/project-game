@@ -35,6 +35,7 @@ export const useGameStore = defineStore('game', () => {
   const decisionForm = computed(() => week.value + 1);
 
   const gameOver = computed(() => gameWon.value || week.value >= config.duration);
+  const stopUpdates = ref(false); //One final update before not updating server and sheets anymore.
 
   // Actions
 
@@ -42,6 +43,7 @@ export const useGameStore = defineStore('game', () => {
    * Progresses the week when the player is done with the decision form
    */
   function nextWeek() {
+    if (useGameStore().gameWon && stopUpdates) return;
     activitiesStore.progressActivities();
     financeStore.applyWeeklyFinances();
     if (synchronized.value) {
@@ -52,6 +54,8 @@ export const useGameStore = defineStore('game', () => {
     if (synchronized.value) {
       toggleReady(false);
     }
+
+    if (useGameStore().gameWon) stopUpdates.value = true;
   }
 
   function toggleReady(value?: boolean) {
@@ -186,6 +190,7 @@ export const useGameStore = defineStore('game', () => {
     gameState,
     gameWon,
     gameOver,
+    stopUpdates,
     nextWeek,
     toggleReady,
     routeCorrectly,

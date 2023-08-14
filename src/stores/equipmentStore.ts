@@ -82,7 +82,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
   }
 
   async function updateDatabase() {
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin || gameStore.stopUpdates) {
       loading.value = false;
       return;
     }

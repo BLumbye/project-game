@@ -129,8 +129,8 @@ export const useFinanceStore = defineStore('finance', () => {
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
       previousWorkers.labour * config.labourPay +
-        previousWorkers.skilled * config.skilledPay +
-        previousWorkers.electrician * config.electricianPay,
+      previousWorkers.skilled * config.skilledPay +
+      previousWorkers.electrician * config.electricianPay,
     );
 
     // Equipment costs
@@ -176,7 +176,7 @@ export const useFinanceStore = defineStore('finance', () => {
     addInterestToLoan(
       hasActiveLoan.value(gameStore.week + 1)
         ? config.loanInterest *
-            (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
+        (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
         : 0,
     );
 
@@ -263,7 +263,7 @@ export const useFinanceStore = defineStore('finance', () => {
   }
 
   async function updateDatabase() {
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
+    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin || gameStore.stopUpdates) {
       loading.value = false;
       return;
     }
