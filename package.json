@@ -14,6 +14,7 @@
   "dependencies": {
     "@tanstack/vue-table": "^8.9.3",
     "@vueuse/core": "^10.2.1",
+    "exceljs": "^4.3.0",
     "file-saver": "^2.0.5",
     "floating-vue": "2.0.0-beta.24",
     "pinia": "^2.1.3",

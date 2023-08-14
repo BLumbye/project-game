@@ -205,6 +205,17 @@ export const useActivitiesStore = defineStore('activities', () => {
     };
   });
 
+  const totalProgress = computed(() => (week?: number) => {
+    week ??= gameStore.week;
+    const activities = activitiesAtWeek.value(week);
+    return (
+      activities.reduce(
+        (totalProgress, activity) => totalProgress + activity.progress / getDuration.value(activity, week),
+        0,
+      ) / activities.length
+    );
+  });
+
   // Actions
 
   /**
@@ -239,7 +250,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         activity.requirements.equipment.forEach((equipment) =>
           equipmentStore.setDeliveryStatus(
             equipment,
-            activityDone ? 'delivered' : 'ordered',
+            activityDone ? 'delivered' : equipmentStore.equipment[equipment].status,
             undefined,
             gameStore.week + 1,
           ),
@@ -263,17 +274,17 @@ export const useActivitiesStore = defineStore('activities', () => {
    * The duration modification is the time added or subtracted from the duration of an activity.
    */
   const getEventDurationModification = computed(() => {
-    return (activity: ConfigActivity, week?: number) => {
+    return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
       week ??= gameStore.week;
+      activityCompletion ??= weekActivityDone.value;
       let durationModification = 0;
       for (const event of config.events) {
         if (
-          weekActivityDone.value[activity.label] !== undefined &&
-          weekActivityDone.value[activity.label] <= event.week
+          (activityCompletion[activity.label] !== undefined && activityCompletion[activity.label] <= event.week) ||
+          event.week > week
         ) {
           continue;
         }
-        if (event.week > week) continue;
         event.effects?.forEach((effect) => {
           if (effect.activityLabels.includes(activity.label) && effect.durationModification !== undefined) {
             durationModification += effect.durationModification;
@@ -289,27 +300,24 @@ export const useActivitiesStore = defineStore('activities', () => {
    * The duration modification is the time added or subtracted from the duration of an activity.
    */
   const getEventWorkersModification = computed(() => {
-    return (activity: ConfigActivity, week?: number) => {
+    return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
       week ??= gameStore.week;
-      let workersModification: Partial<Record<WorkerType, number>> = {
+      activityCompletion ??= weekActivityDone.value;
+      let workersModification: Record<WorkerType, number> = {
         labour: 0,
         skilled: 0,
         electrician: 0,
       };
-      if (weekActivityDone.value[activity.label] !== undefined && weekActivityDone.value[activity.label] <= week) {
+      if (activityCompletion[activity.label] !== undefined && activityCompletion[activity.label] <= week) {
         return workersModification;
       }
       for (const event of config.events) {
         if (event.week > week) continue;
         event.effects?.forEach((effect) => {
-          if (effect.activityLabels.includes(activity.label) && effect.workersModification !== undefined) {
-            if (effect.workersModification.labour !== undefined && workersModification.labour !== undefined)
-              workersModification.labour += effect.workersModification.labour;
-            if (effect.workersModification.skilled !== undefined && workersModification.skilled !== undefined)
-              workersModification.skilled += effect.workersModification.skilled;
-            if (effect.workersModification.electrician !== undefined && workersModification.electrician !== undefined)
-              workersModification.electrician += effect.workersModification.electrician;
-          }
+          if (!effect.activityLabels.includes(activity.label) || effect.workersModification === undefined) return;
+          workersModification.labour += effect.workersModification.labour || 0;
+          workersModification.skilled += effect.workersModification.skilled || 0;
+          workersModification.electrician += effect.workersModification.electrician || 0;
         });
       }
       return workersModification;
@@ -458,6 +466,18 @@ export const useActivitiesStore = defineStore('activities', () => {
         );
       }
     });
+
+    // Update total progress
+    updateExistingOrCreate(
+      collections.totalProgress,
+      `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week}`,
+      {
+        user: pocketbase.authStore.model!.id,
+        game_id: gameStore.gameID,
+        week: gameStore.week,
+        progress: totalProgress.value(),
+      },
+    );
   }
 
   if (gameStore.settingsLoaded) {
@@ -500,8 +520,10 @@ export const useActivitiesStore = defineStore('activities', () => {
     totalWorkersAssigned,
     workerRequirementMet,
     requirementsMet,
+    totalProgress,
     allocateWorker,
     progressActivities,
     connectWithDatabase,
+    getEventDurationModification,
   };
 });

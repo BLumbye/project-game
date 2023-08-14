@@ -46,12 +46,12 @@ if (!gameStore.synchronized) {
 
 <style scoped lang="postcss">
 .container {
-  height: 100%;
   width: 100%;
   display: flex;
   justify-content: space-evenly;
   align-items: flex-start;
   gap: 1rem;
+  padding-bottom: 1rem;
 
   @media (max-width: 1050px) {
     flex-direction: column;

@@ -7,7 +7,7 @@
     <span v-if="$route.name === 'game' && ['getting_bids', 'reviewing_bids'].includes(gameStore.gameState!)">
       Pre-Game Survey
     </span>
-    <span v-if="$route.name === 'admin'">
+    <span v-if="isAdmin()">
       Admin Panel
     </span>
     <div class="right-side"
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { pocketbase } from '~/pocketbase';
+import { pocketbase, isAdmin } from '~/pocketbase';
 
 const gameStore = useGameStore();
 const router = useRouter();

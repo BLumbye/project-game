@@ -24,8 +24,7 @@
       <span>{{ activity.allocation.electrician }}</span>
     </template>
     <span>Total</span>
-    <span>{{ (progressActivities.reduce((completion, activity) => completion + (activity.progress /
-      activityStore.getDuration(activity)), 0) / activities.length * 100).toFixed(0) }}%</span>
+    <span>{{ (activityStore.totalProgress(week - 1) * 100).toFixed(0) }}%</span>
     <span>{{ activityStore.totalWorkersAssigned('labour', week - 2) }}</span>
     <span>{{ activityStore.totalWorkersAssigned('skilled', week - 2) }}</span>
     <span>{{ activityStore.totalWorkersAssigned('electrician', week - 2) }}</span>

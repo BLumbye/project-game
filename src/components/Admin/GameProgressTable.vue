@@ -5,66 +5,42 @@
 
 <script setup lang="ts">
 import { useVueTable, createColumnHelper, getCoreRowModel, SortingState, getSortedRowModel, Table, CellContext } from '@tanstack/vue-table';
-import { Bid } from '~/types/types';
-import { validate, and, isNumber, isWholeNumber, asNumber, isPositive } from '~/utils/validation';
+import { AdminGameState } from '~/types/types';
 
 const adminStore = useAdminStore();
 
-const inputCell = (info: CellContext<Bid, number>) => {
-  return h('input', {
-    value: info.getValue(),
-    onBeforeinput: (evt: InputEvent) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent),
-    onInput: (e: InputEvent) => adminStore.updateBid(info.row.original.id, Number((e.target as HTMLInputElement).value))
-  });
-}
-
-const columnHelper = createColumnHelper<Bid>();
+const columnHelper = createColumnHelper<AdminGameState>();
 const columns = [
   columnHelper.accessor(row => adminStore.users.find(user => user.id === row.userID)?.username, {
     id: 'username',
     cell: info => info.getValue(),
     header: 'Username',
   }),
-  columnHelper.accessor(row => row.price, {
-    id: 'price',
+  columnHelper.accessor(row => row.status, {
+    id: 'status',
     cell: info => info.getValue(),
-    header: 'Price',
+    header: 'Status',
   }),
-  columnHelper.accessor(row => row.promisedDuration, {
-    id: 'promisedDuration',
+  columnHelper.accessor(row => `${(row.progress * 100).toFixed(0)}%`, {
+    id: 'progress',
     cell: info => info.getValue(),
-    header: 'Promised Duration',
+    header: 'Progress',
   }),
-  columnHelper.accessor(row => row.expectedCost, {
-    id: 'expectedCost',
+  columnHelper.accessor(row => row.ready ? 'Yes' : 'No', {
+    id: 'ready',
     cell: info => info.getValue(),
-    header: 'Expected Cost',
-  }),
-  columnHelper.accessor(row => row.expectedDuration, {
-    id: 'expectedDuration',
-    cell: info => info.getValue(),
-    header: 'Expected Duration',
-  }),
-  columnHelper.accessor(row => row.revisedPrice, {
-    id: 'revisedPrice',
-    cell: info => inputCell(info),
-    header: 'Revised Price',
-  }),
-  columnHelper.accessor(row => row.price === row.revisedPrice ? 'Yes' : 'Rejected', {
-    id: 'bidAccepted',
-    cell: info => info.getValue(),
-    header: 'Bid Accepted?',
+    header: 'Ready',
   }),
 ];
 
 const sorting = ref<SortingState>([]);
 
-let table: Table<Bid>;
+let table: Table<AdminGameState>;
 
 const createTable = () => {
   table = useVueTable({
     get data() {
-      return adminStore.bids;
+      return adminStore.gameStates;
     },
     columns,
     state: {
