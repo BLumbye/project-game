@@ -49,6 +49,7 @@ export const useGameStore = defineStore('game', () => {
     if (synchronized.value) {
       workersStore.updateDatabase();
       equipmentStore.updateDatabase();
+      updateSummary();
     }
     week.value++;
     if (synchronized.value) {
@@ -150,6 +151,18 @@ export const useGameStore = defineStore('game', () => {
       nextWeek();
     }
     ready.value = isReady;
+  }
+
+  function updateSummary() {
+    console.log('updating summary', gameOver.value ? (gameWon.value ? 'won' : 'lost') : 'playing');
+    updateExistingOrCreate(collections.gameSummary, `user.username="${pocketbase.authStore.model!.username}"`, {
+      user: pocketbase.authStore.model!.id,
+      game_id: gameID.value,
+      total_balance: financeStore.balanceAtWeek(),
+      total_loaned: financeStore.loanTimeline.getReduced(),
+      total_repaid: financeStore.loanRepayTimeline.getReduced(),
+      status: gameOver.value ? (gameWon.value ? 'won' : 'lost') : 'playing',
+    });
   }
 
   function routeCorrectly() {

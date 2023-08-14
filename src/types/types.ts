@@ -67,4 +67,34 @@ export interface Bid {
   revisedPrice: number;
 }
 
+export interface SurveyAnswer {
+  id: string;
+  userID: string;
+  projectType: string;
+  caseIndustry: string;
+  location: string;
+  profitConfidence: number;
+  timeConfidence: number;
+  topPerformerConfidence: number;
+  projectAbility: string;
+  projectKnowledge: string;
+  superiorKnowledge: string;
+}
+
+export interface AdminGameState {
+  userID: string;
+  status: 'playing' | 'won' | 'lost' | 'not_started' | 'disconnected';
+  progress: number;
+  ready: boolean;
+}
+
+export interface GameSummary {
+  id: string;
+  userID: string;
+  totalBalance: number;
+  totalLoaned: number;
+  totalRepaid: number;
+  status: 'playing' | 'won' | 'lost';
+}
+
 export type GameState = 'adding_users' | 'getting_bids' | 'reviewing_bids' | 'in_progress' | 'finished';

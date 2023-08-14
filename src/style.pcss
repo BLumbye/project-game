@@ -18,13 +18,14 @@
   font-weight: 400;
   color-scheme: light dark;
   color: var(--text-color);
-  background-color: #242424;
+  background-color: var(--background-color);
   font-synthesis: none;
   text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-size-adjust: 100%;
 
+  --background-color: #242424;
   --boxed-background-color: #333;
   --text-color: rgba(255 255 255 / 87%);
   --color-error: #ff6464;
@@ -131,8 +132,7 @@ hr {
 
 @media (prefers-color-scheme: light) {
   :root {
-    background-color: #fff;
-
+    --background-color: #fff;
     --boxed-background-color: #eee;
     --text-color: #213547;
   }
@@ -148,13 +148,9 @@ hr {
 
 dialog {
   color: var(--text-color);
-  background-color: #242424;
+  background-color: var(--background-color);
   border-radius: 8px;
   border: 1px solid #646cff;
-
-  @media (prefers-color-scheme: light) {
-    background-color: #fff;
-  }
 }
 
 .error-message {
@@ -223,4 +219,79 @@ select {
 
 .v-slider-thumb__label {
   transform: translateX(-50%);
+}
+
+.table-export-buttons {
+  margin-block: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  width: 100%;
+}
+
+.admin-table-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  min-height: 0;
+}
+
+.admin-table-scroll-container {
+  --table-border-color: #ccc;
+
+  overflow-x: auto;
+  position: relative;
+  max-width: 100%;
+  border: 1px solid var(--table-border-color);
+
+  @media (prefers-color-scheme: light) {
+    --table-border-color: #555;
+  }
+}
+
+.admin-table {
+  --even-row-color: var(--background-color);
+  --odd-row-color: #333;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  & td,
+  & th {
+    padding: 0.5rem;
+    text-align: left;
+    background-color: var(--even-row-color);
+  }
+
+  & th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-bottom: 1px solid var(--table-border-color);
+  }
+
+  & td:first-child {
+    position: sticky;
+    z-index: 1;
+    left: 0;
+  }
+
+  & th:first-child {
+    position: sticky;
+    z-index: 3;
+    left: 0;
+  }
+
+  & tbody tr:nth-child(odd) td {
+    background-color: var(--odd-row-color);
+  }
+
+  @media (prefers-color-scheme: light) {
+    --odd-row-color: #eee;
+  }
+}
+
+.th-sortable {
+  cursor: pointer;
+  user-select: none;
 }

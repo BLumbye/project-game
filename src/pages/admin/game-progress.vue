@@ -1,6 +1,9 @@
 <template>
-  <p>Current week: {{ gameStore.week }}</p>
-  <button @click="adminStore.progressWeek()">Go to next week</button>
+  <h3>Game Progress (week {{ gameStore.week }})</h3>
+  <p class="no-submissions"
+     v-if="adminStore.gameStates.length === 0">No users connected...</p>
+  <GameProgressTable class="progress-table"
+                     v-else />
 </template>
 
 <script setup lang="ts">

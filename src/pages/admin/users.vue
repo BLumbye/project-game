@@ -16,17 +16,15 @@
     </div>
     <div class="buttons">
       <button @click="addUsersModal?.open">Add More Users</button>
-      <button @click="adminStore.startAcceptingBids">Start Accepting Bids</button>
     </div>
   </div>
-  <AddUsersDialog ref="addUsersModal" />
 </template>
 
 <script setup lang="ts">
 import AddUsersDialog from '~/components/Admin/AddUsersDialog.vue';
 
 const adminStore = useAdminStore();
-const addUsersModal = ref<typeof AddUsersDialog | null>(null);
+const addUsersModal = inject('addUsersModal', ref<typeof AddUsersDialog | null>(null));
 </script>
 
 <style scoped lang="postcss">

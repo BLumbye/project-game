@@ -5,66 +5,74 @@
 
 <script setup lang="ts">
 import { useVueTable, createColumnHelper, getCoreRowModel, SortingState, getSortedRowModel, Table, CellContext } from '@tanstack/vue-table';
-import { Bid } from '~/types/types';
-import { validate, and, isNumber, isWholeNumber, asNumber, isPositive } from '~/utils/validation';
+import { SurveyAnswer } from '~/types/types';
 
 const adminStore = useAdminStore();
 
-const inputCell = (info: CellContext<Bid, number>) => {
-  return h('input', {
-    value: info.getValue(),
-    onBeforeinput: (evt: InputEvent) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent),
-    onInput: (e: InputEvent) => adminStore.updateBid(info.row.original.id, Number((e.target as HTMLInputElement).value))
-  });
-}
-
-const columnHelper = createColumnHelper<Bid>();
+const columnHelper = createColumnHelper<SurveyAnswer>();
 const columns = [
   columnHelper.accessor(row => adminStore.users.find(user => user.id === row.userID)?.username, {
     id: 'username',
     cell: info => info.getValue(),
     header: 'Username',
   }),
-  columnHelper.accessor(row => row.price, {
-    id: 'price',
+  columnHelper.accessor(row => row.projectType, {
+    id: 'project-type',
     cell: info => info.getValue(),
-    header: 'Price',
+    header: 'Project Type',
+    minSize: 200,
   }),
-  columnHelper.accessor(row => row.promisedDuration, {
-    id: 'promisedDuration',
+  columnHelper.accessor(row => row.caseIndustry, {
+    id: 'case-industry',
     cell: info => info.getValue(),
-    header: 'Promised Duration',
+    header: 'Case Industry',
+    minSize: 250,
   }),
-  columnHelper.accessor(row => row.expectedCost, {
-    id: 'expectedCost',
+  columnHelper.accessor(row => row.location, {
+    id: 'location',
     cell: info => info.getValue(),
-    header: 'Expected Cost',
+    header: 'Location',
   }),
-  columnHelper.accessor(row => row.expectedDuration, {
-    id: 'expectedDuration',
+  columnHelper.accessor(row => row.profitConfidence, {
+    id: 'profit-confidence',
     cell: info => info.getValue(),
-    header: 'Expected Duration',
+    header: 'Profit Confidence',
   }),
-  columnHelper.accessor(row => row.revisedPrice, {
-    id: 'revisedPrice',
-    cell: info => inputCell(info),
-    header: 'Revised Price',
-  }),
-  columnHelper.accessor(row => row.price === row.revisedPrice ? 'Yes' : 'Rejected', {
-    id: 'bidAccepted',
+  columnHelper.accessor(row => row.timeConfidence, {
+    id: 'time-confidence',
     cell: info => info.getValue(),
-    header: 'Bid Accepted?',
+    header: 'Time Confidence',
+  }),
+  columnHelper.accessor(row => row.topPerformerConfidence, {
+    id: 'top-performer-confidence',
+    cell: info => info.getValue(),
+    header: 'Top Performer Confidence',
+  }),
+  columnHelper.accessor(row => row.projectAbility, {
+    id: 'project-ability',
+    cell: info => info.getValue(),
+    header: 'Project Ability',
+  }),
+  columnHelper.accessor(row => row.projectKnowledge, {
+    id: 'project-knowledge',
+    cell: info => info.getValue(),
+    header: 'Project Knowledge',
+  }),
+  columnHelper.accessor(row => row.superiorKnowledge, {
+    id: 'superior-knowledge',
+    cell: info => info.getValue(),
+    header: 'Superior Knowledge',
   }),
 ];
 
 const sorting = ref<SortingState>([]);
 
-let table: Table<Bid>;
+let table: Table<SurveyAnswer>;
 
 const createTable = () => {
   table = useVueTable({
     get data() {
-      return adminStore.bids;
+      return adminStore.surveyAnswers;
     },
     columns,
     state: {
