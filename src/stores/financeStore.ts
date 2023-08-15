@@ -80,7 +80,7 @@ export const useFinanceStore = defineStore('finance', () => {
   const loan = computed(() => loanAtWeek.value());
   const hasActiveLoan = computed(() => {
     return (week?: number) => {
-      week ??= gameStore.week - 1;
+      week ??= gameStore.week;
       return Math.abs(loanAtWeek.value(week)).toFixed(2) !== '0.00';
     };
   });
@@ -113,10 +113,10 @@ export const useFinanceStore = defineStore('finance', () => {
     week ??= gameStore.week;
     let numberValue = Number(value);
     if (/^[0-9]{1,3}%$/.test(value)) {
-      numberValue = (Number(value.slice(0, -1)) / 100) * loan.value * (1 + config.loanInterest);
+      numberValue = (Number(value.slice(0, -1)) / 100) * loanAtWeek.value(week);
     }
     if (isNaN(numberValue)) return;
-    numberValue = Math.max(0, Math.min(numberValue, loan.value * (1 + config.loanInterest)));
+    numberValue = Math.max(0, Math.min(numberValue, loanAtWeek.value(week)));
     loanRepayTimeline.set(numberValue, week + 1);
   }
 
@@ -169,7 +169,7 @@ export const useFinanceStore = defineStore('finance', () => {
           Object.values(activity.requirements.workers).some((worker) => worker !== undefined && worker !== 0) &&
           activityStore.workerRequirementMet(activity, gameStore.week),
       );
-    consumablesTimeline.set(consumables ? config.consumables : 0);
+    consumablesTimeline.set(consumables ? config.consumables : 0, gameStore.week + 1);
 
     // Project delayed penalty
     delayPenaltyTimeline.set(gameStore.week > bidStore.promisedDuration ? config.projectDelayPenalty : 0);

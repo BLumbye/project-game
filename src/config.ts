@@ -123,7 +123,7 @@ const activities: ConfigActivities = [
     requirements: {
       workers: {
         labour: 1,
-        skilled: 4,
+        skilled: 6,
       },
       activities: ['B', 'H'],
     },

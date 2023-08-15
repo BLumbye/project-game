@@ -26,8 +26,8 @@
            :disabled="gameStore.ready"
            @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
            class="loan-input"
-           :class="{ 'input-error': newLoan > 0 && currentLoan > 0 }"
-           v-tooltip="{ content: 'You can only take one loan at a time.', disabled: newLoan === 0 || currentLoan === 0 }"
+           :class="{ 'input-error': newLoan > 0 && financeStore.hasActiveLoan() }"
+           v-tooltip="{ content: 'You can only take one loan at a time.', disabled: newLoan === 0 || !financeStore.hasActiveLoan() }"
            id="new-loan-input"
            name="new-loan-input" />
     <label for="repay-input"
@@ -49,8 +49,6 @@ import Info from '~/assets/info-large.svg';
 
 const gameStore = useGameStore();
 const financeStore = useFinanceStore();
-
-const currentLoan = computed(() => financeStore.loanAtWeek(gameStore.week));
 
 const newLoan = ref(0);
 const repay = ref('0');

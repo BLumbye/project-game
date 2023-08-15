@@ -2,7 +2,7 @@
   <dialog ref="dialog"
           @click="backgroundClickClose">
     <div class="contents">
-      <h2>{{ gameStore.gameWon ? 'Projected Completed' : 'Project not completed in time' }}</h2>
+      <h2>{{ gameStore.gameWon ? 'Project Completed' : 'Project not completed in time' }}</h2>
       <p v-if="gameStore.gameWon">You've successfully completed the project in {{ gameStore.week }} weeks with {{
         financeStore.balanceAtWeek()
         >= 0 ? `${formattedBalance} in profit.` : `${formattedBalance} over budget.` }}</p>
