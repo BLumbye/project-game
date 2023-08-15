@@ -81,7 +81,7 @@ export const useFinanceStore = defineStore('finance', () => {
   const hasActiveLoan = computed(() => {
     return (week?: number) => {
       week ??= gameStore.week - 1;
-      return Math.abs(loan.value).toFixed(2) !== '0.00';
+      return Math.abs(loanAtWeek.value(week)).toFixed(2) !== '0.00';
     };
   });
 
@@ -165,7 +165,9 @@ export const useFinanceStore = defineStore('finance', () => {
       .activitiesAtWeek(gameStore.week)
       .some(
         (activity) =>
-          activity.requirements.workers !== undefined && activityStore.workerRequirementMet(activity, gameStore.week),
+          activity.requirements.workers !== undefined &&
+          Object.values(activity.requirements.workers).some((worker) => worker !== undefined && worker !== 0) &&
+          activityStore.workerRequirementMet(activity, gameStore.week),
       );
     consumablesTimeline.set(consumables ? config.consumables : 0);
 
