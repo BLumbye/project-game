@@ -12,6 +12,9 @@
   <template v-else-if="gameStore.gameState === 'reviewing_bids'">
     <h2 class="big-text">Survey submissions has been closed. Wait for the game to start.</h2>
   </template>
+  <template v-else-if="bidStore.price === 0">
+    <h2 class="big-text">You did not submit a bid in time, and can therefore not participate in the game.</h2>
+  </template>
   <template v-else-if="gameStore.gameState === 'in_progress'">
     <Event />
     <div class="container">
@@ -34,6 +37,7 @@ import { isAdmin, pocketbase } from '~/pocketbase';
 import ConfettiExplosion from 'vue-confetti-explosion';
 
 const gameStore = useGameStore();
+const bidStore = useBidStore();
 
 if ((gameStore.synchronized && !pocketbase.authStore.isValid) || isAdmin()) {
   console.log('redirecting from game...');
