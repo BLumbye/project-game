@@ -8,7 +8,7 @@ import routes from '~pages';
 import FloatingVue from 'floating-vue';
 import 'floating-vue/dist/style.css';
 import { createVuetify } from 'vuetify';
-import { initializeChartjs } from '~/plugins/chartjs';
+import { initializeChartjs } from '~/plugins/Chartjs';
 
 const router = createRouter({
   history: createWebHistory(),
