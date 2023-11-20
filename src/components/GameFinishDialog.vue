@@ -2,10 +2,10 @@
   <dialog ref="dialog"
           @click="backgroundClickClose">
     <div class="contents">
-      <h2>{{ gameStore.gameWon ? 'Projected Completed' : 'Project not completed in time' }}</h2>
+      <h2>{{ gameStore.gameWon ? 'Project Completed' : 'Project not completed in time' }}</h2>
       <p v-if="gameStore.gameWon">You've successfully completed the project in {{ gameStore.week }} weeks with {{
         financeStore.balanceAtWeek()
-        >= 0 ? `${formattedBalance} left over.` : `${formattedBalance} in debt.` }}</p>
+        >= 0 ? `${formattedBalance} under budget.` : `${formattedBalance} over budget.` }}</p>
       <template v-else>
         <p>The project was not completed because you failed to {{ loseReasons }} in time.</p>
         <WRAllocation v-if="!activitiesStore.allActivitiesDone() && gameStore.week > 1"
@@ -48,7 +48,7 @@ const loseReasons = computed(() => {
   return listFormat.format(reasons);
 })
 
-const formattedBalance = computed(() => currencyFormat.format(Math.abs(financeStore.balanceAtWeek())));
+const formattedBalance = computed(() => currencyFormat.format(Math.abs(financeStore.balanceAtWeek(gameStore.week+1))));
 
 const open = () => {
   dialog.value?.showModal();

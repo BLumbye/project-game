@@ -138,7 +138,9 @@ export const useFinanceStore = defineStore('finance', () => {
         .activitiesAtWeek(gameStore.week)
         .some(
           (activity) =>
-            activity.requirements.workers !== undefined && activityStore.workerRequirementMet(activity, gameStore.week),
+            activity.requirements.workers !== undefined &&
+            Object.values(activity.requirements.workers).some((worker) => worker !== undefined && worker !== 0) &&
+            activityStore.workerRequirementMet(activity, gameStore.week),
         )
     ) {
       consumablesTimeline.set(config.consumables);
