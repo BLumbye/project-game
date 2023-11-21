@@ -178,7 +178,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function routeCorrectly() {
-    console.log('routing');
+    console.log('routing', pocketbase.authStore.model);
     if (synchronized.value && !pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth')
       router.push({ name: 'auth' });
     else if (router.currentRoute.value.name !== 'admin' && isAdmin()) router.push({ name: 'admin' });

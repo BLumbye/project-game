@@ -48,7 +48,7 @@ const loseReasons = computed(() => {
   return listFormat.format(reasons);
 })
 
-const formattedBalance = computed(() => currencyFormat.format(Math.abs(financeStore.balanceAtWeek())));
+const formattedBalance = computed(() => currencyFormat.format(Math.abs(financeStore.balanceAtWeek(gameStore.week + 1))));
 
 const open = () => {
   dialog.value?.showModal();
