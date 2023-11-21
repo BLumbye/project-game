@@ -242,6 +242,10 @@ export const useFinanceStore = defineStore('finance', () => {
   };
 
   async function connectWithDatabase() {
+    // DISABLED
+    loading.value = false;
+    return;
+
     if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
       loading.value = false;
       return;

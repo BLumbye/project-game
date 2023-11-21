@@ -357,6 +357,10 @@ export const useActivitiesStore = defineStore('activities', () => {
 
   // Logic
   async function connectWithDatabase() {
+    // DISABLED
+    loading.value = false;
+    return;
+
     if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
       loading.value = false;
       return;

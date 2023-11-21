@@ -40,7 +40,7 @@ export const useBidStore = defineStore('bid', () => {
       return;
     }
 
-    // Get existing bid from database or create new one
+    // Get existing bid
     try {
       const record = await collections.bids.getFirstListItem(`user.username="${pocketbase.authStore.model!.username}"`);
       price.value = record.revised_price;

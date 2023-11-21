@@ -29,11 +29,12 @@ export const useAdminStore = defineStore('admin', () => {
       if (
         status === 'playing' &&
         readyStatus.value[user.id] !== undefined &&
-        readyStatus.value[user.id]!.week < gameStore.week - 1
+        readyStatus.value[user.id]!.week < gameStore.maxWeek! - 1
       )
         status = 'disconnected';
-      const progress = userProgress.value[user.id]?.slice(0, gameStore.week).findLast((val) => val !== 0) ?? 0;
-      const ready = (readyStatus.value[user.id]?.ready ?? false) && readyStatus.value[user.id]?.week === gameStore.week;
+      const progress = userProgress.value[user.id]?.slice(0, gameStore.maxWeek!).findLast((val) => val !== 0) ?? 0;
+      const ready =
+        (readyStatus.value[user.id]?.ready ?? false) && readyStatus.value[user.id]?.week === gameStore.maxWeek!;
       gameStates.push({
         userID: user.id,
         status,
@@ -74,7 +75,7 @@ export const useAdminStore = defineStore('admin', () => {
   }
 
   function progressWeek() {
-    collections.settings.update(gameStore.settingsRecordID!, { current_week: gameStore.week + 1 });
+    collections.settings.update(gameStore.settingsRecordID!, { current_week: gameStore.maxWeek! + 1 });
   }
 
   function finishGame() {

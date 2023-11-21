@@ -1,5 +1,5 @@
 <template>
-   <h2>Game Progress (week {{ gameStore.week }})</h2>
+   <h2>Game Progress (week {{ gameStore.maxWeek! }})</h2>
    <p class="no-submissions"
       v-if="adminStore.gameStates.length === 0">No users connected...</p>
    <GameProgressTable class="progress-table"

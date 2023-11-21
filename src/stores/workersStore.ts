@@ -52,6 +52,10 @@ export const useWorkersStore = defineStore('workers', () => {
 
   // Logic
   async function connectWithDatabase() {
+    // DISABLED
+    loading.value = false;
+    return;
+
     if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
       loading.value = false;
       return;
@@ -82,7 +86,12 @@ export const useWorkersStore = defineStore('workers', () => {
   }
 
   async function updateDatabase() {
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin || gameStore.stopUpdates) {
+    if (
+      !gameStore.synchronized ||
+      !pocketbase.authStore.isValid ||
+      pocketbase.authStore.model!.admin ||
+      gameStore.stopUpdates
+    ) {
       loading.value = false;
       return;
     }

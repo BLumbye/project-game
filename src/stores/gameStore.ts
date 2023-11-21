@@ -19,6 +19,7 @@ export const useGameStore = defineStore('game', () => {
   //Uses setup store
   // State
   const week = ref(0);
+  const maxWeek = ref<number | undefined>(undefined);
   const settingsLoaded = ref(false);
   const settingsRecordID = ref<string | undefined>(undefined);
   /**
@@ -82,6 +83,7 @@ export const useGameStore = defineStore('game', () => {
     synchronized.value = settingsRecord.synchronized;
     settingsRecordID.value = settingsRecord.id;
     gameID.value = settingsRecord.game_id;
+    maxWeek.value = settingsRecord.current_week;
     if (synchronized.value) {
       gameState.value = settingsRecord.game_state;
     }
@@ -94,43 +96,49 @@ export const useGameStore = defineStore('game', () => {
       if (data.record.synchronized !== synchronized.value) synchronized.value = data.record.synchronized;
       if (data.record.game_id !== gameID.value) gameID.value = data.record.game_id;
       if (data.record.game_state !== gameState.value) gameState.value = data.record.game_state;
-      if (data.record.current_week !== week.value) {
-        if (isAdmin()) {
-          week.value = data.record.current_week;
-        } else {
-          for (let i = week.value; i < data.record.current_week; i++) {
-            nextWeek();
-          }
+      if (data.record.current_week !== maxWeek.value) {
+        maxWeek.value = data.record.current_week;
+        if (synchronized.value && ready.value && week.value < maxWeek.value!) {
+          nextWeek();
         }
       }
+      // if (data.record.current_week !== week.value) {
+      //   if (isAdmin()) {
+      //     week.value = data.record.current_week;
+      //   } else {
+      //     for (let i = week.value; i < data.record.current_week; i++) {
+      //       nextWeek();
+      //     }
+      //   }
+      // }
     });
 
-    if (synchronized.value && !isAdmin()) {
-      if (
-        !activitiesStore.loading &&
-        !financeStore.loading &&
-        !workersStore.loading &&
-        !equipmentStore.loading &&
-        !bidStore.loading
-      ) {
-        fastForward(settingsRecord.current_week);
-      } else {
-        const loadWatcher = watchEffect(() => {
-          if (
-            !activitiesStore.loading &&
-            !financeStore.loading &&
-            !workersStore.loading &&
-            !equipmentStore.loading &&
-            !bidStore.loading
-          ) {
-            loadWatcher();
-            fastForward(settingsRecord.current_week);
-          }
-        });
-      }
-    } else if (synchronized.value) {
-      week.value = settingsRecord.current_week;
-    }
+    // if (synchronized.value && !isAdmin()) {
+    //   if (
+    //     !activitiesStore.loading &&
+    //     !financeStore.loading &&
+    //     !workersStore.loading &&
+    //     !equipmentStore.loading &&
+    //     !bidStore.loading
+    //   ) {
+    //     fastForward(settingsRecord.current_week);
+    //   } else {
+    //     const loadWatcher = watchEffect(() => {
+    //       if (
+    //         !activitiesStore.loading &&
+    //         !financeStore.loading &&
+    //         !workersStore.loading &&
+    //         !equipmentStore.loading &&
+    //         !bidStore.loading
+    //       ) {
+    //         loadWatcher();
+    //         fastForward(settingsRecord.current_week);
+    //       }
+    //     });
+    //   }
+    // } else if (synchronized.value) {
+    //   week.value = settingsRecord.current_week;
+    // }
 
     updateSummary();
 
@@ -178,7 +186,6 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function routeCorrectly() {
-    console.log('routing', pocketbase.authStore.model);
     if (synchronized.value && !pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth')
       router.push({ name: 'auth' });
     else if (router.currentRoute.value.name !== 'admin' && isAdmin()) router.push({ name: 'admin' });
@@ -206,6 +213,7 @@ export const useGameStore = defineStore('game', () => {
 
   return {
     week,
+    maxWeek,
     decisionForm,
     ready,
     synchronized,
