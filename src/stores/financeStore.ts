@@ -122,15 +122,15 @@ export const useFinanceStore = defineStore('finance', () => {
 
   function applyWeeklyFinances() {
     if (gameStore.week === 0) {
-      incomingTimeline.set(bidStore.price * config.startBudget, 0);
+      incomingTimeline.set(bidStore.price * config.payments.startBudget, 0);
     }
 
     // Worker pay
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
-      previousWorkers.labour * config.labourPay +
-        previousWorkers.skilled * config.skilledPay +
-        previousWorkers.electrician * config.electricianPay,
+      previousWorkers.labour * config.finances.labourPay +
+        previousWorkers.skilled * config.finances.skilledPay +
+        previousWorkers.electrician * config.finances.electricianPay,
     );
 
     // Equipment costs
@@ -140,25 +140,25 @@ export const useFinanceStore = defineStore('finance', () => {
     if (equipment.steelwork.status === 'ordered' && previousEquipment.steelwork.status !== 'ordered') {
       equipmentCost +=
         equipment.steelwork.deliveryType! === 'regular'
-          ? config.equipmentCost[0]
-          : config.equipmentCost[0] * config.expressMultiplier;
+          ? config.finances.equipmentCost[0]
+          : config.finances.equipmentCost[0] * config.finances.expressMultiplier;
     }
     if (equipment.interior.status === 'ordered' && previousEquipment.interior.status !== 'ordered') {
       equipmentCost +=
         equipment.interior.deliveryType! === 'regular'
-          ? config.equipmentCost[1]
-          : config.equipmentCost[1] * config.expressMultiplier;
+          ? config.finances.equipmentCost[1]
+          : config.finances.equipmentCost[1] * config.finances.expressMultiplier;
     }
     if (equipment.tbs.status === 'ordered' && previousEquipment.tbs.status !== 'ordered') {
       equipmentCost +=
         equipment.tbs.deliveryType! === 'regular'
-          ? config.equipmentCost[2]
-          : config.equipmentCost[2] * config.expressMultiplier;
+          ? config.finances.equipmentCost[2]
+          : config.finances.equipmentCost[2] * config.finances.expressMultiplier;
     }
     equipmentTimeline.set(equipmentCost);
 
     // Overhead charge
-    overheadTimeline.set(config.overhead);
+    overheadTimeline.set(config.finances.overhead);
 
     // Consumables charge: charge only if any workers are working
     const consumables = activityStore
@@ -169,22 +169,24 @@ export const useFinanceStore = defineStore('finance', () => {
           Object.values(activity.requirements.workers).some((worker) => worker !== undefined && worker !== 0) &&
           activityStore.workerRequirementMet(activity, gameStore.week),
       );
-    consumablesTimeline.set(consumables ? config.consumables : 0, gameStore.week + 1);
+    consumablesTimeline.set(consumables ? config.finances.consumables : 0, gameStore.week + 1);
 
     // Project delayed penalty
-    delayPenaltyTimeline.set(gameStore.week > bidStore.promisedDuration ? config.projectDelayPenalty : 0);
+    delayPenaltyTimeline.set(gameStore.week > bidStore.promisedDuration ? config.finances.projectDelayPenalty : 0);
 
     //Loan increase
     addInterestToLoan(
       hasActiveLoan.value(gameStore.week + 1)
-        ? config.loanInterest *
+        ? config.finances.loanInterest *
             (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
         : 0,
     );
 
     //Overdraft
     overdraftInterestTimeline.set(
-      balanceAtWeek.value(gameStore.week) < 0 ? config.overdraftInterest * -balanceAtWeek.value(gameStore.week) : 0,
+      balanceAtWeek.value(gameStore.week) < 0
+        ? config.finances.overdraftInterest * -balanceAtWeek.value(gameStore.week)
+        : 0,
     );
 
     if (gameStore.synchronized) updateDatabase();
@@ -206,10 +208,16 @@ export const useFinanceStore = defineStore('finance', () => {
   watch(
     () => activityStore.weekActivityDone,
     (newDone, oldDone) => {
-      if (oldDone[config.milestoneActivity] && !newDone[config.milestoneActivity]) {
-        incomingTimeline.add(-bidStore.price * config.milestoneReward, oldDone[config.milestoneActivity]);
-      } else if (!oldDone[config.milestoneActivity] && newDone[config.milestoneActivity]) {
-        incomingTimeline.add(bidStore.price * config.milestoneReward, newDone[config.milestoneActivity]);
+      if (oldDone[config.payments.milestoneActivity] && !newDone[config.payments.milestoneActivity]) {
+        incomingTimeline.add(
+          -bidStore.price * config.payments.milestoneReward,
+          oldDone[config.payments.milestoneActivity],
+        );
+      } else if (!oldDone[config.payments.milestoneActivity] && newDone[config.payments.milestoneActivity]) {
+        incomingTimeline.add(
+          bidStore.price * config.payments.milestoneReward,
+          newDone[config.payments.milestoneActivity],
+        );
       }
     },
   );
@@ -221,9 +229,9 @@ export const useFinanceStore = defineStore('finance', () => {
     () => activityStore.allActivitiesDone(),
     (finishedNow, finishedBefore) => {
       if (!finishedBefore && finishedNow) {
-        incomingTimeline.add(bidStore.price * config.allActivitesCompleteReward, gameStore.week);
+        incomingTimeline.add(bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
       } else if (finishedBefore && !finishedNow) {
-        incomingTimeline.add(-bidStore.price * config.allActivitesCompleteReward, gameStore.week);
+        incomingTimeline.add(-bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
       }
     },
   );
@@ -246,26 +254,26 @@ export const useFinanceStore = defineStore('finance', () => {
     loading.value = false;
     return;
 
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
-      loading.value = false;
-      return;
-    }
+    // if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
+    //   loading.value = false;
+    //   return;
+    // }
 
-    // Get existing finances from database
-    try {
-      const records = await collections.finance.getFullList({
-        filter: `user.username="${pocketbase.authStore.model!.username}"`,
-      });
-      for (let record of records) {
-        timelines[record.timeline as keyof typeof timelines].set(record.value, record.week);
-      }
-    } catch (error) {
-      if (!(error instanceof ClientResponseError) || error.status !== 404) {
-        throw error;
-      }
-    }
+    // // Get existing finances from database
+    // try {
+    //   const records = await collections.finance.getFullList({
+    //     filter: `user.username="${pocketbase.authStore.model!.username}"`,
+    //   });
+    //   for (let record of records) {
+    //     timelines[record.timeline as keyof typeof timelines].set(record.value, record.week);
+    //   }
+    // } catch (error) {
+    //   if (!(error instanceof ClientResponseError) || error.status !== 404) {
+    //     throw error;
+    //   }
+    // }
 
-    loading.value = false;
+    // loading.value = false;
   }
 
   async function updateDatabase() {

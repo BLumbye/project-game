@@ -17,7 +17,7 @@ const generateProgressTimelines = () => {
 const generateAllocationState = () => {
   const allocations: Record<string, Record<WorkerType, number>[]> = {};
   for (const activity of config.activities) {
-    allocations[activity.label] = Array.from({ length: config.duration + 1 }, () => ({
+    allocations[activity.label] = Array.from({ length: config.projectDuration + 1 }, () => ({
       labour: 0,
       skilled: 0,
       electrician: 0,
@@ -362,54 +362,54 @@ export const useActivitiesStore = defineStore('activities', () => {
     loading.value = false;
     return;
 
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
-      loading.value = false;
-      return;
-    }
+    // if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
+    //   loading.value = false;
+    //   return;
+    // }
 
-    // Get existing allocation from database
-    try {
-      const records = await collections.allocation.getFullList({
-        filter: `user.username="${pocketbase.authStore.model!.username}"`,
-      });
-      for (let record of records) {
-        allocations.value[record.activity][record.week][record.worker_type as WorkerType] = record.value || 0;
-      }
-    } catch (error) {
-      if (!(error instanceof ClientResponseError) || error.status !== 404) {
-        throw error;
-      }
-    }
+    // // Get existing allocation from database
+    // try {
+    //   const records = await collections.allocation.getFullList({
+    //     filter: `user.username="${pocketbase.authStore.model!.username}"`,
+    //   });
+    //   for (let record of records) {
+    //     allocations.value[record.activity][record.week][record.worker_type as WorkerType] = record.value || 0;
+    //   }
+    // } catch (error) {
+    //   if (!(error instanceof ClientResponseError) || error.status !== 404) {
+    //     throw error;
+    //   }
+    // }
 
-    // Get existing progress from database
-    try {
-      const records = await collections.progress.getFullList({
-        filter: `user.username="${pocketbase.authStore.model!.username}"`,
-      });
-      for (let record of records) {
-        progressTimelines[record.activity].set(record.progress, record.week);
-      }
-    } catch (error) {
-      if (!(error instanceof ClientResponseError) || error.status !== 404) {
-        throw error;
-      }
-    }
+    // // Get existing progress from database
+    // try {
+    //   const records = await collections.progress.getFullList({
+    //     filter: `user.username="${pocketbase.authStore.model!.username}"`,
+    //   });
+    //   for (let record of records) {
+    //     progressTimelines[record.activity].set(record.progress, record.week);
+    //   }
+    // } catch (error) {
+    //   if (!(error instanceof ClientResponseError) || error.status !== 404) {
+    //     throw error;
+    //   }
+    // }
 
-    // Get existing activity completion from database
-    try {
-      const records = await collections.activityCompletion.getFullList({
-        filter: `user.username="${pocketbase.authStore.model!.username}"`,
-      });
-      for (let record of records) {
-        weekActivityDone.value[record.activity] = record.week;
-      }
-    } catch (error) {
-      if (!(error instanceof ClientResponseError) || error.status !== 404) {
-        throw error;
-      }
-    }
+    // // Get existing activity completion from database
+    // try {
+    //   const records = await collections.activityCompletion.getFullList({
+    //     filter: `user.username="${pocketbase.authStore.model!.username}"`,
+    //   });
+    //   for (let record of records) {
+    //     weekActivityDone.value[record.activity] = record.week;
+    //   }
+    // } catch (error) {
+    //   if (!(error instanceof ClientResponseError) || error.status !== 404) {
+    //     throw error;
+    //   }
+    // }
 
-    loading.value = false;
+    // loading.value = false;
   }
 
   async function updateDatabase() {

@@ -264,7 +264,7 @@ export const useAdminStore = defineStore('admin', () => {
     // Total progress
     function updateProgress(data: any) {
       if (userProgress.value[data.user] === undefined) {
-        userProgress.value = { ...userProgress.value, [data.user]: Array(config.duration + 1).fill(0) };
+        userProgress.value = { ...userProgress.value, [data.user]: Array(config.projectDuration + 1).fill(0) };
         userProgress.value[data.user]![data.week] = data.progress;
       } else {
         userProgress.value[data.user]![data.week] = data.progress;

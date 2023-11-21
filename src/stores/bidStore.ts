@@ -16,7 +16,7 @@ export const useBidStore = defineStore('bid', () => {
 
   // Actions
   async function createBid(data: any) {
-    price.value = data.price > config.maxBid || data.price < config.minBid ? config.defaultBid : data.price;
+    price.value = data.price > config.bid.max || data.price < config.bid.min ? config.bid.default : data.price;
     promisedDuration.value = data.promised_duration;
 
     const record = await collections.bids.create({

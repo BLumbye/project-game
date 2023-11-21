@@ -5,9 +5,8 @@ import { ConfigActivities, WorkerType, EventEffect } from '../types/types';
  * @param labels
  * @param wt
  * @param n
- * @param activities
  */
-function addWorkers(labels: string[], wt: WorkerType[], n: number, activities: ConfigActivities): EventEffect[] {
+function addWorkers(labels: string[], wt: WorkerType[], n: number): EventEffect[] {
   const eventEffects: EventEffect[] = [];
   labels.forEach((l) => {
     eventEffects.push({

@@ -14,7 +14,7 @@ export const useWorkersStore = defineStore('workers', () => {
   const loading = ref(true);
   const workers = useStorage(
     'workers',
-    Array.from({ length: config.duration + 1 }, () => ({ labour: 0, skilled: 0, electrician: 0 })),
+    Array.from({ length: config.projectDuration + 1 }, () => ({ labour: 0, skilled: 0, electrician: 0 })),
   );
 
   // Getters
@@ -60,33 +60,33 @@ export const useWorkersStore = defineStore('workers', () => {
     loading.value = false;
     return;
 
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
-      loading.value = false;
-      return;
-    }
+    // if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
+    //   loading.value = false;
+    //   return;
+    // }
 
-    // Get existing workers from database
-    try {
-      const records = await collections.workers.getFullList({
-        filter: `user.username="${pocketbase.authStore.model!.username}"`,
-      });
-      for (let record of records) {
-        workers.value[record.week][record.worker_type as WorkerType] = record.change;
-      }
-    } catch (error) {
-      if (!(error instanceof ClientResponseError) || error.status !== 404) {
-        throw error;
-      }
-    }
+    // // Get existing workers from database
+    // try {
+    //   const records = await collections.workers.getFullList({
+    //     filter: `user.username="${pocketbase.authStore.model!.username}"`,
+    //   });
+    //   for (let record of records) {
+    //     workers.value[record.week][record.worker_type as WorkerType] = record.change;
+    //   }
+    // } catch (error) {
+    //   if (!(error instanceof ClientResponseError) || error.status !== 404) {
+    //     throw error;
+    //   }
+    // }
 
-    watch(
-      () => gameStore.ready,
-      () => {
-        if (gameStore.ready) updateDatabase();
-      },
-    );
+    // watch(
+    //   () => gameStore.ready,
+    //   () => {
+    //     if (gameStore.ready) updateDatabase();
+    //   },
+    // );
 
-    loading.value = false;
+    // loading.value = false;
   }
 
   async function updateDatabase() {

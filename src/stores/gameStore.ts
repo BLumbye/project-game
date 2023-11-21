@@ -36,7 +36,7 @@ export const useGameStore = defineStore('game', () => {
   // Getters
   const decisionForm = computed(() => week.value + 1);
 
-  const gameOver = computed(() => gameWon.value || week.value >= config.duration);
+  const gameOver = computed(() => gameWon.value || week.value >= config.projectDuration);
   const stopUpdates = ref(false); //One final update before not updating server and sheets anymore.
 
   // Actions

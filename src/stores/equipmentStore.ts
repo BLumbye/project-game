@@ -51,39 +51,39 @@ export const useEquipmentStore = defineStore('equipment', () => {
     loading.value = false;
     return;
 
-    if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
-      loading.value = false;
-      return;
-    }
+    // if (!gameStore.synchronized || !pocketbase.authStore.isValid || pocketbase.authStore.model!.admin) {
+    //   loading.value = false;
+    //   return;
+    // }
 
-    // Get existing equipment from database
-    try {
-      const records = await collections.equipment.getFullList({
-        filter: `user.username="${pocketbase.authStore.model!.username}"`,
-      });
-      for (let record of records) {
-        timeline.set(
-          {
-            ...timeline.get.value(record.week),
-            [record.equipment_type]: { status: record.status, deliveryType: record.delivery_type },
-          },
-          record.week,
-        );
-      }
-    } catch (error) {
-      if (!(error instanceof ClientResponseError) || error.status !== 404) {
-        throw error;
-      }
-    }
+    // // Get existing equipment from database
+    // try {
+    //   const records = await collections.equipment.getFullList({
+    //     filter: `user.username="${pocketbase.authStore.model!.username}"`,
+    //   });
+    //   for (let record of records) {
+    //     timeline.set(
+    //       {
+    //         ...timeline.get.value(record.week),
+    //         [record.equipment_type]: { status: record.status, deliveryType: record.delivery_type },
+    //       },
+    //       record.week,
+    //     );
+    //   }
+    // } catch (error) {
+    //   if (!(error instanceof ClientResponseError) || error.status !== 404) {
+    //     throw error;
+    //   }
+    // }
 
-    watch(
-      () => gameStore.ready,
-      () => {
-        if (gameStore.ready) updateDatabase();
-      },
-    );
+    // watch(
+    //   () => gameStore.ready,
+    //   () => {
+    //     if (gameStore.ready) updateDatabase();
+    //   },
+    // );
 
-    loading.value = false;
+    // loading.value = false;
   }
 
   async function updateDatabase() {

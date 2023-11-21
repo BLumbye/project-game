@@ -41,7 +41,7 @@ const actionButtonText = computed(() => {
   } else if (gameStore.gameState === 'reviewing_bids') {
     return 'Start game';
   } else if (gameStore.gameState === 'in_progress') {
-    return gameStore.maxWeek! === config.duration ? 'Finish game' : 'Go to next week';
+    return gameStore.maxWeek! === config.projectDuration ? 'Finish game' : 'Go to next week';
   } else if (gameStore.gameState === 'finished') {
     return 'Stop game session';
   } else {
@@ -58,9 +58,9 @@ function doAction() {
     adminStore.stopAcceptingBids();
   } else if (gameStore.gameState === 'reviewing_bids') {
     confirmModal.value!.confirm('Are you sure you want to start the game?', adminStore.startGame);
-  } else if (gameStore.gameState === 'in_progress' && gameStore.maxWeek! < config.duration) {
+  } else if (gameStore.gameState === 'in_progress' && gameStore.maxWeek! < config.projectDuration) {
     confirmModal.value!.confirm('Are you sure you want to progress to the next week?', adminStore.progressWeek);
-  } else if (gameStore.gameState === 'in_progress' && gameStore.maxWeek! === config.duration) {
+  } else if (gameStore.gameState === 'in_progress' && gameStore.maxWeek! === config.projectDuration) {
     confirmModal.value!.confirm('Are you sure you want to end the game?', adminStore.finishGame);
   } else if (gameStore.gameState === 'finished') {
     confirmModal.value!.confirm('Are you sure you want to disable synchronized mode?', adminStore.stopGameSession);
