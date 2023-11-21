@@ -14,16 +14,16 @@ export const useFinanceStore = defineStore('finance', () => {
   // State
   const loading = ref(true);
   //Timelines keep track of the finance through the weeks.
-  const incomingTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  const workersTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  const equipmentTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  const overheadTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  const consumablesTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  const delayPenaltyTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  const loanInterestTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  const overdraftInterestTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  const loanRepayTimeline = createWeeklyTimeline(0, sumReducer, 0);
-  const loanTimeline = createWeeklyTimeline(0, sumReducer, 0);
+  const incomingTimeline = createWeeklyTimeline('incomingTimeline', 0, sumReducer, 0);
+  const workersTimeline = createWeeklyTimeline('workersTimeline', 0, sumReducer, 0);
+  const equipmentTimeline = createWeeklyTimeline('equipmentTimeline', 0, sumReducer, 0);
+  const overheadTimeline = createWeeklyTimeline('overheadTimeline', 0, sumReducer, 0);
+  const consumablesTimeline = createWeeklyTimeline('consumablesTimeline', 0, sumReducer, 0);
+  const delayPenaltyTimeline = createWeeklyTimeline('delayPenaltyTimeline', 0, sumReducer, 0);
+  const loanInterestTimeline = createWeeklyTimeline('loanInterestTimeline', 0, sumReducer, 0);
+  const overdraftInterestTimeline = createWeeklyTimeline('overdraftInterestTimeline', 0, sumReducer, 0);
+  const loanRepayTimeline = createWeeklyTimeline('loanRepayTimeline', 0, sumReducer, 0);
+  const loanTimeline = createWeeklyTimeline('loanTimeline', 0, sumReducer, 0);
 
   // Getters
   const outgoingAtWeek = computed(() => {

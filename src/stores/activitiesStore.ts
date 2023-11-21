@@ -4,11 +4,12 @@ import { Activity, ConfigActivity, WorkerType } from '../types/types';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 import { ClientResponseError } from 'pocketbase';
 import { collections, deleteExisting, pocketbase, updateExistingOrCreate } from '~/pocketbase';
+import { useStorage } from '@vueuse/core';
 
 const generateProgressTimelines = () => {
   const timelines: Record<string, ReturnType<typeof createWeeklyTimeline<number>>> = {};
   for (const activity of config.activities) {
-    timelines[activity.label] = createWeeklyTimeline(0, sumReducer, 0);
+    timelines[activity.label] = createWeeklyTimeline(`activity-${activity.label}-timeline`, 0, sumReducer, 0);
   }
   return timelines;
 };
@@ -33,8 +34,8 @@ export const useActivitiesStore = defineStore('activities', () => {
   // State
   const loading = ref(true);
   const progressTimelines = generateProgressTimelines();
-  const allocations = ref(generateAllocationState());
-  const weekActivityDone = ref<Record<string, number>>({}); //Which week an activity is done. If an activity is not in the record, it is not done.
+  const allocations = useStorage('allocations', generateAllocationState());
+  const weekActivityDone = useStorage<Record<string, number>>('weekActivityDone', {}); //Which week an activity is done. If an activity is not in the record, it is not done.
 
   // Getters
 

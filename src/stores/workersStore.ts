@@ -3,6 +3,7 @@ import { WorkerType } from '../types/types';
 import config from '../config';
 import { ClientResponseError } from 'pocketbase';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
+import { useStorage } from '@vueuse/core';
 
 type WorkersState = Record<WorkerType, number>;
 
@@ -11,7 +12,10 @@ export const useWorkersStore = defineStore('workers', () => {
 
   // State
   const loading = ref(true);
-  const workers = ref(Array.from({ length: config.duration + 1 }, () => ({ labour: 0, skilled: 0, electrician: 0 })));
+  const workers = useStorage(
+    'workers',
+    Array.from({ length: config.duration + 1 }, () => ({ labour: 0, skilled: 0, electrician: 0 })),
+  );
 
   // Getters
 

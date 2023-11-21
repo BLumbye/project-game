@@ -18,8 +18,11 @@
         Log out
       </button>
     </div>
-    <span class="right-side"
-          v-else>Guest</span>
+    <div class="right-side"
+         v-else>
+      <span>Guest</span>
+      <RestartGame />
+    </div>
   </header>
 </template>
 
