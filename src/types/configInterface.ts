@@ -30,7 +30,10 @@ export interface Config {
     milestoneActivity: ConfigActivities[number]['label'];
   };
   projectDuration: number;
-  currency: string;
+  currency: {
+    region: string;
+    currency: string;
+  };
   activities: ConfigActivities;
   events: Event[];
 }
