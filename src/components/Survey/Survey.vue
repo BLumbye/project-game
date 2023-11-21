@@ -45,6 +45,7 @@ const section1 = ref<typeof Section1 | undefined>();
 const section2 = ref<typeof Section2 | undefined>();
 const section3 = ref<typeof Section3 | undefined>();
 
+// Progress to the next section or submit the survey
 const handleSubmit = (evt: Event) => {
   const sectionComponent = [section1, section2, section3][section.value - 1].value;
   if (!sectionComponent || sectionComponent.errorCheck())
@@ -57,6 +58,7 @@ const handleSubmit = (evt: Event) => {
   }
 }
 
+// Submit the survey
 const submitSurvey = () => {
   collections.surveyAnswers.create({
     ...section1.value!.getData(),
@@ -79,6 +81,18 @@ const checkAnswered = async () => {
     }
   }
 }
+
+//Give a warning notification if the user tries to leave the page without submitting the form
+window.addEventListener('beforeunload', function (e) {
+
+  // Check the form has been answered (submitted)
+  if (!answered.value) {
+    // Cancel the event and alert that
+    // there are unsaved changes
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
 
 checkAnswered();
 </script>
