@@ -21,6 +21,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
     tbs: { status: 'unordered' },
   };
   const timeline = createWeeklyTimeline<Partial<Record<EquipmentType, Partial<Equipment>>>>(
+    'equipment',
     {},
     (accumulator, current) => mergeDeep(accumulator, current),
     defaultState,

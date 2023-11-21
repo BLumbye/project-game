@@ -28,6 +28,7 @@ declare module '@vue/runtime-core' {
     GameFinishDialog: typeof import('./components/GameFinishDialog.vue')['default']
     GameHeader: typeof import('./components/GameHeader.vue')['default']
     GameProgressTable: typeof import('./components/Admin/GameProgressTable.vue')['default']
+    RestartGame: typeof import('./components/RestartGame.vue')['default']
     ResultsTable: typeof import('./components/Admin/ResultsTable.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

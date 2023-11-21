@@ -3,6 +3,7 @@ import { collections, isAdmin, pocketbase, updateExistingOrCreate } from '../poc
 import { GameState } from '~/types/types';
 import config from '~/config';
 import { ClientResponseError } from 'pocketbase';
+import { useStorage } from '@vueuse/core';
 
 /**
  * This store contains overall information about the game, and also controls the flow
@@ -18,7 +19,7 @@ export const useGameStore = defineStore('game', () => {
 
   //Uses setup store
   // State
-  const week = ref(0);
+  const week = useStorage('week', 0);
   const maxWeek = ref<number | undefined>(undefined);
   const settingsLoaded = ref(false);
   const settingsRecordID = ref<string | undefined>(undefined);
@@ -30,7 +31,7 @@ export const useGameStore = defineStore('game', () => {
   const gameID = ref<number | undefined>(undefined);
   const gameState = ref<GameState | undefined>(undefined);
   const ready = ref(false);
-  const gameWon = ref(false);
+  const gameWon = useStorage('gameWon', false);
 
   // Getters
   const decisionForm = computed(() => week.value + 1);
