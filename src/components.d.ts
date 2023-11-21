@@ -26,6 +26,7 @@ declare module '@vue/runtime-core' {
     DFWorkers: typeof import('./components/DecisionForm/DF-Workers.vue')['default']
     Event: typeof import('./components/Event/Event.vue')['default']
     GameFinishDialog: typeof import('./components/GameFinishDialog.vue')['default']
+    GameFinished: typeof import('./components/GameFinished.vue')['default']
     GameHeader: typeof import('./components/GameHeader.vue')['default']
     GameProgressTable: typeof import('./components/Admin/GameProgressTable.vue')['default']
     ResultsTable: typeof import('./components/Admin/ResultsTable.vue')['default']

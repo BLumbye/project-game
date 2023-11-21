@@ -43,7 +43,11 @@ const milestoneActivity: (typeof activities)[number]['label'] = 'H';
 const projectDuration: number = 12;
 
 // Currency
-const currency: string = '€';
+const currency =
+{
+  region: 'da-DK',
+  currency: 'DKK'
+};
 
 //Activities
 const activities: ConfigActivities = [
