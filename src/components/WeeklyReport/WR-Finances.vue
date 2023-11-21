@@ -149,10 +149,7 @@
 
 <script setup lang="ts">
 const financeStore = useFinanceStore();
-
-const currencyFormat = new Intl.NumberFormat('en-UK', {
-  style: 'currency', currency: 'EUR'
-});
+import {currencyFormat} from '~/utils/formatters';
 
 const props = defineProps<{
   week: number;

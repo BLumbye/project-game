@@ -34,7 +34,10 @@ export default {
     milestoneActivity: 'H',
   },
   projectDuration: 12,
-  currency: 'EUR',
+  currency: {
+    region: 'da-DK',
+    currency: 'DKK',
+  },
   activities: [
     {
       label: 'A',

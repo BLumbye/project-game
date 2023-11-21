@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { backgroundClickClose } from '~/utils/dialog';
+import { currencyFormat } from '~/utils/formatters';
 
 const gameStore = useGameStore();
 const financeStore = useFinanceStore();
@@ -32,10 +33,6 @@ const dialog = ref<HTMLDialogElement | null>(null);
 
 const listFormat = new Intl.ListFormat('en', {
   style: 'long', type: 'conjunction'
-});
-
-const currencyFormat = new Intl.NumberFormat('en-UK', {
-  style: 'currency', currency: 'EUR'
 });
 
 const workersLeft = computed(() => Object.values(workersStore.currentWorkers).some((worker) => worker !== 0));
