@@ -11,21 +11,21 @@ import { addWorkers } from './utils/configUtils';
 
 export default {
   bid: {
-    max: 1200000,
-    min: 800000,
-    default: 850000,
+    max: 9000000, //Original 1200000
+    min: 6000000, //Original 800000
+    default: 6500000, //Original 850000
   },
   finances: {
     loanInterest: 0.01,
     overdraftInterest: 0.1,
-    consumables: 50000,
-    overhead: 10000,
-    projectDelayPenalty: 20000,
-    equipmentCost: [38000, 28000, 130000],
+    consumables: 400000, //Original 50000
+    overhead: 75000, //Original 10000
+    projectDelayPenalty: 150000, //Original 20000
+    equipmentCost: [300000, 210000, 975000], //Original [38000, 28000, 130000]
     expressMultiplier: 1.1,
-    labourPay: 800,
-    skilledPay: 1500,
-    electricianPay: 2000,
+    labourPay: 6000, //Original 800
+    skilledPay: 11000, //Original 1500
+    electricianPay: 15000, //Original 2000
   },
   payments: {
     startBudget: 0.2,

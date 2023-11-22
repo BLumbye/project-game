@@ -9,7 +9,7 @@ export const useBidStore = defineStore('bid', () => {
 
   // State
   const loading = ref(true);
-  const price = ref<number>(850000);
+  const price = ref<number>(config.bid.default);
   const promisedDuration = ref<number>(10);
 
   // Getters
