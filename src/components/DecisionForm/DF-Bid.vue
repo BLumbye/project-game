@@ -5,16 +5,19 @@
 -->
 
 <template>
-  <div class="bid">
+  <div :class="['bid', { 'bid-wide': !config.loansEnabled }]">
     <h3 class="bid-column-label">Bid</h3>
-    <span class="bid-label">Price: {{ bidStore.price }}</span>
-    <span class="bid-label">Duration: {{ bidStore.promisedDuration }}</span>
+    <span class="bid-label">{{ currencyFormat.format(bidStore.price) }}</span>
+    <span class="bid-label">{{ bidStore.promisedDuration }} weeks</span>
   </div>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
+import config from '~/config';
+import { currencyFormat } from '~/utils/formatters';
+
 const bidStore = useBidStore();
 </script>
 
@@ -24,14 +27,15 @@ const bidStore = useBidStore();
 .bid {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
+}
+
+.bid-wide {
+  grid-column: span 2;
 }
 
 .bid-label {
   text-align: left;
-}
-
-.bid-column-label {
-  margin-bottom: .5rem;
 }
 </style>
