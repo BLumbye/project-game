@@ -34,6 +34,7 @@ export interface Config {
     region: string;
     currency: string;
   };
+  loansEnabled: boolean;
   activities: ConfigActivities;
   events: Event[];
 }

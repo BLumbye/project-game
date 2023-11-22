@@ -38,6 +38,7 @@ export default {
     region: 'da-DK',
     currency: 'DKK',
   },
+  loansEnabled: false,
   activities: [
     {
       label: 'A',

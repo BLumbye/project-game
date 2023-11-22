@@ -39,7 +39,8 @@
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.delayPenaltyTimeline.get(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div class="finance-item"
+             v-if="config.loansEnabled">
           <span class="finance-item-label">Loan interest</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanInterestTimeline.get(week - 1) || 0)
           }}</span>
@@ -50,7 +51,8 @@
             || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div class="finance-item"
+             v-if="config.loansEnabled">
           <span class="finance-item-label">Loan repayment</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanRepayTimeline.get(week - 1) || 0)
           }}</span>
@@ -63,7 +65,8 @@
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.incomingTimeline.get(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div class="finance-item"
+             v-if="config.loansEnabled">
           <span class="finance-item-label">Loan</span>
           <span class="finance-item-value">{{ currencyFormat.format((financeStore.loanTimeline.get(week - 1) || 0) -
             (financeStore.loanInterestTimeline.get(week - 1) || 0)) }}</span>
@@ -106,7 +109,8 @@
             || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div class="finance-item"
+             v-if="config.loansEnabled">
           <span class="finance-item-label">Loan interest</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanInterestTimeline.getReduced(week - 1)
             || 0)
@@ -118,7 +122,8 @@
             - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div class="finance-item"
+             v-if="config.loansEnabled">
           <span class="finance-item-label">Loan repayment</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanRepayTimeline.getReduced(week - 1) ||
             0)
@@ -132,7 +137,8 @@
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.incomingTimeline.getReduced(week - 1) ||
             0) }}</span>
         </div>
-        <div class="finance-item">
+        <div class="finance-item"
+             v-if="config.loansEnabled">
           <span class="finance-item-label">Loan (with interest)</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanAtWeek(week - 1) || 0) }}</span>
         </div>
@@ -149,7 +155,8 @@
 
 <script setup lang="ts">
 const financeStore = useFinanceStore();
-import {currencyFormat} from '~/utils/formatters';
+import config from '~/config';
+import { currencyFormat } from '~/utils/formatters';
 
 const props = defineProps<{
   week: number;
@@ -167,5 +174,4 @@ const props = defineProps<{
   &.summary-item {
     font-weight: bold;
   }
-}
-</style>
+}</style>

@@ -17,7 +17,8 @@
     <DFWorkers class="workers boxed" />
     <DFEquipment class="equipment boxed" />
     <DFAllocation class="allocation boxed" />
-    <DFLoan class="loan boxed" />
+    <DFLoan v-if="config.loansEnabled"
+            class="loan boxed" />
     <DFBid class="bid boxed" />
     <DFDoneButton class="done-button" />
   </div>
@@ -26,6 +27,8 @@
 <!-- Script -->
 
 <script setup lang="ts">
+import config from '~/config';
+
 const gameStore = useGameStore();
 </script>
 
