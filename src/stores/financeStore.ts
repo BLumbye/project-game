@@ -129,8 +129,8 @@ export const useFinanceStore = defineStore('finance', () => {
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
       previousWorkers.labour * config.finances.labourPay +
-        previousWorkers.skilled * config.finances.skilledPay +
-        previousWorkers.electrician * config.finances.electricianPay,
+      previousWorkers.skilled * config.finances.skilledPay +
+      previousWorkers.electrician * config.finances.electricianPay,
     );
 
     // Equipment costs
@@ -157,13 +157,9 @@ export const useFinanceStore = defineStore('finance', () => {
     }
     equipmentTimeline.set(equipmentCost);
 
-    // Overhead charge
-    if (gameStore.week != 0) {
-      //No overhead in week 0
-      overheadTimeline.set(config.finances.overhead);
-    } else {
-      overheadTimeline.set(0);
-    }
+    // Overhead charge. No overhead week 0
+    overheadTimeline.set(config.finances.overhead, gameStore.week + 1);
+
 
     // Consumables charge: charge only if any workers are working
     const consumables = activityStore
@@ -183,7 +179,7 @@ export const useFinanceStore = defineStore('finance', () => {
     addInterestToLoan(
       hasActiveLoan.value(gameStore.week + 1)
         ? config.finances.loanInterest *
-            (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
+        (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
         : 0,
     );
 

@@ -13,7 +13,7 @@
       <button @click="week--"
               :disabled="week <= 2">&lt;- Back</button>
       <button @click="week++"
-              :disabled="week >= gameStore.week">Forward -></button>
+              :disabled="(week >= gameStore.week && !gameStore.gameOver) || week >= config.projectDuration+1">Forward -></button>
     </div>
     <WRAllocation v-if="week > 1"
                   :week="week" />
@@ -28,6 +28,7 @@
 <script setup lang="ts">
 const gameStore = useGameStore();
 const week = ref(gameStore.week);
+import config from '~/config';
 
 watch(() => gameStore.week, () => {
   week.value = gameStore.week;
