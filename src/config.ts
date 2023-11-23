@@ -12,7 +12,7 @@ import { addWorkers } from './utils/configUtils';
 export default {
   bid: {
     max: 80000000, //Original 1200000
-    min: 60000000, //Original 800000
+    min: 65000000, //Original 800000
     default: 70000000, //Original 850000
   },
   finances: {
@@ -28,9 +28,9 @@ export default {
     electricianPay: 84000, //Original 2000
   },
   payments: {
-    startBudget: 0.2,
-    allActivitiesCompleteReward: 0.3,
+    startBudget: 0.3,
     milestoneReward: 0.5,
+    allActivitiesCompleteReward: 0.2,
     milestoneActivity: 'H',
   },
   projectDuration: 12,
@@ -79,7 +79,7 @@ export default {
       duration: 3,
       requirements: {
         workers: {
-          labour: 6,
+          labour: 6 * 2,
         },
         activities: ['D'],
       },
@@ -89,7 +89,7 @@ export default {
       duration: 1,
       requirements: {
         workers: {
-          labour: 4,
+          labour: 4 * 2,
         },
         activities: ['D'],
       },
@@ -99,7 +99,7 @@ export default {
       duration: 3,
       requirements: {
         workers: {
-          labour: 4,
+          labour: 4 * 2,
         },
         activities: ['E'],
       },
@@ -109,8 +109,8 @@ export default {
       duration: 2,
       requirements: {
         workers: {
-          labour: 2,
-          skilled: 4,
+          labour: 2 * 2,
+          skilled: 4 * 2,
         },
         activities: ['A', 'F'],
       },
@@ -120,8 +120,8 @@ export default {
       duration: 1,
       requirements: {
         workers: {
-          labour: 1,
-          skilled: 6,
+          labour: 1 * 2,
+          skilled: 6 * 2,
         },
         activities: ['B', 'H'],
       },
@@ -131,8 +131,8 @@ export default {
       duration: 1,
       requirements: {
         workers: {
-          labour: 4,
-          skilled: 3,
+          labour: 4 * 2,
+          skilled: 3 * 2,
         },
         activities: ['H'],
       },
@@ -142,9 +142,9 @@ export default {
       duration: 2,
       requirements: {
         workers: {
-          labour: 4,
-          skilled: 2,
-          electrician: 8,
+          labour: 4 * 2,
+          skilled: 2 * 2,
+          electrician: 8 * 2,
         },
         activities: ['C', 'I'],
       },
@@ -154,8 +154,8 @@ export default {
       duration: 1,
       requirements: {
         workers: {
-          labour: 2,
-          skilled: 2,
+          labour: 2 * 2,
+          skilled: 2 * 2,
         },
         activities: ['C', 'K'],
       },
