@@ -2,7 +2,7 @@
   <header>
     <span class="title">Project Game</span>
     <span v-if="$route.name === 'game' && gameStore.gameState === 'in_progress'">
-      Week {{ gameStore.week }}
+      {{capitalize(config.durationIdentifier.singular)}} {{ gameStore.week }}
     </span>
     <span v-if="$route.name === 'game' && ['getting_bids', 'reviewing_bids'].includes(gameStore.gameState!)">
       Pre-Game Survey
@@ -28,6 +28,8 @@
 
 <script setup lang="ts">
 import { pocketbase, isAdmin } from '~/pocketbase';
+import {capitalize} from '~/utils/formatters';
+import config from '~/config';
 
 const gameStore = useGameStore();
 const router = useRouter();

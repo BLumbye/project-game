@@ -11,7 +11,7 @@
   <div class="finances boxed">
     <h3>Finance</h3>
     <div class="weekly">
-      <h4>Weekly</h4>
+      <h4>{{capitalize(config.durationIdentifier.iterative)}}</h4>
       <div class="outgoing">
         <h5>Outgoing</h5>
         <div class="finance-item">
@@ -73,7 +73,7 @@
         </div>
       </div>
       <div class="finance-item summary-item">
-        <span class="finance-item-label">Weekly balance:</span>
+        <span class="finance-item-label">{{ config.durationIdentifier.iterative }} balance:</span>
         <span class="finance-item-value">{{ currencyFormat.format(financeStore.weeklyBalanceAtWeek(week - 1)) }}</span>
       </div>
     </div>
@@ -156,7 +156,7 @@
 <script setup lang="ts">
 const financeStore = useFinanceStore();
 import config from '~/config';
-import { currencyFormat } from '~/utils/formatters';
+import { currencyFormat, capitalize } from '~/utils/formatters';
 
 const props = defineProps<{
   week: number;

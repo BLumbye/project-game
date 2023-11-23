@@ -34,6 +34,11 @@ export interface Config {
     region: string;
     currency: string;
   };
+  durationIdentifier: {
+    singular: string; // e.g. "week"
+    plural: string; // e.g. "weeks"
+    iterative: string; // e.g. "weekly"
+  }
   loansEnabled: boolean;
   activities: ConfigActivities;
   events: Event[];

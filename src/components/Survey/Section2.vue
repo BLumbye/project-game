@@ -21,8 +21,8 @@
        v-show="show">
     <label class="prompt"
            for="promised-duration">
-      Promised duration (number of weeks, i.e. you promise your client that project will be completed by the end of
-      which week):
+      Promised duration (number of {{config.durationIdentifier.plural}}, i.e. you promise your client that project will be completed by the end of
+      which {{config.durationIdentifier.singular}}):
     </label>
     <input type="text"
            id="promised-duration"
@@ -55,7 +55,7 @@
        v-show="show">
     <label class="prompt"
            for="expected-duration">
-      Expected duration (in weeks) - This will not influence the measurement of success:
+      Expected duration (in {{config.durationIdentifier.plural}}) - This will not influence the measurement of success:
     </label>
     <input type="text"
            id="expected-duration"
@@ -71,6 +71,7 @@
 
 <script setup lang="ts">
 import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
+import config from '~/config';
 
 const price = ref<number | undefined>();
 const promisedDuration = ref<number | undefined>();

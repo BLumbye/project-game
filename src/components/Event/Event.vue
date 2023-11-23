@@ -10,7 +10,7 @@
         <button @click="eventDialog![i].showModal()"
                 class="event-button"
                 v-if="event.week <= gameStore.week && event.title != 'NOTHING TO REPORT'">
-          Week {{ event.week }}: {{ event.title }}
+          {{capitalize(config.durationIdentifier.singular)}} {{ event.week }}: {{ event.title }}
         </button>
         <dialog ref="eventDialog"
                 @click="backgroundClickClose">
@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import config from '../../config';
 import { backgroundClickClose } from '~/utils/dialog';
+import {capitalize} from '~/utils/formatters';
 
 const gameStore = useGameStore();
 

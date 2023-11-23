@@ -8,7 +8,7 @@
   <div :class="['bid', { 'bid-wide': !config.loansEnabled }]">
     <h3 class="bid-column-label">Bid</h3>
     <span class="bid-label">{{ currencyFormat.format(bidStore.price) }}</span>
-    <span class="bid-label">{{ bidStore.promisedDuration }} weeks</span>
+    <span class="bid-label">{{ bidStore.promisedDuration }} {{config.durationIdentifier.plural}}</span>
   </div>
 </template>
 

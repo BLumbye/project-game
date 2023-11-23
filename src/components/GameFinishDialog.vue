@@ -3,7 +3,7 @@
           @click="backgroundClickClose">
     <div class="contents">
       <h2>{{ gameStore.gameWon ? 'Project Completed' : 'Project not completed in time' }}</h2>
-      <p v-if="gameStore.gameWon">You've successfully completed the project in {{ gameStore.week }} weeks with {{
+      <p v-if="gameStore.gameWon">You've successfully completed the project in {{ gameStore.week }} {{config.durationIdentifier.plural}} with {{
         financeStore.balanceAtWeek()
         >= 0 ? `${formattedBalance} in profit.` : `${formattedBalance} over budget.` }}</p>
       <template v-else>
@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import { backgroundClickClose } from '~/utils/dialog';
 import { currencyFormat } from '~/utils/formatters';
+import config from '~/config';
 
 const gameStore = useGameStore();
 const financeStore = useFinanceStore();

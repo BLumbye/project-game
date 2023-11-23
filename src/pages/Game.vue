@@ -19,7 +19,7 @@
     <Event />
     <div class="container">
       <WeeklyReport v-if="gameStore.week > 1" />
-      <h2 v-else>No weekly report in week {{ gameStore.week }}</h2>
+      <h2 v-else>No {{config.durationIdentifier.iterative}} report in {{config.durationIdentifier.singular}} {{ gameStore.week }}</h2>
       <DecisionForm v-if="!gameStore.gameOver"/>
       <GameFinished v-if="gameStore.gameOver"/>
     </div>
@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 import { isAdmin, pocketbase } from '~/pocketbase';
+import config from '~/config';
 // @ts-ignore
 import ConfettiExplosion from 'vue-confetti-explosion';
 

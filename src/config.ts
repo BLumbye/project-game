@@ -38,6 +38,11 @@ export default {
     region: 'da-DK',
     currency: 'DKK',
   },
+  durationIdentifier: {
+    singular: 'month',
+    plural: 'months',
+    iterative: 'monthly',
+  },
   loansEnabled: false,
   activities: [
     {
@@ -186,7 +191,7 @@ export default {
       week: 4,
       image: '/images/Week4.jpg',
       title: 'DELAYED DELIVERIES',
-      description: 'OH NO...! \n ALL the procurement that has not yet been delivered have been delayed by 1 week!',
+      description: `OH NO...! \n ALL the procurement that has not yet been delivered have been delayed by 1 month!`,
       effects: [
         {
           activityLabels: ['A'],
@@ -209,7 +214,7 @@ export default {
       image: '/images/Week5.jpg',
       title: 'BAD WEATHER',
       description:
-        'The cladding stage 1 (Task J) takes one week longer than planned! The forecast shows it might continue.',
+        'The cladding stage 1 (Task J) takes one month longer than planned! The forecast shows it might continue.',
       effects: [
         {
           activityLabels: ['J'],
@@ -234,7 +239,7 @@ export default {
       image: '/images/Week7.jpg',
       title: 'UNION REQUEST',
       description:
-        'Workers formed a strong union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 5 instead of 4 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from week 9 onwards.',
+        'Workers formed a strong union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 5 instead of 4 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from month 9 onwards.',
       showTitle: true,
       showDescription: true,
     },

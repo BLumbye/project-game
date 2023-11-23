@@ -16,7 +16,7 @@
             class="icon" />
       <v-tooltip activator="parent"
                  location="top">
-        <p>Remember to allocate workers again in every week's 'Decision Form'.</p>
+        <p>Remember to allocate workers again in every {{config.durationIdentifier.singular}}'s 'Decision Form'.</p>
         <p>Remember to allocate a sufficient amount of workers for the task to progress.</p>
       </v-tooltip>
     </div>

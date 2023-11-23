@@ -15,6 +15,7 @@
 <!-- Script -->
 
 <script setup lang="ts">
+import config from '~/config';
 const gameStore = useGameStore();
 
 const buttonText = computed(() => {
@@ -23,7 +24,7 @@ const buttonText = computed(() => {
   } else if (gameStore.synchronized && gameStore.week === gameStore.maxWeek) {
     return gameStore.ready ? "Not ready" : "Ready";
   } else {
-    return "Next Week ->";
+    return `Next ${config.durationIdentifier.singular} ->`;
   }
 });
 

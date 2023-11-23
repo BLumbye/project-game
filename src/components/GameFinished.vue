@@ -10,7 +10,7 @@
 <template>
         <div class="contents">
             <h2>{{ gameStore.gameWon ? 'Project Completed' : 'Project not completed in time' }}</h2>
-            <p class="text-won" v-if="gameStore.gameWon">You've successfully completed the project in {{ gameStore.week }} weeks with {{
+            <p class="text-won" v-if="gameStore.gameWon">You've successfully completed the project in {{ gameStore.week }} {{config.durationIdentifier.plural}} with {{
                 financeStore.balanceAtWeek(gameStore.week + 1)
                 >= 0 ? `${formattedBalance} in profit.` : `${formattedBalance} over budget.` }}
             </p>
@@ -34,6 +34,7 @@
 <script setup lang="ts">
 
 import { currencyFormat } from '~/utils/formatters';
+import config from '~/config';
 
 const gameStore = useGameStore();
 const financeStore = useFinanceStore();
