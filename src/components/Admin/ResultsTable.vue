@@ -195,11 +195,11 @@ const dataChangeWatcher = watch(() => [adminStore.bids, adminStore.gameSummaries
       }
       const planDurationDiff = row.week - row.promisedDuration;
       const actualCost = row.revisedPrice - row.totalBalance;
-      const planCostDiff = Math.abs(row.totalBalance + row.expectedCost - row.price);
-      const priceRank = adminStore.bids.filter(bid => bid.price < row.price).length + 1;
+      const planCostDiff = Math.abs(row.totalBalance + row.expectedCost - row.revisedPrice);
+      const priceRank = adminStore.bids.filter(bid => bid.revisedPrice < row.revisedPrice).length + 1;
       const costRank = bidSummaryMerge.filter(r => r.status === 'won' && r.revisedPrice - r.totalBalance! < actualCost).length + 1;
       const profitRank = bidSummaryMerge.filter(r => r.status === 'won' && r.totalBalance! > row.totalBalance!).length + 1;
-      const planRank = bidSummaryMerge.filter(r => r.status === 'won' && Math.abs(r.totalBalance! + r.expectedCost - r.price) < planCostDiff).length + 1;
+      const planRank = bidSummaryMerge.filter(r => r.status === 'won' && Math.abs(r.totalBalance! + r.expectedCost - r.revisedPrice) < planCostDiff).length + 1;
       const durationRank = bidSummaryMerge.filter(r => r.status === 'won' && r.week! < row.week!).length + 1;
       const projectManagerScore = priceRank + costRank + profitRank + planRank + durationRank;
       const stakeholderScore = priceRank + durationRank;
