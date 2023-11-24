@@ -83,7 +83,8 @@ export interface SurveyAnswer {
 
 export interface AdminGameState {
   userID: string;
-  status: 'playing' | 'won' | 'lost' | 'not_started' | 'disconnected';
+  status: 'playing' | 'won' | 'lost' | 'not_started';
+  week: number;
   progress: number;
   ready: boolean;
 }

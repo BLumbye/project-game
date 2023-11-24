@@ -26,6 +26,11 @@ const columns = [
     cell: info => info.getValue(),
     header: 'Progress',
   }),
+  columnHelper.accessor(row => row.week, {
+    id: 'week',
+    cell: info => info.getValue(),
+    header: 'Week',
+  }),
   columnHelper.accessor(row => row.ready ? 'Yes' : 'No', {
     id: 'ready',
     cell: info => info.getValue(),
