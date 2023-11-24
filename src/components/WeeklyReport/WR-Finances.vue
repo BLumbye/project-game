@@ -73,7 +73,7 @@
         </div>
       </div>
       <div class="finance-item summary-item">
-        <span class="finance-item-label">{{ config.durationIdentifier.iterative }} balance:</span>
+        <span class="finance-item-label">{{ capitalize(config.durationIdentifier.iterative) }} balance:</span>
         <span class="finance-item-value">{{ currencyFormat.format(financeStore.weeklyBalanceAtWeek(week - 1)) }}</span>
       </div>
     </div>
