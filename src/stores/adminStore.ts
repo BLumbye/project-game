@@ -26,12 +26,6 @@ export const useAdminStore = defineStore('admin', () => {
     users.value.forEach((user) => {
       const summary = gameSummaries.value.find((summary) => summary.userID === user.id);
       let status: AdminGameState['status'] = summary?.status ?? 'not_started';
-      if (
-        status === 'playing' &&
-        readyStatus.value[user.id] !== undefined &&
-        readyStatus.value[user.id]!.week < gameStore.maxWeek! - 1
-      )
-        status = 'disconnected';
       const progress = userProgress.value[user.id]?.slice(0, gameStore.maxWeek!).findLast((val) => val !== 0) ?? 0;
       const ready =
         (readyStatus.value[user.id]?.ready ?? false) && readyStatus.value[user.id]?.week === gameStore.maxWeek!;
@@ -40,6 +34,7 @@ export const useAdminStore = defineStore('admin', () => {
         status,
         progress,
         ready,
+        week: summary?.week || 0,
       });
     });
     return gameStates;

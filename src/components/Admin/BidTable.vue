@@ -27,6 +27,7 @@ import { validate, and, isNumber, isWholeNumber, asNumber, isPositive } from '~/
 import { Bar } from 'vue-chartjs';
 import { BarControllerChartOptions, ChartData, ChartOptions, CoreChartOptions, DatasetChartOptions, ElementChartOptions, PluginChartOptions, ScaleChartOptions, plugins } from 'chart.js'
 import { _DeepPartialObject } from 'chart.js/dist/types/utils';
+import { currencyFormat } from '~/utils/formatters';
 
 const adminStore = useAdminStore();
 
@@ -103,7 +104,7 @@ const columns = [
   }),
   columnHelper.accessor(row => row.price, {
     id: 'price',
-    cell: info => info.getValue(),
+    cell: info => currencyFormat.format(info.getValue()),
     header: 'Price',
   }),
   columnHelper.accessor(row => row.promisedDuration, {
@@ -113,7 +114,7 @@ const columns = [
   }),
   columnHelper.accessor(row => row.expectedCost, {
     id: 'expectedCost',
-    cell: info => info.getValue(),
+    cell: info => currencyFormat.format(info.getValue()),
     header: 'Expected Cost',
   }),
   columnHelper.accessor(row => row.expectedDuration, {

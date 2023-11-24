@@ -6,6 +6,7 @@
 <script setup lang="ts">
 import { useVueTable, createColumnHelper, getCoreRowModel, SortingState, getSortedRowModel, Table, CellContext } from '@tanstack/vue-table';
 import { GameSummary, Bid } from '~/types/types';
+import { currencyFormat } from '~/utils/formatters';
 
 const adminStore = useAdminStore();
 
@@ -32,7 +33,7 @@ const columns = [
   }),
   columnHelper.accessor(row => row.price, {
     id: 'price',
-    cell: info => info.getValue(),
+    cell: info => currencyFormat.format(info.getValue()),
     header: 'Price',
   }),
   columnHelper.accessor(row => row.promisedDuration, {
@@ -42,7 +43,7 @@ const columns = [
   }),
   columnHelper.accessor(row => row.expectedCost, {
     id: 'expectedCost',
-    cell: info => info.getValue(),
+    cell: info => currencyFormat.format(info.getValue()),
     header: 'Expected Cost',
   }),
   columnHelper.accessor(row => row.expectedDuration, {
@@ -57,7 +58,7 @@ const columns = [
   }),
   columnHelper.accessor(row => row.revisedPrice, {
     id: 'revisedPrice',
-    cell: info => info.getValue(),
+    cell: info => currencyFormat.format(info.getValue()),
     header: 'Revised Price',
   }),
   columnHelper.accessor(row => row.status === 'playing' ? 'Disconnected' : row.status ?? 'Not started', {
@@ -65,114 +66,108 @@ const columns = [
     cell: info => info.getValue(),
     header: 'Status',
   }),
-  columnHelper.accessor(row => row.status === 'won' ? row.totalBalance : '', {
+  columnHelper.accessor(row => row.status === 'won' ? currencyFormat.format(row.totalBalance!) : '', {
     id: 'finalProfit',
     cell: info => info.getValue(),
     header: 'Final Profit',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.totalBalance! - b.original.totalBalance!,
   }),
   columnHelper.accessor(row => row.status === 'won' ? row.week : '', {
     id: 'actualDuration',
     cell: info => info.getValue(),
     header: 'Actual Duration',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.week! - b.original.week!,
   }),
   columnHelper.accessor(row => row.status === 'won' ? row.planDurationDiff : '', {
     id: 'durationDiff',
     cell: info => info.getValue(),
     header: 'Plan - Actual Duration',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.planDurationDiff! - b.original.planDurationDiff!,
   }),
-  columnHelper.accessor(row => row.status === 'won' ? row.actualCost : '', {
+  columnHelper.accessor(row => row.status === 'won' ? currencyFormat.format(row.actualCost!) : '', {
     id: 'actualCost',
     cell: info => info.getValue(),
     header: 'Actual Cost',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.actualCost! - b.original.actualCost!,
   }),
-  columnHelper.accessor(row => row.status === 'won' ? row.planCostDiff : '', {
+  columnHelper.accessor(row => row.status === 'won' ? currencyFormat.format(row.planCostDiff!) : '', {
     id: 'planCostDiff',
     cell: info => info.getValue(),
     header: 'Plan vs actual costs',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.planCostDiff! - b.original.planCostDiff!,
   }),
   columnHelper.accessor((row) => row.status === 'won' ? row.priceRank : '', {
     id: 'priceRank',
     cell: info => info.getValue(),
     header: 'Lowest price',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.priceRank! - b.original.priceRank!,
   }),
   columnHelper.accessor((row) => row.status === 'won' ? row.costRank : '', {
     id: 'costRank',
     cell: info => info.getValue(),
     header: 'Lowest cost',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.costRank! - b.original.costRank!,
   }),
   columnHelper.accessor((row) => row.status === 'won' ? row.profitRank : '', {
     id: 'profitRank',
     cell: info => info.getValue(),
     header: 'Highest profit',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.profitRank! - b.original.profitRank!,
   }),
   columnHelper.accessor((row) => row.status === 'won' ? row.planRank : '', {
     id: 'planRank',
     cell: info => info.getValue(),
     header: 'Plan ability (costs)',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.planRank! - b.original.planRank!,
   }),
   columnHelper.accessor((row) => row.status === 'won' ? row.durationRank : '', {
     id: 'durationRank',
     cell: info => info.getValue(),
     header: 'Quickest delivery',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.durationRank! - b.original.durationRank!,
   }),
   columnHelper.accessor((row) => row.status === 'won' ? row.projectManagerScore : '', {
     id: 'projectManager',
     cell: info => info.getValue(),
     header: 'Project manager',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.projectManagerScore! - b.original.projectManagerScore!,
   }),
   columnHelper.accessor((row) => row.status === 'won' ? row.stakeholderScore : '', {
     id: 'stakeholder',
     cell: info => info.getValue(),
     header: 'Stakeholder',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.stakeholderScore! - b.original.stakeholderScore!,
   }),
   columnHelper.accessor((row) => row.status === 'won' ? row.contractorScore : '', {
     id: 'contractor',
     cell: info => info.getValue(),
     header: 'Contractor',
+    sortDescFirst: false,
+    sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.contractorScore! - b.original.contractorScore!,
   }),
 ];
 
 const sorting = ref<SortingState>([]);
 
 let table: Table<TableData>;
+const data = ref<TableData[]>([]);
 
 const createTable = () => {
   table = useVueTable({
     get data() {
-      const bidSummaryMerge = adminStore.bids.map(bid => ({
-        ...bid,
-        ...adminStore.gameSummaries.find(summary => summary.userID === bid.userID),
-      }));
-      return bidSummaryMerge.map(row => {
-        if (!row.status || row.totalBalance === undefined || row.week === undefined) {
-          return row;
-        }
-        const planDurationDiff = row.week - row.promisedDuration;
-        const actualCost = row.revisedPrice - row.totalBalance;
-        const planCostDiff = Math.abs(row.totalBalance + row.expectedCost - row.price);
-        const priceRank = adminStore.bids.filter(bid => bid.price < row.price).length + 1;
-        const costRank = bidSummaryMerge.filter(r => r.status === 'won' && r.revisedPrice - r.totalBalance! < actualCost).length + 1;
-        const profitRank = bidSummaryMerge.filter(r => r.status === 'won' && r.totalBalance! > row.totalBalance!).length + 1;
-        const planRank = bidSummaryMerge.filter(r => r.status === 'won' && Math.abs(r.totalBalance! + r.expectedCost - r.price) < planCostDiff).length + 1;
-        const durationRank = bidSummaryMerge.filter(r => r.status === 'won' && r.week! < row.week!).length + 1;
-        const projectManagerScore = priceRank + costRank + profitRank + planRank + durationRank;
-        const stakeholderScore = priceRank + durationRank;
-        const contractorScore = profitRank + durationRank;
-        return {
-          ...row,
-          planDurationDiff,
-          actualCost,
-          planCostDiff,
-          priceRank,
-          costRank,
-          profitRank,
-          planRank,
-          durationRank,
-          projectManagerScore,
-          stakeholderScore,
-          contractorScore,
-        }
-      });
+      return data.value;
     },
     columns,
     state: {
@@ -188,13 +183,52 @@ const createTable = () => {
   });
 };
 
+const dataChangeWatcher = watch(() => [adminStore.bids, adminStore.gameSummaries], () => {
+  if (adminStore.bids.length > 0 && adminStore.gameSummaries.length > 0) {
+    const bidSummaryMerge = adminStore.bids.map(bid => ({
+      ...bid,
+      ...adminStore.gameSummaries.find(summary => summary.userID === bid.userID),
+    }));
+    data.value = bidSummaryMerge.map(row => {
+      if (!row.status || row.totalBalance === undefined || row.week === undefined) {
+        return row;
+      }
+      const planDurationDiff = row.week - row.promisedDuration;
+      const actualCost = row.revisedPrice - row.totalBalance;
+      const planCostDiff = Math.abs(row.totalBalance + row.expectedCost - row.price);
+      const priceRank = adminStore.bids.filter(bid => bid.price < row.price).length + 1;
+      const costRank = bidSummaryMerge.filter(r => r.status === 'won' && r.revisedPrice - r.totalBalance! < actualCost).length + 1;
+      const profitRank = bidSummaryMerge.filter(r => r.status === 'won' && r.totalBalance! > row.totalBalance!).length + 1;
+      const planRank = bidSummaryMerge.filter(r => r.status === 'won' && Math.abs(r.totalBalance! + r.expectedCost - r.price) < planCostDiff).length + 1;
+      const durationRank = bidSummaryMerge.filter(r => r.status === 'won' && r.week! < row.week!).length + 1;
+      const projectManagerScore = priceRank + costRank + profitRank + planRank + durationRank;
+      const stakeholderScore = priceRank + durationRank;
+      const contractorScore = profitRank + durationRank;
+      return {
+        ...row,
+        planDurationDiff,
+        actualCost,
+        planCostDiff,
+        priceRank,
+        costRank,
+        profitRank,
+        planRank,
+        durationRank,
+        projectManagerScore,
+        stakeholderScore,
+        contractorScore,
+      }
+    })
+  }
+}, { immediate: true });
+
 const loading = ref(true);
-if (adminStore.users.length > 0) {
+if (adminStore.users.length > 0 && adminStore.bids.length > 0 && adminStore.gameSummaries.length > 0) {
   createTable();
   loading.value = false;
 } else {
-  const loadingWatcher = watch(() => adminStore.users, () => {
-    if (adminStore.users.length > 0) {
+  const loadingWatcher = watch(() => [adminStore.users, adminStore.bids, adminStore.gameSummaries], () => {
+    if (adminStore.users.length > 0 && adminStore.bids.length > 0 && adminStore.gameSummaries.length > 0) {
       createTable();
       loading.value = false;
       loadingWatcher();

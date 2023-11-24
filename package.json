@@ -12,7 +12,7 @@
     "lint:style": "stylelint src/**/*.{css,scss,vue}"
   },
   "dependencies": {
-    "@tanstack/vue-table": "^8.9.3",
+    "@tanstack/vue-table": "^8.10.7",
     "@vueuse/core": "^10.2.1",
     "chart.js": "^4.3.3",
     "exceljs": "^4.3.0",
