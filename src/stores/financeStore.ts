@@ -148,7 +148,9 @@ export const useFinanceStore = defineStore('finance', () => {
     equipmentTimeline.set(equipmentCost);
 
     // Overhead charge. No overhead week 0
-    overheadTimeline.set(config.finances.overhead, gameStore.week + 1);
+    if (!gameStore.gameOver) {
+      overheadTimeline.set(config.finances.overhead, gameStore.week + 1);
+    }
 
     // Consumables charge: charge only if any workers are working
     const consumables = activityStore

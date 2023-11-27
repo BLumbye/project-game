@@ -23,7 +23,7 @@
     </form>
   </template>
   <template v-else>
-    <p class="completed-message">Thank you! You have now completed the survey and can leave the page.</p>
+    <h2 class="completed-message">Thank you! You have now completed the survey. Wait for the game to start.</h2>
   </template>
 </template>
 
@@ -165,9 +165,5 @@ h2,
 form,
 .completed-message {
   padding-block: 2rem;
-}
-
-.completed-message {
-  font-size: 1.2rem;
 }
 </style>
