@@ -16,7 +16,7 @@
     <span class="equipment-column-label">Equipment</span>
     <span class="equipment-column-label">Order</span>
     <label for="steelwork-input"
-           class="equipment-label">Steelwork (Task A)</label>
+           class="equipment-label">Concrete Elements (Task A)</label>
     <select v-model="steelwork"
             name="steelwork-input"
             id="steelwork-input"
@@ -42,7 +42,7 @@
               value="3">Delivered</option>
     </select>
     <label for="tbs-input"
-           class="equipment-label">TBS (Task C)</label>
+           class="equipment-label">Lab Equipment (Task C)</label>
     <select v-model="tbs"
             name="tbs-input"
             id="tbs-input"
