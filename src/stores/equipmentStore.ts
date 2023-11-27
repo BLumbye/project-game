@@ -1,30 +1,25 @@
 import { defineStore } from 'pinia';
-import { EquipmentType, Equipment, DeliveryType, EquipmentStatus } from '../types/types';
+import { Equipment, DeliveryType, EquipmentStatus } from '../types/types';
 import { mergeDeep } from '../utils/merge';
-import { ClientResponseError } from 'pocketbase';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 import { createWeeklyTimeline } from '~/utils/timeline';
+import config from '~/config';
 
-type EquipmentState = Record<EquipmentType, Equipment>;
+type EquipmentState = Record<string, Equipment>;
 
 export const useEquipmentStore = defineStore('equipment', () => {
   const gameStore = useGameStore();
 
   // State
   const loading = ref(true);
-  /**
-   * Equipment starts out as unordered.
-   */
-  const defaultState: EquipmentState = {
-    steelwork: { status: 'unordered' },
-    interior: { status: 'unordered' },
-    tbs: { status: 'unordered' },
-  };
-  const timeline = createWeeklyTimeline<Partial<Record<EquipmentType, Partial<Equipment>>>>(
+  const timeline = createWeeklyTimeline<Partial<Record<string, Partial<Equipment>>>>(
     'equipment',
     {},
     (accumulator, current) => mergeDeep(accumulator, current),
-    defaultState,
+    Object.keys(config.equipment).reduce(
+      (accumulator, type) => ({ ...accumulator, [type]: { status: 'unordered' } }),
+      {},
+    ) as EquipmentState,
   );
 
   // Getters
@@ -37,7 +32,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
   /**
    * Sets the status of an equipment to 'delivered' which completes the delivery.
    */
-  function setDeliveryStatus(type: EquipmentType, status: EquipmentStatus, deliveryType?: DeliveryType, week?: number) {
+  function setDeliveryStatus(type: string, status: EquipmentStatus, deliveryType?: DeliveryType, week?: number) {
     deliveryType ??= equipment.value[type].deliveryType;
     timeline.set(
       { ...timeline.get.value(week), [type]: { ...timeline.getReduced.value(week)![type], status, deliveryType } },
@@ -98,7 +93,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
     }
 
     if (!timeline.get.value()) return;
-    ['steelwork', 'interior', 'tbs'].forEach((type) => {
+    Object.keys(config.equipment).forEach((type) => {
       updateExistingOrCreate(
         collections.equipment,
         `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && equipment_type="${type}"`,
@@ -107,13 +102,9 @@ export const useEquipmentStore = defineStore('equipment', () => {
           game_id: gameStore.gameID,
           week: gameStore.week,
           equipment_type: type,
-          status:
-            timeline.get.value()![type as EquipmentType]?.status ||
-            timeline.getReduced.value()[type as EquipmentType]?.status,
+          status: timeline.get.value()![type]?.status || timeline.getReduced.value()[type]?.status,
           delivery_type:
-            timeline.get.value()![type as EquipmentType]?.deliveryType ||
-            timeline.getReduced.value()[type as EquipmentType]?.deliveryType ||
-            null,
+            timeline.get.value()![type]?.deliveryType || timeline.getReduced.value()[type]?.deliveryType || null,
         },
       );
     });
@@ -137,7 +128,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
     loading,
     timeline,
     equipment,
-    equipmentAtWeek: timeline.getReduced as globalThis.ComputedRef<(week?: number) => Record<EquipmentType, Equipment>>,
+    equipmentAtWeek: timeline.getReduced as globalThis.ComputedRef<(week?: number) => Record<string, Equipment>>,
     setDeliveryStatus,
     updateDatabase,
     connectWithDatabase,

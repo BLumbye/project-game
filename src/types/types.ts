@@ -4,14 +4,16 @@
  * This is where relevant general types and interfaces are defined.
  */
 
+import config from '~/config';
+import { Config } from './configInterface';
+
 export type WorkerType = 'labour' | 'skilled' | 'electrician';
-export type EquipmentType = 'steelwork' | 'interior' | 'tbs';
 export type EquipmentStatus = 'unordered' | 'ordered' | 'delivered';
 export type DeliveryType = 'regular' | 'express';
 export type bidType = 'bidPrice' | 'bidDuration' | 'expectedPrice' | 'expectedDuration';
 
 export interface DurationParameters {
-  equipment: Record<EquipmentType, Equipment>;
+  equipment: Record<string, Equipment>;
 }
 
 export interface Activity {
@@ -22,7 +24,7 @@ export interface Activity {
   requirements: Partial<{
     workers: Partial<Record<WorkerType, number>>;
     activities: string[];
-    equipment: EquipmentType[];
+    equipment: string[];
   }>;
   allocation: Record<WorkerType, number>;
 }

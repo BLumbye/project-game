@@ -21,11 +21,24 @@ export default {
     consumables: 400000 * 4, //Original 50000
     overhead: 75000 * 4, //Original 10000
     projectDelayPenalty: 150000 * 4, //Original 20000
-    equipmentCost: [3000000, 12000000, 16000000], //Original [38000, 28000, 130000]
     expressMultiplier: 1.1,
     labourPay: 42000, //Original 800
     skilledPay: 70000, //Original 1500
     electricianPay: 84000, //Original 2000
+  },
+  equipment: {
+    concrete: {
+      label: 'Concrete Elements (Task A)',
+      cost: 3000000, //Original 38000
+    },
+    interior: {
+      label: 'Interior (Task B)',
+      cost: 12000000, //Original 28000
+    },
+    lab: {
+      label: 'Lab Equipment (Task C)',
+      cost: 16000000, //Original 130000
+    },
   },
   payments: {
     startBudget: 0.3,
@@ -50,7 +63,7 @@ export default {
       duration: 2,
       expressDuration: 1,
       requirements: {
-        equipment: ['steelwork'],
+        equipment: ['concrete'],
       },
     },
     {
@@ -66,7 +79,7 @@ export default {
       duration: 5,
       expressDuration: 4,
       requirements: {
-        equipment: ['tbs'],
+        equipment: ['lab'],
       },
     },
     {

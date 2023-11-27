@@ -129,37 +129,26 @@ export const useFinanceStore = defineStore('finance', () => {
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
       previousWorkers.labour * config.finances.labourPay +
-      previousWorkers.skilled * config.finances.skilledPay +
-      previousWorkers.electrician * config.finances.electricianPay,
+        previousWorkers.skilled * config.finances.skilledPay +
+        previousWorkers.electrician * config.finances.electricianPay,
     );
 
     // Equipment costs
     const previousEquipment = equipmentStore.equipmentAtWeek(gameStore.week - 1);
     const equipment = equipmentStore.equipmentAtWeek(gameStore.week);
     let equipmentCost = 0;
-    if (equipment.steelwork.status === 'ordered' && previousEquipment.steelwork.status !== 'ordered') {
-      equipmentCost +=
-        equipment.steelwork.deliveryType! === 'regular'
-          ? config.finances.equipmentCost[0]
-          : config.finances.equipmentCost[0] * config.finances.expressMultiplier;
-    }
-    if (equipment.interior.status === 'ordered' && previousEquipment.interior.status !== 'ordered') {
-      equipmentCost +=
-        equipment.interior.deliveryType! === 'regular'
-          ? config.finances.equipmentCost[1]
-          : config.finances.equipmentCost[1] * config.finances.expressMultiplier;
-    }
-    if (equipment.tbs.status === 'ordered' && previousEquipment.tbs.status !== 'ordered') {
-      equipmentCost +=
-        equipment.tbs.deliveryType! === 'regular'
-          ? config.finances.equipmentCost[2]
-          : config.finances.equipmentCost[2] * config.finances.expressMultiplier;
+    for (let type in equipment) {
+      if (equipment[type].status === 'ordered' && previousEquipment[type].status !== 'ordered') {
+        equipmentCost +=
+          equipment[type].deliveryType! === 'regular'
+            ? config.equipment[type as keyof typeof config.equipment].cost
+            : config.equipment[type as keyof typeof config.equipment].cost * config.finances.expressMultiplier;
+      }
     }
     equipmentTimeline.set(equipmentCost);
 
     // Overhead charge. No overhead week 0
     overheadTimeline.set(config.finances.overhead, gameStore.week + 1);
-
 
     // Consumables charge: charge only if any workers are working
     const consumables = activityStore
@@ -179,7 +168,7 @@ export const useFinanceStore = defineStore('finance', () => {
     addInterestToLoan(
       hasActiveLoan.value(gameStore.week + 1)
         ? config.finances.loanInterest *
-        (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
+            (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
         : 0,
     );
 

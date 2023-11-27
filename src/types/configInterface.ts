@@ -17,11 +17,16 @@ export interface Config {
     consumables: number;
     overhead: number;
     projectDelayPenalty: number;
-    equipmentCost: number[];
     expressMultiplier: number;
     labourPay: number;
     skilledPay: number;
     electricianPay: number;
+  };
+  equipment: {
+    [key: string]: {
+      label: string;
+      cost: number;
+    };
   };
   payments: {
     startBudget: number;
@@ -38,7 +43,7 @@ export interface Config {
     singular: string; // e.g. "week"
     plural: string; // e.g. "weeks"
     iterative: string; // e.g. "weekly"
-  }
+  };
   loansEnabled: boolean;
   activities: ConfigActivities;
   events: Event[];
