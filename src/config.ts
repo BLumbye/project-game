@@ -191,6 +191,16 @@ export default {
       showDescription: true,
     },
     {
+      week: 2,
+      image: '/images/HEADHUNTING.jpg',
+      title: 'HEADHUNTING',
+      description:
+        'ONE OF YOUR COMPETITORS HEADHUNTED A KEY MEMBER OF YOUR TEAM!​ One of the key members of your team (chosen randomly) will move to another team. Upside: You have been good at networking and spotted a bright talent in another company to substitute your teammate!',
+      //No in-game effect
+      showTitle: true,
+      showDescription: true,
+    },
+    {
       week: 3,
       image: '/images/Week3.png',
       title: 'NEW CORONA WAVE?',
