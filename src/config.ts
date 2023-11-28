@@ -242,7 +242,7 @@ export default {
       image: '/images/Week6.jpg',
       title: 'RUMOURS',
       description:
-        'RUMOURS… \n There are some rumours around that the labour workers are dissatisfied. They claim there are too much work and not enough people.',
+        'There are some rumours around that the labour workers are dissatisfied. They claim there are too much work and not enough people.',
       // NO EFFECT!
       showTitle: true,
       showDescription: true,
@@ -252,7 +252,7 @@ export default {
       image: '/images/Week7.jpg',
       title: 'UNION REQUEST',
       description:
-        'Workers formed a strong union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 5 instead of 4 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from month 9 onwards.',
+        'Workers formed a strong union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 9 instead of 8 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from month 9 onwards.',
       showTitle: true,
       showDescription: true,
     },
