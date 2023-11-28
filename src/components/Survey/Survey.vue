@@ -7,23 +7,23 @@
 <template>
   <template v-if="!answered">
     <form @submit.prevent="handleSubmit">
-      <Section1 :show="section === 1"
-                ref="section1" />
-      <Section2 :show="section === 2"
+      <!-- <Section1 :show="section === 1"
+                ref="section1" /> -->
+      <Section2 :show="section === 1"
                 ref="section2" />
-      <Section3 :show="section === 3"
+      <Section3 :show="section === 2"
                 ref="section3" />
       <div class="buttons">
         <button class="text-button"
                 :disabled="section === 1"
                 @click="section--">Back</button>
         <input type="submit"
-               :value="section === 3 ? 'Submit' : 'Continue'" />
+               :value="section === 2 ? 'Submit' : 'Continue'" />
       </div>
     </form>
   </template>
   <template v-else>
-    <p class="completed-message">Thank you! You have now completed the survey and can leave the page.</p>
+    <h2 class="completed-message">Thank you! You have now completed the survey. Wait for the game to start.</h2>
   </template>
 </template>
 
@@ -41,17 +41,17 @@ const bidStore = useBidStore();
 const gameStore = useGameStore();
 
 const section = ref<1 | 2 | 3>(1);
-const section1 = ref<typeof Section1 | undefined>();
+// const section1 = ref<typeof Section1 | undefined>();
 const section2 = ref<typeof Section2 | undefined>();
 const section3 = ref<typeof Section3 | undefined>();
 
 // Progress to the next section or submit the survey
 const handleSubmit = (evt: Event) => {
-  const sectionComponent = [section1, section2, section3][section.value - 1].value;
+  const sectionComponent = [section2, section3][section.value - 1].value;
   if (!sectionComponent || sectionComponent.errorCheck())
     return;
 
-  if (section.value === 3) {
+  if (section.value === 2) {
     submitSurvey();
   } else {
     section.value++;
@@ -61,7 +61,7 @@ const handleSubmit = (evt: Event) => {
 // Submit the survey
 const submitSurvey = () => {
   collections.surveyAnswers.create({
-    ...section1.value!.getData(),
+    // ...section1.value!.getData(),
     ...section3.value!.getData(),
     user: pocketbase.authStore.model!.id,
     game_id: gameStore.gameID
@@ -165,9 +165,5 @@ h2,
 form,
 .completed-message {
   padding-block: 2rem;
-}
-
-.completed-message {
-  font-size: 1.2rem;
 }
 </style>

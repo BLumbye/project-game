@@ -10,7 +10,7 @@
     <Survey />
   </template>
   <template v-else-if="gameStore.gameState === 'reviewing_bids'">
-    <h2 class="big-text">Survey submissions has been closed. Wait for the game to start.</h2>
+    <h2 class="big-text">Survey submissions has been closed. The game is about to start.</h2>
   </template>
   <template v-else-if="bidStore.price === 0">
     <h2 class="big-text">You did not submit a bid in time, and can therefore not participate in the game.</h2>
@@ -19,9 +19,10 @@
     <Event />
     <div class="container">
       <WeeklyReport v-if="gameStore.week > 1" />
-      <h2 v-else>No {{config.durationIdentifier.iterative}} report in {{config.durationIdentifier.singular}} {{ gameStore.week }}</h2>
-      <DecisionForm v-if="!gameStore.gameOver"/>
-      <GameFinished v-if="gameStore.gameOver"/>
+      <h2 v-else>No {{ config.durationIdentifier.iterative }} report in {{ config.durationIdentifier.singular }} {{
+        gameStore.week }}</h2>
+      <DecisionForm v-if="!gameStore.gameOver" />
+      <GameFinished v-if="gameStore.gameOver" />
     </div>
   </template>
   <template v-else>

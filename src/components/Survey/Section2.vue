@@ -5,7 +5,7 @@
        v-show="show">
     <label class="prompt"
            for="price">
-      Price (in EUR):
+      Price (in {{ config.currency.currency }}):
     </label>
     <input type="text"
            id="price"
@@ -21,8 +21,10 @@
        v-show="show">
     <label class="prompt"
            for="promised-duration">
-      Promised duration (number of {{config.durationIdentifier.plural}}, i.e. you promise your client that project will be completed by the end of
-      which {{config.durationIdentifier.singular}}):
+      Promised duration (number of {{ config.durationIdentifier.plural }}, i.e. you promise your client that project will
+      be
+      completed by the end of
+      which {{ config.durationIdentifier.singular }}):
     </label>
     <input type="text"
            id="promised-duration"
@@ -38,7 +40,8 @@
        v-show="show">
     <label class="prompt"
            for="expected-cost">
-      Expected cost (in EUR) - This will not influence the measurement of success, and it is only used so we know
+      Expected cost (in {{ config.currency.currency }}) - This will not influence the measurement of success, and it is
+      only used so we know
       whether your calculations are more or less correct:
     </label>
     <input type="text"
@@ -55,7 +58,7 @@
        v-show="show">
     <label class="prompt"
            for="expected-duration">
-      Expected duration (in {{config.durationIdentifier.plural}}) - This will not influence the measurement of success:
+      Expected duration (in {{ config.durationIdentifier.plural }}) - This will not influence the measurement of success:
     </label>
     <input type="text"
            id="expected-duration"
