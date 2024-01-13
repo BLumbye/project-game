@@ -16,3 +16,5 @@ export function backgroundClickClose(e: MouseEvent) {
 
   if (clickedInDialog === false) (e.target as HTMLDialogElement).close();
 }
+
+

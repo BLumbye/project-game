@@ -15,6 +15,7 @@
         <dialog ref="eventDialog"
                 @click="backgroundClickClose">
           <div class="event-content">
+            <button class="close-button" @click="eventDialog![i].close()">&#10006;</button>
             <img :src="event.image"
                  :alt="event.title" />
             <div class="text"
@@ -31,7 +32,7 @@
 
 <script setup lang="ts">
 import config from '../../config';
-import { backgroundClickClose } from '~/utils/dialog';
+import { backgroundClickClose} from '~/utils/dialog';
 import {capitalize} from '~/utils/formatters';
 
 const gameStore = useGameStore();
@@ -44,6 +45,9 @@ watch(() => gameStore.week, () => {
     eventDialog.value![config.events.indexOf(weekEvent)].showModal();
   }
 });
+
+
+
 </script>
 
 <style scoped lang="postcss">
@@ -93,6 +97,26 @@ dialog {
       max-width: 600px;
       margin: auto;
     }
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  color: #ffffff;
+  opacity: .75;
+  transition: opacity .2s ease-in-out;
+  mix-blend-mode: difference;
+
+  &:hover {
+    opacity: 1;
   }
 }
 </style>
