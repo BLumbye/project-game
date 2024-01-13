@@ -11,6 +11,7 @@ export const useBidStore = defineStore('bid', () => {
   const loading = ref(true);
   const price = ref<number>(config.bid.default);
   const promisedDuration = ref<number>(10);
+  const revised = ref(false);
 
   // Getters
 
@@ -18,6 +19,7 @@ export const useBidStore = defineStore('bid', () => {
   async function createBid(data: any) {
     price.value = data.price > config.bid.max || data.price < config.bid.min ? config.bid.default : data.price;
     promisedDuration.value = data.promised_duration;
+    revised.value = price.value !== data.price;
 
     const record = await collections.bids.create({
       ...data,
@@ -30,6 +32,7 @@ export const useBidStore = defineStore('bid', () => {
     collections.bids.subscribe(record.id, (data) => {
       price.value = data.record['revised_price'];
       promisedDuration.value = data.record['promised_duration'];
+      revised.value = price.value !== data.record['price'];
     });
   }
 
@@ -45,11 +48,13 @@ export const useBidStore = defineStore('bid', () => {
       const record = await collections.bids.getFirstListItem(`user.username="${pocketbase.authStore.model!.username}"`);
       price.value = record.revised_price;
       promisedDuration.value = record.promised_duration;
+      revised.value = price.value !== record.price;
 
       // Subscribe to bid record
       collections.bids.subscribe(record.id, (data) => {
         price.value = data.record['revised_price'];
         promisedDuration.value = data.record['promised_duration'];
+        revised.value = price.value !== data.record['price'];
       });
     } catch (error) {
       if (!(error instanceof ClientResponseError) || error.status !== 404) {
@@ -78,6 +83,7 @@ export const useBidStore = defineStore('bid', () => {
     loading,
     price,
     promisedDuration,
+    revised,
     connectWithDatabase,
     createBid,
   };

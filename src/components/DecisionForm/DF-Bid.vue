@@ -7,8 +7,8 @@
 <template>
   <div :class="['bid', { 'bid-wide': !config.loansEnabled }]">
     <h3 class="bid-column-label">Bid</h3>
-    <span class="bid-label">{{ currencyFormat.format(bidStore.price) }}</span>
-    <span class="bid-label">{{ bidStore.promisedDuration }} {{config.durationIdentifier.plural}}</span>
+    <span :class="bidStore.revised ? 'rejected-bid-label' : 'accepted-bid-label'">{{ currencyFormat.format(bidStore.price) }}</span>
+    <span class="accepted-bid-label">{{ bidStore.promisedDuration }} {{config.durationIdentifier.plural}}</span>
   </div>
 </template>
 
@@ -35,7 +35,12 @@ const bidStore = useBidStore();
   grid-column: span 2;
 }
 
-.bid-label {
+.rejected-bid-label {
+  text-align: left;
+  color: red;
+}
+
+.accepted-bid-label {
   text-align: left;
 }
 </style>
