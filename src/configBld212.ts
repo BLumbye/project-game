@@ -11,59 +11,59 @@ import { addWorkers } from './utils/configUtils';
 
 export default {
   bid: {
-    max: 1200000,
-    min: 800000,
-    default: 850000,
+    max: 80000000, //Original 1200000
+    min: 65000000, //Original 800000
+    default: 70000000, //Original 850000
   },
   finances: {
     loanInterest: 0.01,
     overdraftInterest: 0.1,
-    consumables: 50000,
-    overhead: 10000,
-    projectDelayPenalty: 20000,
+    consumables: 400000 * 4, //Original 50000
+    overhead: 75000 * 4, //Original 10000
+    projectDelayPenalty: 150000 * 4, //Original 20000
     expressMultiplier: 1.1,
-    labourPay: 800,
-    skilledPay: 1500,
-    electricianPay: 2000,
+    labourPay: 42000, //Original 800
+    skilledPay: 70000, //Original 1500
+    electricianPay: 84000, //Original 2000
   },
   equipment: {
-    steelwork: {
-      label: 'Steelwork (Task A)',
-      cost: 38000,
+    concrete: {
+      label: 'Concrete Elements (Task A)',
+      cost: 3000000, //Original 38000
     },
     interior: {
       label: 'Interior (Task B)',
-      cost: 28000,
+      cost: 12000000, //Original 28000
     },
-    tbs: {
-      label: 'TBS (Task C)',
-      cost: 130000,
+    lab: {
+      label: 'Lab Equipment (Task C)',
+      cost: 16000000, //Original 130000
     },
   },
   payments: {
-    startBudget: 0.2,
-    allActivitiesCompleteReward: 0.3,
+    startBudget: 0.3,
     milestoneReward: 0.5,
+    allActivitiesCompleteReward: 0.2,
     milestoneActivity: 'H',
   },
   projectDuration: 12,
   currency: {
-    region: 'en-IN',
-    currency: 'EUR',
+    region: 'da-DK',
+    currency: 'DKK',
   },
   durationIdentifier: {
-    singular: 'week',
-    plural: 'weeks',
-    iterative: 'weekly',
+    singular: 'month',
+    plural: 'months',
+    iterative: 'monthly',
   },
-  loansEnabled: true,
+  loansEnabled: false,
   activities: [
     {
       label: 'A',
       duration: 2,
       expressDuration: 1,
       requirements: {
-        equipment: ['steelwork'],
+        equipment: ['concrete'],
       },
     },
     {
@@ -79,7 +79,7 @@ export default {
       duration: 5,
       expressDuration: 4,
       requirements: {
-        equipment: ['tbs'],
+        equipment: ['lab'],
       },
     },
     {
@@ -92,7 +92,7 @@ export default {
       duration: 3,
       requirements: {
         workers: {
-          labour: 6,
+          labour: 6 * 2,
         },
         activities: ['D'],
       },
@@ -102,7 +102,7 @@ export default {
       duration: 1,
       requirements: {
         workers: {
-          labour: 4,
+          labour: 4 * 2,
         },
         activities: ['D'],
       },
@@ -112,7 +112,7 @@ export default {
       duration: 3,
       requirements: {
         workers: {
-          labour: 4,
+          labour: 4 * 2,
         },
         activities: ['E'],
       },
@@ -122,8 +122,8 @@ export default {
       duration: 2,
       requirements: {
         workers: {
-          labour: 2,
-          skilled: 4,
+          labour: 2 * 2,
+          skilled: 4 * 2,
         },
         activities: ['A', 'F'],
       },
@@ -133,8 +133,8 @@ export default {
       duration: 1,
       requirements: {
         workers: {
-          labour: 1,
-          skilled: 6,
+          labour: 1 * 2,
+          skilled: 6 * 2,
         },
         activities: ['B', 'H'],
       },
@@ -144,8 +144,8 @@ export default {
       duration: 1,
       requirements: {
         workers: {
-          labour: 4,
-          skilled: 3,
+          labour: 4 * 2,
+          skilled: 3 * 2,
         },
         activities: ['H'],
       },
@@ -155,9 +155,9 @@ export default {
       duration: 2,
       requirements: {
         workers: {
-          labour: 4,
-          skilled: 2,
-          electrician: 8,
+          labour: 4 * 2,
+          skilled: 2 * 2,
+          electrician: 8 * 2,
         },
         activities: ['C', 'I'],
       },
@@ -167,8 +167,8 @@ export default {
       duration: 1,
       requirements: {
         workers: {
-          labour: 2,
-          skilled: 2,
+          labour: 2 * 2,
+          skilled: 2 * 2,
         },
         activities: ['C', 'K'],
       },
@@ -191,6 +191,16 @@ export default {
       showDescription: true,
     },
     {
+      week: 2,
+      image: '/images/HEADHUNTING.jpg',
+      title: 'HEADHUNTING',
+      description:
+        'ONE OF YOUR COMPETITORS HEADHUNTED A KEY MEMBER OF YOUR TEAM!​ One of the key members of your team (chosen randomly) will move to another team. Upside: You have been good at networking and spotted a bright talent in another company to substitute your teammate!',
+      //No in-game effect
+      showTitle: true,
+      showDescription: true,
+    },
+    {
       week: 3,
       image: '/images/Week3.png',
       title: 'NEW CORONA WAVE?',
@@ -204,7 +214,7 @@ export default {
       week: 4,
       image: '/images/Week4.jpg',
       title: 'DELAYED DELIVERIES',
-      description: 'OH NO...! \n ALL the procurement that has not yet been delivered have been delayed by 1 week!',
+      description: `OH NO...! \n ALL the procurement that has not yet been delivered have been delayed by 1 month!`,
       effects: [
         {
           activityLabels: ['A'],
@@ -227,7 +237,7 @@ export default {
       image: '/images/Week5.jpg',
       title: 'BAD WEATHER',
       description:
-        'The cladding stage 1 (Task J) takes one week longer than planned! The forecast shows it might continue.',
+        'The cladding stage 1 (Task J) takes one month longer than planned! The forecast shows it might continue.',
       effects: [
         {
           activityLabels: ['J'],
@@ -242,7 +252,7 @@ export default {
       image: '/images/Week6.jpg',
       title: 'RUMOURS',
       description:
-        'RUMOURS… \n There are some rumours around that the labour workers are dissatisfied. They claim there are too much work and not enough people.',
+        'There are some rumours around that the labour workers are dissatisfied. They claim there are too much work and not enough people.',
       // NO EFFECT!
       showTitle: true,
       showDescription: true,
@@ -252,7 +262,7 @@ export default {
       image: '/images/Week7.jpg',
       title: 'UNION REQUEST',
       description:
-        'Workers formed a strong union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 5 instead of 4 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from week 9 onwards.',
+        'Workers formed a strong union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 9 instead of 8 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from month 9 onwards.',
       showTitle: true,
       showDescription: true,
     },
