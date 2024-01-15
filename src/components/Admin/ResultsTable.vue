@@ -196,7 +196,7 @@ const dataChangeWatcher = watch(() => [adminStore.bids, adminStore.gameSummaries
       const planDurationDiff = row.week - row.promisedDuration;
       const actualCost = row.revisedPrice - row.totalBalance;
       const planCostDiff = Math.abs(row.totalBalance + row.expectedCost - row.revisedPrice);
-      const priceRank = adminStore.bids.filter(bid => bid.revisedPrice < row.revisedPrice).length + 1;
+      const priceRank = bidSummaryMerge.filter(r => r.status === 'won' && r.revisedPrice < row.revisedPrice).length + 1;
       const costRank = bidSummaryMerge.filter(r => r.status === 'won' && r.revisedPrice - r.totalBalance! < actualCost).length + 1;
       const profitRank = bidSummaryMerge.filter(r => r.status === 'won' && r.totalBalance! > row.totalBalance!).length + 1;
       const planRank = bidSummaryMerge.filter(r => r.status === 'won' && Math.abs(r.totalBalance! + r.expectedCost - r.revisedPrice) < planCostDiff).length + 1;
