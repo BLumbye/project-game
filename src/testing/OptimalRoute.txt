@@ -1,0 +1,2 @@
+hf_worker1, hf_worker2, hf_worker3, delivery1, delivery2, delivery3, take_loan, repay_loan, aw1,aw2,aw3, bw1,bw2,bw3,cw1,cw2,cw3,dw1,dw2,dw3,ew1,ew2,ew3,fw1,fw2,fw3,gw1,gw2,gw3,hw1,hw2,hw3,iw1,iw2,iw3,jw1,jw2,jw3,kw1,kw2,kw3,lw1,lw2,lw3
+10, 0, 0, 1, 1, 2, 350000, 0,0, 0, 0,0, 0, 0,0, 0, 0,0, 0, 0,0, 0, 0,0, 0, 0,0, 0, 0,0, 0, 0,0, 0, 0,0, 0, 0,0, 0, 0,0, 0, 0
