@@ -9,7 +9,7 @@
 import { Config } from './types/configInterface';
 import { addWorkers } from './utils/configUtils';
 
-export default {
+const baseConfig: Omit<Config, 'events'> = {
   bid: {
     max: 80000000, //Original 1200000
     min: 65000000, //Original 800000
@@ -174,106 +174,118 @@ export default {
       },
     },
   ],
-  events: [
-    {
-      week: 1,
-      image: '/images/Week1.jpg',
-      title: 'OPPORTUNITY',
-      description:
-        'Your site manager reported that activity H is a resource dependant activity, and therefore, you can double the speed, by doubling the number of workers.',
-      effects: [
-        {
-          activityLabels: ['H'],
-          resourceDependant: true,
-        },
-      ],
-      showTitle: true,
-      showDescription: true,
-    },
-    {
-      week: 2,
-      image: '/images/HEADHUNTING.jpg',
-      title: 'HEADHUNTING',
-      description:
-        'ONE OF YOUR COMPETITORS HEADHUNTED A KEY MEMBER OF YOUR TEAM!​ One of the key members of your team (chosen randomly) will move to another team. Upside: You have been good at networking and spotted a bright talent in another company to substitute your teammate!',
-      //No in-game effect
-      showTitle: true,
-      showDescription: true,
-    },
-    {
-      week: 3,
-      image: '/images/Week3.png',
-      title: 'NEW CORONA WAVE?',
-      description:
-        'The government announced that the new wave of corona virus might affect the construction industry. The government is considering a lockdown, which might affect the supply of materials and workers.',
-      // NO EFFECT!
-      showTitle: false,
-      showDescription: false,
-    },
-    {
-      week: 4,
-      image: '/images/Week4.jpg',
-      title: 'DELAYED DELIVERIES',
-      description: `OH NO...! \n ALL the procurement that has not yet been delivered have been delayed by 1 month!`,
-      effects: [
-        {
-          activityLabels: ['A'],
-          durationModification: 1,
-        },
-        {
-          activityLabels: ['B'],
-          durationModification: 1,
-        },
-        {
-          activityLabels: ['C'],
-          durationModification: 1,
-        },
-      ],
-      showTitle: true,
-      showDescription: true,
-    },
-    {
-      week: 5,
-      image: '/images/Week5.jpg',
-      title: 'BAD WEATHER',
-      description:
-        'The cladding stage 1 (Task J) takes one month longer than planned! The forecast shows it might continue.',
-      effects: [
-        {
-          activityLabels: ['J'],
-          durationModification: 1,
-        },
-      ],
-      showTitle: true,
-      showDescription: true,
-    },
-    {
-      week: 6,
-      image: '/images/Week6.jpg',
-      title: 'RUMOURS',
-      description:
-        'There are some rumours around that the labour workers are dissatisfied. They claim there are too much work and not enough people.',
-      // NO EFFECT!
-      showTitle: true,
-      showDescription: true,
-    },
-    {
-      week: 7,
-      image: '/images/Week7.jpg',
-      title: 'UNION REQUEST',
-      description:
-        'Workers formed a strong union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 9 instead of 8 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from month 9 onwards.',
-      showTitle: true,
-      showDescription: true,
-    },
-    {
-      week: 9,
-      image: '/images/Week9.jpg',
-      title: 'UNION REQUEST',
-      description: 'The union has now been formed and is in effect.',
-      effects: [...addWorkers(['K', 'G', 'L'], ['labour'], 1)],
-      showTitle: true,
-      showDescription: true,
-    },
-  ],
+};
+
+const events: Config['events'] = [
+  {
+    week: 1,
+    image: '/images/Week1.jpg',
+    title: 'OPPORTUNITY',
+    description:
+      'Your site manager reported that activity H is a resource dependant activity, and therefore, you can double the speed, by doubling the number of workers.',
+    effects: [
+      {
+        activityLabels: ['H'],
+        resourceDependant: true,
+      },
+    ],
+    showTitle: true,
+    showDescription: true,
+  },
+  {
+    week: 2,
+    image: '/images/HEADHUNTING.jpg',
+    title: 'HEADHUNTING',
+    description:
+      'ONE OF YOUR COMPETITORS HEADHUNTED A KEY MEMBER OF YOUR TEAM! One of the key members of your team (chosen randomly) will move to another team. Upside: You have been good at networking and spotted a bright talent in another company to substitute your teammate!',
+    //No in-game effect
+    showTitle: true,
+    showDescription: true,
+  },
+  {
+    week: 3,
+    image: '/images/Week3.png',
+    title: 'NEW CORONA WAVE?',
+    description:
+      'A new strain of COVID has been discovered. How contagious it is, is as of yet unknown. The government is considering a lockdown.',
+    // NO EFFECT!
+    showTitle: false,
+    showDescription: false,
+  },
+  {
+    week: 4,
+    image: '/images/Week4.jpg',
+    title: 'DELAYED DELIVERIES',
+    description: `Supply chains have been disrupted and Lab Equipment (Task C) is delayed by 1 month`,
+    effects: [
+      {
+        activityLabels: ['C'],
+        durationModification: 1,
+      },
+    ],
+    showTitle: true,
+    showDescription: true,
+  },
+  {
+    week: 5,
+    image: '/images/Week5.jpg',
+    title: 'BAD WEATHER',
+    description:
+      `The cladding stage 1 (Task J) takes one ${baseConfig.durationIdentifier.singular} longer than planned! The forecast shows it might continue.`,
+    effects: [
+      {
+        activityLabels: ['J'],
+        durationModification: 1,
+      },
+    ],
+    showTitle: true,
+    showDescription: true,
+  },
+  {
+    week: 5,
+    image: '/images/???.jpg',
+    title: 'OPPORTUNITY FROM PROJECT OWNER',
+    description:
+      `Your project owner has an offer for you. You have been given an optional task to build a terrace extension (Task M). It requires 6 labourers. This task is not required to finish the project, but you will be paid an extra 100000 if you manage it. `,
+    effects: [
+      {
+        activityLabels: ['M'] // Reveal activity M
+      },
+    ],
+    showTitle: true,
+    showDescription: true,
+  },
+  {
+    week: 6,
+    image: '/images/Week6.jpg',
+    title: 'RUMOURS',
+    description:
+      'There are some rumours around that the labour workers are dissatisfied. They claim there are too much work and not enough people.',
+    // NO EFFECT!
+    showTitle: true,
+    showDescription: true,
+  },
+  {
+    week: 7,
+    image: '/images/Week7.jpg',
+    title: 'UNION REQUEST',
+    description:
+      'Workers have been in talk with their union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 9 instead of 8 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from month 9 onwards.',
+    showTitle: true,
+    showDescription: true,
+  },
+  {
+    week: 9,
+    image: '/images/Week9.jpg',
+    title: 'UNION REQUEST',
+    description: 'The agreement with the workers\' union has now been formed and is in effect.',
+    effects: [...addWorkers(['K', 'G', 'L'], ['labour'], 1)],
+    showTitle: true,
+    showDescription: true,
+  },
+];
+
+export default {
+  ...baseConfig,
+  events,
 } satisfies Config;
