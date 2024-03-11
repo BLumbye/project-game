@@ -14,6 +14,9 @@ dependencies:
   chart.js:
     specifier: ^4.3.3
     version: 4.3.3
+  chartjs-plugin-annotation:
+    specifier: ^3.0.1
+    version: 3.0.1(chart.js@4.3.3)
   exceljs:
     specifier: ^4.3.0
     version: 4.3.0
@@ -1256,6 +1259,14 @@ packages:
     engines: {pnpm: '>=7'}
     dependencies:
       '@kurkle/color': 0.3.2
+    dev: false
+
+  /chartjs-plugin-annotation@3.0.1(chart.js@4.3.3):
+    resolution: {integrity: sha512-hlIrXXKqSDgb+ZjVYHefmlZUXK8KbkCPiynSVrTb/HjTMkT62cOInaT1NTQCKtxKKOm9oHp958DY3RTAFKtkHg==}
+    peerDependencies:
+      chart.js: '>=4.0.0'
+    dependencies:
+      chart.js: 4.3.3
     dev: false
 
   /chokidar@3.5.3:

@@ -1,6 +1,15 @@
 <template>
   <AdminTable :loading="loading"
-              :table="table" />
+              :table="table">
+    <template #charts>
+      <details>
+        <summary>Confidence</summary>
+        <div class="content">
+          <ConfidenceChart />
+        </div>
+      </details>
+    </template>
+  </AdminTable>
 </template>
 
 <script setup lang="ts">

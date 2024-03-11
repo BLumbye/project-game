@@ -5,15 +5,13 @@
       <details>
         <summary>Price Distribution</summary>
         <div class="content">
-          <Bar :options="priceDistributionOptions"
-               :data="priceDistributionData" />
+          <PriceDistributionChart />
         </div>
       </details>
       <details>
         <summary>Duration Distribution</summary>
         <div class="content">
-          <Bar :options="durationDistributionOptions"
-               :data="durationDistributionData" />
+          <DurationDistributionChart />
         </div>
       </details>
     </template>
@@ -24,9 +22,6 @@
 import { useVueTable, createColumnHelper, getCoreRowModel, SortingState, getSortedRowModel, Table, CellContext } from '@tanstack/vue-table';
 import { Bid } from '~/types/types';
 import { validate, and, isNumber, isWholeNumber, asNumber, isPositive } from '~/utils/validation';
-import { Bar } from 'vue-chartjs';
-import { BarControllerChartOptions, ChartData, ChartOptions, CoreChartOptions, DatasetChartOptions, ElementChartOptions, PluginChartOptions, ScaleChartOptions, plugins } from 'chart.js'
-import { _DeepPartialObject } from 'chart.js/dist/types/utils';
 import { currencyFormat } from '~/utils/formatters';
 
 const adminStore = useAdminStore();
@@ -38,62 +33,6 @@ const inputCell = (info: CellContext<Bid, number>) => {
     onInput: (e: InputEvent) => adminStore.updateBid(info.row.original.id, Number((e.target as HTMLInputElement).value))
   });
 }
-
-type BarOptions = _DeepPartialObject<CoreChartOptions<"bar"> & ElementChartOptions<"bar"> & PluginChartOptions<"bar"> & DatasetChartOptions<"bar"> & ScaleChartOptions<"bar"> & BarControllerChartOptions>;
-type BarData = ChartData<"bar", (number | [number, number] | null)[], unknown>;
-
-const priceDistributionOptions: BarOptions = {
-  responsive: true,
-  plugins: {
-    legend: {
-      display: false,
-    },
-  },
-}
-
-const priceDistributionData = computed<BarData>(() => {
-  const sortedBids = adminStore.bids.sort((a, b) => a.price - b.price);
-  const labels = sortedBids.map(bid => adminStore.users.find(user => user.id === bid.userID)?.username);
-  const datasets = [{ data: sortedBids.map(bid => bid.price), backgroundColor: '#4285f4' }];
-  return { labels, datasets };
-});
-
-const durationDistributionOptions: BarOptions = {
-  responsive: true,
-  plugins: {
-    legend: {
-      display: false,
-    },
-  },
-  scales: {
-    x: {
-      type: 'linear',
-      ticks: {
-        precision: 0,
-      }
-    },
-    y: {
-      type: 'linear',
-      ticks: {
-        precision: 0,
-      }
-    },
-  }
-}
-
-const durationDistributionData = computed<BarData>(() => {
-  const data: { x: number, y: number }[] = [];
-  adminStore.bids.forEach(({ promisedDuration }) => {
-    const group = data.find(group => group.x === promisedDuration);
-    if (group) {
-      group.y++;
-    } else {
-      data.push({ x: promisedDuration, y: 1 });
-    }
-  });
-  const datasets = [{ data, backgroundColor: '#4285f4' }];
-  return { datasets } as unknown as BarData;
-});
 
 const columnHelper = createColumnHelper<Bid>();
 const columns = [
