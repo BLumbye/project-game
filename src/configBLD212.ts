@@ -279,7 +279,7 @@ const events: Config['events'] = {
       {
         activityLabels: ['M'],
         revealActivity: true, // Reveal activity M
-        //immediateReward: 3000000, // Reward for accepting -> baseConfig.finances.consumables + baseConfig.finances.overhead + baseConfig.workers.labour.cost * 6 + 1000000
+        immediateReward: 3000000, // Reward for accepting -> baseConfig.finances.consumables + baseConfig.finances.overhead + baseConfig.workers.labour.cost * 6 + 1000000
       },
     ],
     showTitle: true,

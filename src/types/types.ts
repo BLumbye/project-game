@@ -50,6 +50,7 @@ export interface EventEffect {
   durationModification?: number; // The new duration of the activity
   resourceDependant?: boolean; // Whether the activitity can be sped up by using more workers
   revealActivity?: boolean; // A previously hidden activity is revealed
+  immediateReward?: number; // The immediate reward for accepting the event
 }
 
 export interface Equipment {

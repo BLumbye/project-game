@@ -24,6 +24,7 @@ export const useFinanceStore = defineStore('finance', () => {
   const overdraftInterestTimeline = createWeeklyTimeline('overdraftInterestTimeline', 0, sumReducer, 0);
   const loanRepayTimeline = createWeeklyTimeline('loanRepayTimeline', 0, sumReducer, 0);
   const loanTimeline = createWeeklyTimeline('loanTimeline', 0, sumReducer, 0);
+  //const rewardTimeline = createWeeklyTimeline('rewardTimeline', 0, sumReducer, 0); //Rewards (immediate payments) from events
 
   // Getters
   const outgoingAtWeek = computed(() => {
@@ -77,6 +78,15 @@ export const useFinanceStore = defineStore('finance', () => {
     };
   });
 
+  /*const rewardAtWeek = computed(() => {
+    return (week?: number) => {
+      week ??= gameStore.week - 1;
+      return (
+        rewardTimeline.getReduced.value(week)
+      );
+    };
+  });*/
+
   const loan = computed(() => loanAtWeek.value());
   const hasActiveLoan = computed(() => {
     return (week?: number) => {
@@ -118,6 +128,11 @@ export const useFinanceStore = defineStore('finance', () => {
     if (isNaN(numberValue)) return;
     numberValue = Math.max(0, Math.min(numberValue, loanAtWeek.value(week)));
     loanRepayTimeline.set(numberValue, week + 1);
+  }
+
+  // Add immediate reward (from events)
+  function recieveReward(value: number, week: number) {
+    incomingTimeline.add(value, week);
   }
 
   function applyWeeklyFinances() {
@@ -168,7 +183,7 @@ export const useFinanceStore = defineStore('finance', () => {
     addInterestToLoan(
       hasActiveLoan.value(gameStore.week + 1)
         ? config.finances.loanInterest *
-            (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
+        (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
         : 0,
     );
 
@@ -323,12 +338,14 @@ export const useFinanceStore = defineStore('finance', () => {
     overdraftInterestTimeline,
     loanRepayTimeline,
     loanTimeline,
+    //rewardTimeline,
     outgoingAtWeek,
     loanAtWeek,
     balanceAtWeek,
     weeklyBalanceAtWeek,
     loan,
     hasActiveLoan,
+    recieveReward,
     takeLoan,
     repayLoan,
     applyWeeklyFinances,
