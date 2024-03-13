@@ -274,11 +274,14 @@ const events: Config['events'] = [
     image: '/images/ExtraActivity.jpg',
     title: 'OPPORTUNITY FROM PROJECT OWNER',
     description:
-      `Your project owner has an offer for you. You have been given an optional task to build a terrace extension (Task M). It requires 6 labourers. You can deny the request, but you will be paid an extra 100000 if you manage it. Do you accept?`,
+      `Your project owner has an offer for you. You have been given an optional task to build a terrace extension (Task M).
+      It requires six labourers. You can deny the request, but you will be paid an extra 3.000.000,00 ${baseConfig.currency.currency} if you manage it.
+      \n Do you accept?`,
     effects: [
       {
         activityLabels: ['M'],
         revealActivity: true, // Reveal activity M
+        //immediateReward: 3000000, // Reward for accepting -> baseConfig.finances.consumables + baseConfig.finances.overhead + baseConfig.workers.labour.cost * 6 + 1000000
       },
     ],
     showTitle: true,

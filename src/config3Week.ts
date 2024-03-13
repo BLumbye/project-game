@@ -194,7 +194,7 @@ const baseConfig: Omit<Config, 'events'> = {
 };
 
 const events: Config['events'] = [
-  {
+  opportunity: {
     week: 1,
     image: '/images/Week1.jpg',
     title: 'OPPORTUNITY',
@@ -209,7 +209,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  corona: {
     week: 3,
     image: '/images/Week3.png',
     title: 'NEW CORONA WAVE?',
@@ -219,7 +219,7 @@ const events: Config['events'] = [
     showTitle: false,
     showDescription: false,
   },
-  {
+  delayedDeliveries: {
     week: 4,
     image: '/images/Week4.jpg',
     title: 'DELAYED DELIVERIES',
@@ -241,7 +241,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  badWeather: {
     week: 5,
     image: '/images/Week5.jpg',
     title: 'BAD WEATHER',
@@ -255,7 +255,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  rumours: {
     week: 6,
     image: '/images/Week6.jpg',
     title: 'RUMOURS',
@@ -265,19 +265,19 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  unionRequest: {
     week: 7,
     image: '/images/Week7.jpg',
     title: 'UNION REQUEST',
-    description: `Workers formed a strong union and request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 5 instead of 4 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from ${baseConfig.durationIdentifier.singular} 9 onwards.`,
+    description: `Workers' union request one more labour worker to be allocated to tasks K, G and L, if these tasks are still ongoing, e.g. task K requires 5 instead of 4 LAB. Due to exensive negotiation, you managed to agree that the request will only take effect from ${baseConfig.durationIdentifier.singular} 9 onwards.`,
     showTitle: true,
     showDescription: true,
   },
-  {
+  unionRequestInEffect: {
     week: 9,
     image: '/images/Week9.jpg',
-    title: 'UNION REQUEST',
-    description: 'The union has now been formed and is in effect.',
+    title: 'UNION REQUEST IS IN EFFECT',
+    description: 'The effects of the union request are now in action.',
     effects: [...addWorkers(['K', 'G', 'L'], ['labour'], 1)],
     showTitle: true,
     showDescription: true,
