@@ -88,7 +88,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const allActivitiesDone = computed(() => {
     return (week?: number) => {
       week ??= gameStore.week;
-      return activitiesAtWeek.value(week).every(isActivityDone.value);
+      return activitiesAtWeek.value(week).every((act) => isActivityDone.value(act) || act.hidden);
     };
   });
 
@@ -207,10 +207,10 @@ export const useActivitiesStore = defineStore('activities', () => {
     week ??= gameStore.week;
     const activities = activitiesAtWeek.value(week);
     return (
-      activities.reduce(
-        (totalProgress, activity) => totalProgress + activity.progress / getDuration.value(activity, week),
-        0,
-      ) / activities.length
+      activities
+        .filter((act) => !act.hidden)
+        .reduce((totalProgress, activity) => totalProgress + activity.progress / getDuration.value(activity, week), 0) /
+      activities.length
     );
   });
 
