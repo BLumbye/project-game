@@ -1,6 +1,9 @@
 /**
  * When applied to the click event of a dialog, it will close whenever the background is clicked.
  */
+import { Event } from '../types/types';
+
+
 export function backgroundClickClose(e: MouseEvent) {
   if ((e.target as HTMLElement).tagName !== 'DIALOG')
     //This prevents issues with forms

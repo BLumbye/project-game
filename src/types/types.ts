@@ -41,6 +41,7 @@ export interface Event {
   showTitle: boolean;
   showDescription: boolean;
   choice?: boolean;
+  accepted?: boolean;
 }
 
 export interface EventEffect {
