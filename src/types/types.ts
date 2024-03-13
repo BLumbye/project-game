@@ -27,9 +27,10 @@ export interface Activity {
     equipment: string[];
   }>;
   allocation: Record<WorkerType, number>;
+  hidden?: boolean;
 }
 
-export type ConfigActivity = Pick<Activity, 'label' | 'duration' | 'expressDuration' | 'requirements'>;
+export type ConfigActivity = Pick<Activity, 'label' | 'duration' | 'expressDuration' | 'requirements' | 'hidden'>;
 export type ConfigActivities = ConfigActivity[];
 
 export interface Event {
@@ -40,6 +41,7 @@ export interface Event {
   effects?: EventEffect[];
   showTitle: boolean;
   showDescription: boolean;
+  choice?: boolean;
 }
 
 export interface EventEffect {
@@ -47,6 +49,7 @@ export interface EventEffect {
   workersModification?: Partial<Record<WorkerType, number>>; // The new number of workers needed
   durationModification?: number; // The new duration of the activity
   resourceDependant?: boolean; // Whether the activitity can be sped up by using more workers
+  revealActivity?: boolean; // A previously hidden activity is revealed
 }
 
 export interface Equipment {

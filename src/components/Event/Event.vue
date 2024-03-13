@@ -40,9 +40,9 @@ const gameStore = useGameStore();
 const eventDialog = ref<HTMLDialogElement[] | null>(null);
 
 watch(() => gameStore.week, () => {
-  const weekEvent = config.events.find(event => event.week === gameStore.week);
-  if (weekEvent) {
-    eventDialog.value![config.events.indexOf(weekEvent)].showModal();
+  const weekEvent = config.events.filter(event => event.week === gameStore.week);
+  for (let i = 0; i < weekEvent.length; i++) {
+    eventDialog.value![config.events.indexOf(weekEvent[i])].showModal();
   }
 });
 
