@@ -51,5 +51,5 @@ export interface Config {
   };
   loansEnabled: boolean;
   activities: ConfigActivities;
-  events: Event[];
+  events: Record<string, Event>;
 }

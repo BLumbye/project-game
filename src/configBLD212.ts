@@ -204,8 +204,8 @@ const baseConfig: Omit<Config, 'events'> = {
   ],
 };
 
-const events: Config['events'] = [
-  {
+const events: Config['events'] = {
+  opportunity: {
     week: 1,
     image: '/images/Week1.jpg',
     title: 'OPPORTUNITY',
@@ -220,7 +220,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  headhunting: {
     week: 2,
     image: '/images/HEADHUNTING.jpg',
     title: 'HEADHUNTING',
@@ -230,7 +230,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  corona: {
     week: 3,
     image: '/images/Week3.png',
     title: 'NEW CORONA WAVE?',
@@ -240,7 +240,7 @@ const events: Config['events'] = [
     showTitle: false,
     showDescription: false,
   },
-  {
+  delayedDeliveries: {
     week: 4,
     image: '/images/Week4.jpg',
     title: 'DELAYED DELIVERIES',
@@ -254,12 +254,11 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  badWeather: {
     week: 5,
     image: '/images/Week5.jpg',
     title: 'BAD WEATHER',
-    description:
-      `The cladding stage 1 (Task J) takes one ${baseConfig.durationIdentifier.singular} longer than planned! The forecast shows it might continue.`,
+    description: `The cladding stage 1 (Task J) takes one ${baseConfig.durationIdentifier.singular} longer than planned! The forecast shows it might continue.`,
     effects: [
       {
         activityLabels: ['J'],
@@ -269,12 +268,11 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  terraceExtension: {
     week: 6,
     image: '/images/ExtraActivity.jpg',
     title: 'OPPORTUNITY FROM PROJECT OWNER',
-    description:
-      `Your project owner has an offer for you. You have been given an optional task to build a terrace extension (Task M). It requires 6 labourers. You can deny the request, but you will be paid an extra 100000 if you manage it. Do you accept?`,
+    description: `Your project owner has an offer for you. You have been given an optional task to build a terrace extension (Task M). It requires 6 labourers. You can deny the request, but you will be paid an extra 100000 if you manage it. Do you accept?`,
     effects: [
       {
         activityLabels: ['M'],
@@ -285,7 +283,7 @@ const events: Config['events'] = [
     showDescription: true,
     choice: true,
   },
-  {
+  rumours: {
     week: 6,
     image: '/images/Week6.jpg',
     title: 'RUMOURS',
@@ -295,7 +293,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  unionRequest: {
     week: 7,
     image: '/images/Week7.jpg',
     title: 'UNION REQUEST',
@@ -304,16 +302,16 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  unionRequest2: {
     week: 9,
     image: '/images/Week9.jpg',
     title: 'UNION REQUEST',
-    description: 'The agreement with the workers\' union has now been formed and is in effect.',
+    description: "The agreement with the workers' union has now been formed and is in effect.",
     effects: [...addWorkers(['K', 'G', 'L'], ['labour'], 1)],
     showTitle: true,
     showDescription: true,
   },
-];
+};
 
 export default {
   ...baseConfig,

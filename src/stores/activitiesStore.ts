@@ -28,6 +28,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const gameStore = useGameStore();
   const workersStore = useWorkersStore();
   const equipmentStore = useEquipmentStore();
+  const eventStore = useEventStore();
 
   // State
   const loading = ref(true);
@@ -48,6 +49,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         ...activity,
         progress: progressTimelines[activity.label].getReduced.value(week),
         allocation: allocations.value[activity.label][week!],
+        hidden: isActivityHidden(activity, week),
       })) satisfies Activity[];
     };
   });
@@ -274,10 +276,11 @@ export const useActivitiesStore = defineStore('activities', () => {
       week ??= gameStore.week;
       activityCompletion ??= weekActivityDone.value;
       let durationModification = 0;
-      for (const event of config.events) {
+      for (const [eventName, event] of Object.entries(config.events)) {
         if (
           (activityCompletion[activity.label] !== undefined && activityCompletion[activity.label] <= event.week) ||
-          event.week > week
+          event.week > week ||
+          (event.choice && eventStore.eventChoices[eventName] !== true)
         ) {
           continue;
         }
@@ -306,8 +309,8 @@ export const useActivitiesStore = defineStore('activities', () => {
       if (activityCompletion[activity.label] !== undefined && activityCompletion[activity.label] <= week) {
         return workersModification;
       }
-      for (const event of config.events) {
-        if (event.week > week) continue;
+      for (const [eventName, event] of Object.entries(config.events)) {
+        if (event.week > week || (event.choice && eventStore.eventChoices[eventName] !== true)) continue;
         event.effects?.forEach((effect) => {
           if (!effect.activityLabels.includes(activity.label) || effect.workersModification === undefined) return;
           for (const key in config.workers) {
@@ -340,12 +343,29 @@ export const useActivitiesStore = defineStore('activities', () => {
   function isActivityResourceDependant(activity: Activity, week?: number): boolean {
     week ??= gameStore.week;
 
-    return config.events.some(
-      (event) =>
+    return Object.entries(config.events).some(
+      ([eventName, event]) =>
         event.week <= week! &&
+        (!event.choice || eventStore.eventChoices[eventName] === true) &&
         event.effects?.some(
           (effect) => effect.activityLabels.includes(activity.label) && effect.resourceDependant === true,
         ),
+    );
+  }
+
+  function isActivityHidden(activity: ConfigActivity, week?: number): boolean {
+    week ??= gameStore.week;
+
+    return (
+      activity.hidden === true &&
+      !Object.entries(config.events).some(
+        ([eventName, event]) =>
+          event.week <= week! &&
+          (!event.choice || eventStore.eventChoices[eventName] === true) &&
+          event.effects?.some(
+            (effect) => effect.activityLabels.includes(activity.label) && effect.revealActivity === true,
+          ),
+      )
     );
   }
 
