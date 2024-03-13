@@ -18,13 +18,18 @@ export interface Config {
     overhead: number;
     projectDelayPenalty: number;
     expressMultiplier: number;
-    labourPay: number;
-    skilledPay: number;
-    electricianPay: number;
   };
   equipment: {
     [key: string]: {
       label: string;
+      cost: number;
+    };
+  };
+  workers: {
+    [key: string]: {
+      label: string;
+      shortLabel: string;
+      plural: string;
       cost: number;
     };
   };

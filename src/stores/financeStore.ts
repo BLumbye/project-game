@@ -128,9 +128,7 @@ export const useFinanceStore = defineStore('finance', () => {
     // Worker pay
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
-      previousWorkers.labour * config.finances.labourPay +
-        previousWorkers.skilled * config.finances.skilledPay +
-        previousWorkers.electrician * config.finances.electricianPay,
+      Object.entries(previousWorkers).reduce((acc, [key, amount]) => acc + amount * config.workers[key].cost, 0),
     );
 
     // Equipment costs

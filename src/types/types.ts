@@ -7,7 +7,6 @@
 import config from '~/config';
 import { Config } from './configInterface';
 
-export type WorkerType = 'labour' | 'skilled' | 'electrician';
 export type EquipmentStatus = 'unordered' | 'ordered' | 'delivered';
 export type DeliveryType = 'regular' | 'express';
 export type bidType = 'bidPrice' | 'bidDuration' | 'expectedPrice' | 'expectedDuration';
@@ -22,11 +21,11 @@ export interface Activity {
   expressDuration?: number; //Only relevant for equipment
   progress: number;
   requirements: Partial<{
-    workers: Partial<Record<WorkerType, number>>;
+    workers: Partial<Record<string, number>>;
     activities: string[];
     equipment: string[];
   }>;
-  allocation: Record<WorkerType, number>;
+  allocation: Record<string, number>;
 }
 
 export type ConfigActivity = Pick<Activity, 'label' | 'duration' | 'expressDuration' | 'requirements'>;
@@ -44,7 +43,7 @@ export interface Event {
 
 export interface EventEffect {
   activityLabels: string[]; // An array of activity labels to be affected
-  workersModification?: Partial<Record<WorkerType, number>>; // The new number of workers needed
+  workersModification?: Partial<Record<string, number>>; // The new number of workers needed
   durationModification?: number; // The new duration of the activity
   resourceDependant?: boolean; // Whether the activitity can be sped up by using more workers
 }

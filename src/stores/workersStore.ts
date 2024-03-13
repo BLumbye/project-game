@@ -1,11 +1,10 @@
 import { defineStore } from 'pinia';
-import { WorkerType } from '../types/types';
 import config from '../config';
 import { ClientResponseError } from 'pocketbase';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 import { useStorage } from '@vueuse/core';
 
-type WorkersState = Record<WorkerType, number>;
+type WorkersState = Record<string, number>;
 
 export const useWorkersStore = defineStore('workers', () => {
   const gameStore = useGameStore();
@@ -14,7 +13,10 @@ export const useWorkersStore = defineStore('workers', () => {
   const loading = ref(true);
   const workers = useStorage(
     'workers',
-    Array.from({ length: config.projectDuration + 1 }, () => ({ labour: 0, skilled: 0, electrician: 0 })),
+    Array.from(
+      { length: config.projectDuration + 1 },
+      () => Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}) as WorkersState,
+    ),
   );
 
   // Getters
@@ -26,15 +28,11 @@ export const useWorkersStore = defineStore('workers', () => {
   const workersAtWeek = computed(() => {
     return (week?: number) => {
       week ??= useGameStore().week;
-      const summedWorkers: WorkersState = {
-        labour: 0,
-        skilled: 0,
-        electrician: 0,
-      };
+      const summedWorkers: WorkersState = Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
       for (let i = 0; i < week; i++) {
-        summedWorkers.labour += workers.value[i].labour;
-        summedWorkers.skilled += workers.value[i].skilled;
-        summedWorkers.electrician += workers.value[i].electrician;
+        for (let key in summedWorkers) {
+          summedWorkers[key] += workers.value[i][key];
+        }
       }
       return summedWorkers;
     };
@@ -49,7 +47,7 @@ export const useWorkersStore = defineStore('workers', () => {
    *  - Positive input hires
    *  - Negative input fires (cannot fire more workers than are already hired)
    */
-  function change(type: WorkerType, value: number) {
+  function change(type: string, value: number) {
     const { week } = useGameStore();
     workers.value[week][type] = Math.max(value, -currentWorkers.value[type]);
   }
@@ -71,7 +69,7 @@ export const useWorkersStore = defineStore('workers', () => {
     //     filter: `user.username="${pocketbase.authStore.model!.username}"`,
     //   });
     //   for (let record of records) {
-    //     workers.value[record.week][record.worker_type as WorkerType] = record.change;
+    //     workers.value[record.week][record.worker_type] = record.change;
     //   }
     // } catch (error) {
     //   if (!(error instanceof ClientResponseError) || error.status !== 404) {
@@ -100,7 +98,7 @@ export const useWorkersStore = defineStore('workers', () => {
       return;
     }
 
-    ['labour', 'skilled', 'electrician'].forEach((type) => {
+    Object.keys(config.workers).forEach((type) => {
       updateExistingOrCreate(
         collections.workers,
         `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && worker_type="${type}"`,
@@ -109,7 +107,7 @@ export const useWorkersStore = defineStore('workers', () => {
           game_id: gameStore.gameID,
           week: gameStore.week,
           worker_type: type,
-          change: workers.value[gameStore.week][type as WorkerType],
+          change: workers.value[gameStore.week][type],
         },
       );
     });

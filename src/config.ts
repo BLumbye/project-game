@@ -22,9 +22,6 @@ const baseConfig: Omit<Config, 'events'> = {
     overhead: 10000,
     projectDelayPenalty: 20000,
     expressMultiplier: 1.1,
-    labourPay: 800,
-    skilledPay: 1500,
-    electricianPay: 2000,
   },
   equipment: {
     steelwork: {
@@ -38,6 +35,26 @@ const baseConfig: Omit<Config, 'events'> = {
     tbs: {
       label: 'TBS (Task C)',
       cost: 130000,
+    },
+  },
+  workers: {
+    labour: {
+      label: 'labour',
+      shortLabel: 'LAB',
+      plural: 'labourers',
+      cost: 800,
+    },
+    skilled: {
+      label: 'skilled',
+      shortLabel: 'SKI',
+      plural: 'skilled workers',
+      cost: 1500,
+    },
+    electrician: {
+      label: 'electrician',
+      shortLabel: 'ELE',
+      plural: 'electricians',
+      cost: 2000,
     },
   },
   payments: {

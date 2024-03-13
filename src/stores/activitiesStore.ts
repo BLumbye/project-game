@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import config from '../config';
-import { Activity, ConfigActivity, WorkerType } from '../types/types';
+import { Activity, ConfigActivity } from '../types/types';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 import { ClientResponseError } from 'pocketbase';
 import { collections, deleteExisting, pocketbase, updateExistingOrCreate } from '~/pocketbase';
@@ -15,13 +15,11 @@ const generateProgressTimelines = () => {
 };
 
 const generateAllocationState = () => {
-  const allocations: Record<string, Record<WorkerType, number>[]> = {};
+  const allocations: Record<string, Record<string, number>[]> = {};
   for (const activity of config.activities) {
-    allocations[activity.label] = Array.from({ length: config.projectDuration + 1 }, () => ({
-      labour: 0,
-      skilled: 0,
-      electrician: 0,
-    }));
+    allocations[activity.label] = Array.from({ length: config.projectDuration + 1 }, () =>
+      Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
+    );
   }
   return allocations;
 };
@@ -115,7 +113,7 @@ export const useActivitiesStore = defineStore('activities', () => {
    * If no week is given, it returns for the current week.
    */
   const totalWorkersAssigned = computed(() => {
-    return (type: WorkerType, week?: number) => {
+    return (type: string, week?: number) => {
       week ??= gameStore.week;
       return config.activities.reduce(
         (totalWorkers, activity) => totalWorkers + allocations.value[activity.label][week!][type],
@@ -164,14 +162,11 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: Activity, week?: number) => {
       week ??= gameStore.week;
 
-      var eventWorkersModification: Partial<Record<WorkerType, number>> = getEventWorkersModification.value(
-        activity,
-        week,
-      );
+      var eventWorkersModification: Partial<Record<string, number>> = getEventWorkersModification.value(activity, week);
 
       if (!activity.requirements.workers && !eventWorkersModification) return true;
 
-      const enoughWorkers = (type: WorkerType) => {
+      const enoughWorkers = (type: string) => {
         if ((!activity.requirements.workers || !activity.requirements.workers[type]) && !eventWorkersModification[type])
           return true;
         const enoughAssigned =
@@ -182,7 +177,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         return enoughAssigned && enoughHired;
       };
 
-      return enoughWorkers('labour') && enoughWorkers('skilled') && enoughWorkers('electrician');
+      return Object.keys(config.workers).every(enoughWorkers);
     };
   });
 
@@ -222,7 +217,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   /**
    * Allocates a worker to a given activity in the current week.
    */
-  function allocateWorker(activity: string, type: WorkerType, value: number) {
+  function allocateWorker(activity: string, type: string, value: number) {
     allocations.value[activity][gameStore.week][type] = value;
   }
   /**
@@ -304,11 +299,10 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
       week ??= gameStore.week;
       activityCompletion ??= weekActivityDone.value;
-      let workersModification: Record<WorkerType, number> = {
-        labour: 0,
-        skilled: 0,
-        electrician: 0,
-      };
+      let workersModification: Record<string, number> = Object.keys(config.workers).reduce(
+        (acc, key) => ({ ...acc, [key]: 0 }),
+        {},
+      );
       if (activityCompletion[activity.label] !== undefined && activityCompletion[activity.label] <= week) {
         return workersModification;
       }
@@ -316,9 +310,9 @@ export const useActivitiesStore = defineStore('activities', () => {
         if (event.week > week) continue;
         event.effects?.forEach((effect) => {
           if (!effect.activityLabels.includes(activity.label) || effect.workersModification === undefined) return;
-          workersModification.labour += effect.workersModification.labour || 0;
-          workersModification.skilled += effect.workersModification.skilled || 0;
-          workersModification.electrician += effect.workersModification.electrician || 0;
+          for (const key in config.workers) {
+            workersModification[key] += effect.workersModification[key] || 0;
+          }
         });
       }
       return workersModification;
@@ -328,16 +322,15 @@ export const useActivitiesStore = defineStore('activities', () => {
   function getResourceDependancyMultiplier(activity: Activity): number {
     let multiplier = Infinity;
 
-    let workersRequired: Partial<Record<WorkerType, number>> = getEventWorkersModification.value(activity);
-    workersRequired = {
-      labour: (workersRequired.labour || 0) + (activity.requirements.workers?.labour || 0),
-      skilled: (workersRequired.skilled || 0) + (activity.requirements.workers?.skilled || 0),
-      electrician: (workersRequired.electrician || 0) + (activity.requirements.workers?.electrician || 0),
-    };
+    let workersRequired: Partial<Record<string, number>> = getEventWorkersModification.value(activity);
+    workersRequired = Object.keys(config.workers).reduce(
+      (acc, key) => ({ ...acc, [key]: (workersRequired[key] || 0) + (activity.requirements.workers?.[key] || 0) }),
+      {},
+    );
 
     Object.entries(workersRequired).forEach(([key, value]) => {
-      if (value !== 0) {
-        multiplier = Math.min(multiplier, activity.allocation[key as unknown as WorkerType] / value);
+      if (value) {
+        multiplier = Math.min(multiplier, activity.allocation[key] / value);
       }
     });
 
@@ -373,7 +366,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     //     filter: `user.username="${pocketbase.authStore.model!.username}"`,
     //   });
     //   for (let record of records) {
-    //     allocations.value[record.activity][record.week][record.worker_type as WorkerType] = record.value || 0;
+    //     allocations.value[record.activity][record.week][record.worker_type] = record.value || 0;
     //   }
     // } catch (error) {
     //   if (!(error instanceof ClientResponseError) || error.status !== 404) {
@@ -425,7 +418,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
     activities.value.forEach((activity) => {
       // Update allocation
-      ['labour', 'skilled', 'electrician'].forEach((type) => {
+      Object.keys(config.workers).forEach((type) => {
         updateExistingOrCreate(
           collections.allocation,
           `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${
@@ -437,7 +430,7 @@ export const useActivitiesStore = defineStore('activities', () => {
             week: gameStore.week,
             activity: activity.label,
             worker_type: type,
-            value: allocations.value[activity.label][gameStore.week][type as WorkerType],
+            value: allocations.value[activity.label][gameStore.week][type],
           },
         );
       });

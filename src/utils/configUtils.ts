@@ -1,4 +1,4 @@
-import { ConfigActivities, WorkerType, EventEffect } from '../types/types';
+import { ConfigActivities, EventEffect } from '../types/types';
 
 /**
  * Adds extra required workers to the given activities.
@@ -6,16 +6,12 @@ import { ConfigActivities, WorkerType, EventEffect } from '../types/types';
  * @param wt
  * @param n
  */
-function addWorkers(labels: string[], wt: WorkerType[], n: number): EventEffect[] {
+function addWorkers(labels: string[], wt: string[], n: number): EventEffect[] {
   const eventEffects: EventEffect[] = [];
   labels.forEach((l) => {
     eventEffects.push({
       activityLabels: [l],
-      workersModification: {
-        labour: wt.includes('labour') ? n : undefined,
-        skilled: wt.includes('skilled') ? n : undefined,
-        electrician: wt.includes('electrician') ? n : undefined,
-      },
+      workersModification: wt.reduce((acc, key) => ({ ...acc, [key]: n }), {} as Record<string, number>),
     });
   });
   return eventEffects;

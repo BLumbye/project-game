@@ -16,127 +16,108 @@
             class="icon" />
       <v-tooltip activator="parent"
                  location="top">
-        <p>Remember to allocate workers again in every {{config.durationIdentifier.singular}}'s 'Decision Form'.</p>
+        <p>Remember to allocate workers again in every {{ config.durationIdentifier.singular }}'s 'Decision Form'.</p>
         <p>Remember to allocate a sufficient amount of workers for the task to progress.</p>
       </v-tooltip>
     </div>
-    <span :class="{ 'error-message': tooManyLab }"
-          v-tooltip="{ content: 'Because you are trying to use more labourers than you have hired some activities will not progress.', disabled: !tooManyLab }">LAB</span>
-    <span :class="{ 'error-message': tooManySki }"
-          v-tooltip="{ content: 'Because you are trying to use more skilled workers than you have hired some activities will not progress.', disabled: !tooManySki }">SKI</span>
-    <span :class="{ 'error-message': tooManyEle }"
-          v-tooltip="{ content: 'Because you are trying to use more electricians than you have hired some activities will not progress.', disabled: !tooManyEle }">ELE</span>
+    <span v-for="(worker, key) in config.workers"
+          :key="key"
+          :class="{ 'error-message': tooManyWorkers(key as string) }"
+          v-tooltip="{ content: `Because you are trying to use more ${worker.plural} than you have hired some activities will not progress.`, disabled: !tooManyWorkers(key as string) }">{{
+          worker.shortLabel }}</span>
     <template v-for="(activity, index) in activityStore.activities">
       <span>{{ activity.label }}</span>
-      <input type="text"
+      <input v-for="(worker, key) in config.workers"
+             :key="key"
+             type="text"
              class="worker-input"
-             :class="{ 'last-row': index === activityStore.activities.length - 1, 'input-error': tooManyLab && Number(lab[index]) > 0 }"
-             v-tooltip="{ content: 'Because you are trying to use more labourers than you have hired this activity will not progress.', disabled: !tooManyLab || Number(lab[index]) === 0 }"
+             :class="{ 'last-row': index === activityStore.activities.length - 1, 'input-error': tooManyWorkers(key as string) && Number(inputs[key][index]) > 0 }"
+             v-tooltip="{ content: `Because you are trying to use more ${worker.plural} than you have hired this activity will not progress.`, disabled: !tooManyWorkers(key as string) || Number(inputs[key][index]) === 0 }"
              name="LAB-input"
-             v-model="lab[index]"
+             v-model="inputs[key][index]"
              :disabled="gameStore.ready"
              @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-             @input="(evt) => change(evt, activity.label, 'labour')" />
-      <input type="text"
-             class="worker-input"
-             :class="{ 'last-row': index === activityStore.activities.length - 1, 'input-error': tooManySki && Number(ski[index]) > 0 }"
-             v-tooltip="{ content: 'Because you are trying to use more skilled workers than you have hired this activity will not progress.', disabled: !tooManySki || Number(ski[index]) === 0 }"
-             name="SKI-input"
-             v-model="ski[index]"
-             :disabled="gameStore.ready"
-             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-             @input="(evt) => change(evt, activity.label, 'skilled')" />
-      <input type="text"
-             class="worker-input"
-             :class="{ 'last-row': index === activityStore.activities.length - 1, 'input-error': tooManyEle && Number(ele[index]) > 0 }"
-             v-tooltip="{ content: 'Because you are trying to use more electricians than you have hired this activity will not progress.', disabled: !tooManyEle || Number(ele[index]) === 0 }"
-             name="ELE-input"
-             v-model="ele[index]"
-             :disabled="gameStore.ready"
-             @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-             @input="(evt) => change(evt, activity.label, 'electrician')" />
+             @input="(evt) => change(evt, activity.label, key as string)" />
     </template>
   </div>
 </template>
 
 <!-- Script -->
 
-<script setup lang="ts">
-import { WorkerType } from '../../types/types';
-import config from '../../config';
-import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
-import Info from '~/assets/info-small.svg';
+<script setup
+        lang="ts">
+        import config from '../../config';
+        import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
+        import Info from '~/assets/info-small.svg';
 
-const gameStore = useGameStore();
-const workersStore = useWorkersStore();
-const activityStore = useActivitiesStore();
-const activities = config.activities;
+        const gameStore = useGameStore();
+        const workersStore = useWorkersStore();
+        const activityStore = useActivitiesStore();
+        const activities = config.activities;
 
-const lab = ref<string[]>([]);
-const ski = ref<string[]>([]);
-const ele = ref<string[]>([]);
+        const inputs = ref<Record<string, string[]>>(Object.keys(config.workers).reduce((acc, worker) => ({ ...acc, [worker]: [] }), {}));
 
-const tooManyLab = computed(() => workersStore.currentWorkers.labour < lab.value.reduce((acc, input) => acc + Number(input), 0));
-const tooManySki = computed(() => workersStore.currentWorkers.skilled < ski.value.reduce((acc, input) => acc + Number(input), 0));
-const tooManyEle = computed(() => workersStore.currentWorkers.electrician < ele.value.reduce((acc, input) => acc + Number(input), 0));
+        const tooManyWorkers = computed(() => (worker: string) => workersStore.currentWorkers[worker] < inputs.value[worker].reduce((acc, input) => acc + Number(input), 0));
 
-const change = (evt: Event, activityLabel: string, workerType: WorkerType) => {
-  activityStore.allocateWorker(activityLabel, workerType, Number((evt.target as HTMLInputElement).value));
-}
+        const change = (evt: Event, activityLabel: string, workerType: string) => {
+          activityStore.allocateWorker(activityLabel, workerType, Number((evt.target as HTMLInputElement).value));
+        }
 
-watch(() => gameStore.week, () => {
-  for (let i = 0; i < activities.length; i++) {
-    lab.value[i] = '';
-    ski.value[i] = '';
-    ele.value[i] = '';
-  }
-});
+        watch(() => gameStore.week, () => {
+          for (const worker in inputs.value) {
+            for (let i = 0; i < activities.length; i++) {
+              inputs.value[worker][i] = '';
+            }
+          }
+        });
 
-watch(
-  () => activityStore.loading,
-  () => {
-    activityStore.activities.forEach((activity, i) => {
-      lab.value[i] = activity.allocation.labour !== 0 ? activity.allocation.labour?.toString() : '';
-      ski.value[i] = activity.allocation.skilled !== 0 ? activity.allocation.skilled?.toString() : '';
-      ele.value[i] = activity.allocation.electrician !== 0 ? activity.allocation.electrician?.toString() : '';
-    });
-  }, { immediate: true }
-);
+        watch(
+          () => activityStore.loading,
+          () => {
+            activityStore.activities.forEach((activity, i) => {
+              for (const worker in config.workers) {
+                inputs.value[worker][i] = activity.allocation[worker] !== 0 ? activity.allocation[worker]?.toString() : '';
+              }
+            });
+          }, { immediate: true }
+        );
 </script>
 
 <!-- Styling -->
 
-<style scoped lang="postcss">
-.activities-label,
-.progress-label {
-  grid-row: span 2;
-}
+<style scoped
+       lang="postcss">
 
-.component-title {
-  grid-column: span 3;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.25em;
-}
+      .activities-label,
+      .progress-label {
+        grid-row: span 2;
+      }
 
-.allocation {
-  display: grid;
-  grid-template-columns: repeat(4, auto);
-  grid-template-rows: repeat(v-bind('activities.length'), auto);
-}
+      .component-title {
+        grid-column: span v-bind('Object.keys(config.workers).length');
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.25em;
+      }
 
-input {
-  &+input {
-    border-left: transparent;
-  }
+      .allocation {
+        display: grid;
+        grid-template-columns: repeat(v-bind('Object.keys(config.workers).length + 1'), auto);
+        grid-template-rows: repeat(v-bind('activities.length'), auto);
+      }
 
-  &:not(.last-row) {
-    border-bottom-color: transparent;
-  }
+      input {
+        &+input {
+          border-left: transparent;
+        }
 
-  &:hover {
-    border-color: #646cff;
-  }
-}
-</style>
+        &:not(.last-row) {
+          border-bottom-color: transparent;
+        }
+
+        &:hover {
+          border-color: #646cff;
+        }
+      }
+    </style>
