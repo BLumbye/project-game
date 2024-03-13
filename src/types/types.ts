@@ -50,6 +50,7 @@ export interface EventEffect {
   durationModification?: number; // The new duration of the activity
   resourceDependant?: boolean; // Whether the activitity can be sped up by using more workers
   revealActivity?: boolean; // A previously hidden activity is revealed
+  bidDurationModification?: number; // How much to modify the bid duration with (does not factor in for results calculation) -- ONLY WORKS FOR CHOICE EVENTS
 }
 
 export interface Equipment {
