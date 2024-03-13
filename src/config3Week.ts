@@ -193,7 +193,7 @@ const baseConfig: Omit<Config, 'events'> = {
   ],
 };
 
-const events: Config['events'] = [
+const events: Config['events'] = {
   opportunity: {
     week: 1,
     image: '/images/Week1.jpg',
@@ -273,7 +273,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  unionRequestInEffect: {
+  unionRequest2: {
     week: 9,
     image: '/images/Week9.jpg',
     title: 'UNION REQUEST IS IN EFFECT',
@@ -282,7 +282,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-];
+};
 
 export default {
   ...baseConfig,
