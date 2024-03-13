@@ -51,6 +51,7 @@ export interface EventEffect {
   resourceDependant?: boolean; // Whether the activitity can be sped up by using more workers
   revealActivity?: boolean; // A previously hidden activity is revealed
   immediateReward?: number; // The immediate reward for accepting the event
+  bidDurationModification?: number; // How much to modify the bid duration with (does not factor in for results calculation) -- ONLY WORKS FOR CHOICE EVENTS
 }
 
 export interface Equipment {
