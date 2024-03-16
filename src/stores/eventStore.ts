@@ -1,30 +1,67 @@
 import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import config from '~/config';
+import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
+import { EventEffect } from '~/types/types';
 
-type EventChoices = Record<string, boolean>;
+type EventChoices = Record<string, string>;
 
 export const useEventStore = defineStore('event', () => {
-  // Event choices
-  const eventChoices = useStorage('eventChoices', {} as EventChoices);
+  const gameStore = useGameStore();
 
-  function setEventChoice(name: string, value: boolean) {
-    eventChoices.value[name] = value;
-    if (value && config.events[name].effects?.some((effect) => effect.immediateReward)) {
-      // Add the immediate reward to the finances
-      useFinanceStore().recieveReward(config.events[name].effects?.find((effect) => effect.immediateReward)?.immediateReward as number, useGameStore().week);
+  // Event choices
+  const eventChoices = useStorage<EventChoices>('eventChoices', {});
+
+  function setEventChoice(name: string, choice: string) {
+    eventChoices.value[name] = choice;
+
+    // Add the immediate reward to the finances
+    if (config.events[name].choices![choice].effects?.some((effect) => effect.immediateReward)) {
+      useFinanceStore().recieveReward(
+        config.events[name].effects?.find((effect) => effect.immediateReward)?.immediateReward as number,
+        useGameStore().week,
+      );
     }
+
     // Apply bid duration modification effect if accepted
-    if (value && config.events[name].effects?.some((effect) => effect.bidDurationModification)) {
+    if (config.events[name].choices![choice].effects?.some((effect) => effect.bidDurationModification)) {
       useBidStore().promisedDuration += config.events[name].effects!.reduce(
         (acc, effect) => acc + (effect.bidDurationModification || 0),
         0,
       );
     }
+
+    // Update the database
+    if (gameStore.synchronized) {
+      updateExistingOrCreate(
+        collections.eventChoices,
+        `user.username="${pocketbase.authStore.model!.username}" && event="${name}"`,
+        {
+          user: pocketbase.authStore.model!.username,
+          game_id: gameStore.gameID,
+          week: gameStore.week,
+          event: name,
+          choice,
+        },
+      );
+    }
   }
+
+  const activeEventEffectsAtWeek = computed(() => (week?: number) => {
+    week ??= useGameStore().week;
+    return Object.entries(config.events)
+      .filter(([_, event]) => event.week <= week!)
+      .flatMap(
+        ([name, event]) =>
+          [...(event.effects ?? []), ...(event.choices?.[eventChoices.value[name]]?.effects ?? [])] as EventEffect[],
+      );
+  });
+  const activeEventEffects = computed(() => activeEventEffectsAtWeek.value());
 
   return {
     eventChoices,
     setEventChoice,
+    activeEventEffectsAtWeek,
+    activeEventEffects,
   };
 });

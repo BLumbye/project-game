@@ -275,17 +275,26 @@ const events: Config['events'] = {
     description: `Your project owner has an offer for you. You have been given an optional task to build a terrace extension (Task M).
       It requires six labourers. You can deny the request, but you will immediately be paid an extra 3.000.000,00 ${baseConfig.currency.currency} if you accept it.
       \n Do you accept?`,
-    effects: [
-      {
-        activityLabels: ['M'],
-        revealActivity: true, // Reveal activity M
-        immediateReward: 3000000, // Reward for accepting -> baseConfig.finances.consumables + baseConfig.finances.overhead + baseConfig.workers.labour.cost * 6 + 1000000
-        bidDurationModification: 1,
-      },
-    ],
     showTitle: true,
     showDescription: true,
-    choice: true,
+    choices: {
+      accept: {
+        label: 'Accept',
+        chosenText: 'You accepted the offer.',
+        effects: [
+          {
+            activityLabels: ['M'],
+            revealActivity: true, // Reveal activity M
+            immediateReward: 3000000, // Reward for accepting -> baseConfig.finances.consumables + baseConfig.finances.overhead + baseConfig.workers.labour.cost * 6 + 1000000
+            bidDurationModification: 1,
+          },
+        ],
+      },
+      decline: {
+        label: 'Decline',
+        chosenText: 'You declined the offer.',
+      },
+    },
   },
   rumours: {
     week: 6,

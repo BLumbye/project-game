@@ -28,24 +28,17 @@
                  v-if="event.showTitle || event.showDescription">
               <h2 v-if="event.showTitle">{{ event.title }}</h2>
               <p v-if="event.showDescription">{{ event.description }}</p>
-              <div v-if="event.choice">
+              <div v-if="event.choices">
                 <div v-if="eventStore.eventChoices[name] === undefined"
                      class="choices">
                   <button class="ChoiceButton"
-                          @click="eventStore.setEventChoice(name, true)"
-                          :style="{ backgroundColor: 'green' }">
-                    Accept
-                  </button>
-                  <button class="ChoiceButton"
-                          @click="eventStore.setEventChoice(name, false)"
-                          :style="{ backgroundColor: 'red' }">
-                    Decline
+                          @click="eventStore.setEventChoice(name, key as string)"
+                          v-for="(choice, key) in event.choices"
+                          :key="key">
+                    {{ choice.label }}
                   </button>
                 </div>
-                <p v-else-if="eventStore.eventChoices[name] === true"
-                   color="green">You accepted the event</p>
-                <p v-else-if="eventStore.eventChoices[name] === false"
-                   color="red">You declined the event</p>
+                <p v-else>{{ event.choices[eventStore.eventChoices[name]].chosenText }}</p>
               </div>
             </div>
           </div>
@@ -76,7 +69,7 @@
         );
 
         const preventCloseChoice = (event: Event, eventName: string, func: () => void) => {
-          if (event.choice && eventStore.eventChoices[eventName] === undefined) {
+          if (event.choices && eventStore.eventChoices[eventName] === undefined) {
             return; // Do not close the dialog if the user has not made a decision
           }
           func();

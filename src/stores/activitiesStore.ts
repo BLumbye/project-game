@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import config from '../config';
-import { Activity, ConfigActivity } from '../types/types';
+import { Activity, ConfigActivity, EventEffect } from '../types/types';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 import { ClientResponseError } from 'pocketbase';
 import { collections, deleteExisting, pocketbase, updateExistingOrCreate } from '~/pocketbase';
@@ -275,21 +275,30 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
       week ??= gameStore.week;
       activityCompletion ??= weekActivityDone.value;
-      let durationModification = 0;
-      for (const [eventName, event] of Object.entries(config.events)) {
-        if (
-          (activityCompletion[activity.label] !== undefined && activityCompletion[activity.label] <= event.week) ||
-          event.week > week ||
-          (event.choice && eventStore.eventChoices[eventName] !== true)
-        ) {
-          continue;
-        }
-        event.effects?.forEach((effect) => {
-          if (effect.activityLabels.includes(activity.label) && effect.durationModification !== undefined) {
-            durationModification += effect.durationModification;
-          }
-        });
-      }
+      let durationModification = Object.entries(config.events)
+        .filter(
+          // Filter out events that are not active
+          ([_, event]) =>
+            event.week <= week! &&
+            (activityCompletion![activity.label] === undefined || activityCompletion![activity.label] > event.week),
+        )
+        .flatMap(
+          // Get all effects from active events and choices
+          ([name, event]) =>
+            [
+              ...(event.effects ?? []),
+              ...(event.choices?.[eventStore.eventChoices[name]]?.effects ?? []),
+            ] as EventEffect[],
+        )
+        .reduce(
+          // Sum up the duration modification
+          (acc, effect) =>
+            acc +
+            (effect.activityLabels && effect.durationModification && effect.activityLabels.includes(activity.label)
+              ? effect.durationModification
+              : 0),
+          0,
+        );
       return durationModification;
     };
   });
@@ -309,15 +318,12 @@ export const useActivitiesStore = defineStore('activities', () => {
       if (activityCompletion[activity.label] !== undefined && activityCompletion[activity.label] <= week) {
         return workersModification;
       }
-      for (const [eventName, event] of Object.entries(config.events)) {
-        if (event.week > week || (event.choice && eventStore.eventChoices[eventName] !== true)) continue;
-        event.effects?.forEach((effect) => {
-          if (!effect.activityLabels.includes(activity.label) || effect.workersModification === undefined) return;
-          for (const key in config.workers) {
-            workersModification[key] += effect.workersModification[key] || 0;
-          }
-        });
-      }
+      eventStore.activeEventEffectsAtWeek(week).forEach((effect) => {
+        if (!effect.activityLabels?.includes(activity.label) || effect.workersModification === undefined) return;
+        for (const key in config.workers) {
+          workersModification[key] += effect.workersModification[key] || 0;
+        }
+      });
       return workersModification;
     };
   });
@@ -343,14 +349,9 @@ export const useActivitiesStore = defineStore('activities', () => {
   function isActivityResourceDependant(activity: Activity, week?: number): boolean {
     week ??= gameStore.week;
 
-    return Object.entries(config.events).some(
-      ([eventName, event]) =>
-        event.week <= week! &&
-        (!event.choice || eventStore.eventChoices[eventName] === true) &&
-        event.effects?.some(
-          (effect) => effect.activityLabels.includes(activity.label) && effect.resourceDependant === true,
-        ),
-    );
+    return eventStore
+      .activeEventEffectsAtWeek(week)
+      .some((effect) => effect.activityLabels?.includes(activity.label) && effect.resourceDependant === true);
   }
 
   function isActivityHidden(activity: ConfigActivity, week?: number): boolean {
@@ -358,14 +359,9 @@ export const useActivitiesStore = defineStore('activities', () => {
 
     return (
       activity.hidden === true &&
-      !Object.entries(config.events).some(
-        ([eventName, event]) =>
-          event.week <= week! &&
-          (!event.choice || eventStore.eventChoices[eventName] === true) &&
-          event.effects?.some(
-            (effect) => effect.activityLabels.includes(activity.label) && effect.revealActivity === true,
-          ),
-      )
+      eventStore
+        .activeEventEffectsAtWeek(week)
+        .some((effect) => effect.activityLabels?.includes(activity.label) && effect.revealActivity === true)
     );
   }
 

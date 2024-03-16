@@ -40,12 +40,18 @@ export interface Event {
   effects?: EventEffect[];
   showTitle: boolean;
   showDescription: boolean;
-  choice?: boolean;
+  choices?: {
+    [key: string]: {
+      label: string;
+      chosenText: string;
+      effects?: EventEffect[];
+    };
+  };
   accepted?: boolean;
 }
 
 export interface EventEffect {
-  activityLabels: string[]; // An array of activity labels to be affected
+  activityLabels?: string[]; // An array of activity labels to be affected
   workersModification?: Partial<Record<string, number>>; // The new number of workers needed
   durationModification?: number; // The new duration of the activity
   resourceDependant?: boolean; // Whether the activitity can be sped up by using more workers
