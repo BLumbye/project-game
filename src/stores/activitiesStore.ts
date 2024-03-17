@@ -173,7 +173,7 @@ export const useActivitiesStore = defineStore('activities', () => {
           return true;
         const enoughAssigned =
           (activity.requirements.workers ? activity.requirements.workers[type] || 0 : 0) +
-            eventWorkersModification[type]! <=
+          eventWorkersModification[type]! <=
           activity.allocation[type];
         const enoughHired = totalWorkersAssigned.value(type, week) <= workersStore.workersAtWeek(week)[type];
         return enoughAssigned && enoughHired;
@@ -304,8 +304,8 @@ export const useActivitiesStore = defineStore('activities', () => {
   });
 
   /**
-   * Returns the duration modification of an activity based on events.
-   * The duration modification is the time added or subtracted from the duration of an activity.
+   * Returns the workersRequired modification of an activity based on events.
+   * The modification is the additional/less workers added or subtracted from an activity's requirements.
    */
   const getEventWorkersModification = computed(() => {
     return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
@@ -437,8 +437,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       Object.keys(config.workers).forEach((type) => {
         updateExistingOrCreate(
           collections.allocation,
-          `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${
-            activity.label
+          `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${activity.label
           }" && worker_type="${type}"`,
           {
             user: pocketbase.authStore.model!.id,
@@ -454,8 +453,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       // Update progress
       updateExistingOrCreate(
         collections.progress,
-        `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${
-          activity.label
+        `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${activity.label
         }"`,
         {
           user: pocketbase.authStore.model!.id,

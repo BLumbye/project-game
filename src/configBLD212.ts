@@ -273,7 +273,7 @@ const events: Config['events'] = {
     image: '/images/ExtraActivity.jpg',
     title: 'OPPORTUNITY FROM PROJECT OWNER',
     description: `Your project owner has an offer for you. You have been given an optional task to build a terrace extension (Task M).
-      It requires six labourers, takes one ${baseConfig.durationIdentifier.singular}  and every other activity must be completed before it can begin. You can deny the request, but you will immediately be paid an extra 3.000.000,00 ${baseConfig.currency.currency} if you accept it.
+      It requires six labourers, takes one ${baseConfig.durationIdentifier.singular} and every other activity must be completed before it can begin. You will be given an extra ${baseConfig.durationIdentifier.singular}, but the overall deadline of ${baseConfig.projectDuration} ${baseConfig.durationIdentifier.plural} will not be increased. You can deny the request, but you will immediately be paid an extra 3.000.000,00 ${baseConfig.currency.currency} if you accept it.
       \n Do you accept?`,
     showTitle: true,
     showDescription: true,
@@ -321,12 +321,20 @@ const events: Config['events'] = {
     showTitle: true,
     showDescription: true,
   },
+  unionRequestEffect: {
+    week: 8,
+    image: '/images/break.jpg',
+    title: 'NOTHING TO REPORT',
+    description: `No news this ${baseConfig.durationIdentifier.singular}`,
+    effects: [...addWorkers(['K', 'G', 'L'], ['labour'], 1)], // Add one labour worker to tasks K, G and L. Needs to be done the week before it take splace, as this is where the DecisionForm is shown.
+    showTitle: true,
+    showDescription: true,
+  },
   unionRequest2: {
     week: 9,
     image: '/images/Week9.jpg',
     title: 'UNION REQUEST',
-    description: "The agreement with the workers' union has now been formed and is in effect.",
-    effects: [...addWorkers(['K', 'G', 'L'], ['labour'], 1)],
+    description: "The agreement with the workers' union is now in effect.",
     showTitle: true,
     showDescription: true,
   },

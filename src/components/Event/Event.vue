@@ -55,7 +55,8 @@ watch(
   () => gameStore.week,
   () => {
     const weekEvents = Object.entries(config.events).filter(([name, event]) => event.week === gameStore.week);
-    weekEvents.forEach(([name, event]) => eventDialogues.value[Object.keys(config.events).indexOf(name)].showModal());
+    //Show modal unless title is "NOTHING TO REPORT"
+    weekEvents.forEach(([name, event]) => event.title !== 'NOTHING TO REPORT' && eventDialogues.value[Object.keys(config.events).indexOf(name)].showModal());
   },
 );
 
