@@ -44,20 +44,34 @@ export interface Event {
     [key: string]: {
       label: string;
       chosenText: string;
-      effects?: EventEffect[];
+      effects?: (EventEffect & EventChoiceEffects)[];
     };
   };
   accepted?: boolean;
 }
 
 export interface EventEffect {
-  activityLabels?: string[]; // An array of activity labels to be affected
-  workersModification?: Partial<Record<string, number>>; // The new number of workers needed
-  durationModification?: number; // The new duration of the activity
-  resourceDependant?: boolean; // Whether the activitity can be sped up by using more workers
-  revealActivity?: boolean; // A previously hidden activity is revealed
-  immediateReward?: number; // The immediate reward for accepting the event
-  bidDurationModification?: number; // How much to modify the bid duration with (does not factor in for results calculation) -- ONLY WORKS FOR CHOICE EVENTS
+  /** An array of activity labels to be affected */
+  activityLabels?: string[];
+  /** The new number of workers needed */
+  workersModification?: Partial<Record<string, number>>;
+  /** The new duration of the activity */
+  durationModification?: number;
+  /** Whether the activitity can be sped up by using more workers */
+  resourceDependant?: boolean;
+  /** A previously hidden activity is revealed */
+  revealActivity?: boolean;
+}
+
+export interface EventChoiceEffects {
+  /** The immediate reward for accepting the event -- ONLY WORKS FOR CHOICE EVENTS */
+  immediateReward?: number;
+  /** How much to modify the bid duration with (does not factor in for results calculation) -- ONLY WORKS FOR CHOICE EVENTS */
+  bidDurationModification?: number;
+  /** Exclude person from being able to win stakeholder price */
+  excludeStakeholderWin?: boolean;
+  /** How much to modify the duration with during results calculation */
+  resultsDurationModification?: number;
 }
 
 export interface Equipment {

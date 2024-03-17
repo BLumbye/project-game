@@ -14,6 +14,7 @@
 
         interface AdditionalData {
           eventChoices: Record<string, string>;
+          durationModification: number;
           planDurationDiff: number;
           actualCost: number;
           planCostDiff: number;
@@ -88,6 +89,13 @@
             sortDescFirst: false,
             sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.week! - b.original.week!,
           }),
+          columnHelper.accessor(row => row.status === 'won' ? row.durationModification : '', {
+            id: 'durationModification',
+            cell: info => info.getValue(),
+            header: 'Duration Modification',
+            sortDescFirst: false,
+            sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.durationModification! - b.original.durationModification!,
+          }),
           columnHelper.accessor(row => row.status === 'won' ? row.planDurationDiff : '', {
             id: 'durationDiff',
             cell: info => info.getValue(),
@@ -151,12 +159,12 @@
             sortDescFirst: false,
             sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.projectManagerScore! - b.original.projectManagerScore!,
           }),
-          columnHelper.accessor((row) => row.status === 'won' ? row.stakeholderScore : '', {
+          columnHelper.accessor((row) => canWinStakeholder(row) ? row.stakeholderScore : '', {
             id: 'stakeholder',
             cell: info => info.getValue(),
             header: 'Stakeholder',
             sortDescFirst: false,
-            sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.stakeholderScore! - b.original.stakeholderScore!,
+            sortingFn: (a, b) => canWinStakeholder(a.original) ? 1 : canWinStakeholder(b.original) ? -1 : a.original.stakeholderScore! - b.original.stakeholderScore!,
           }),
           columnHelper.accessor((row) => row.status === 'won' ? row.contractorScore : '', {
             id: 'contractor',
@@ -166,6 +174,11 @@
             sortingFn: (a, b) => a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.contractorScore! - b.original.contractorScore!,
           }),
         ];
+
+        const canWinStakeholder = (data: TableData) => data.status === 'won' && !Object.entries(data.eventChoices!).some(([eventName, choice]) => config.events[eventName].choices?.[choice].effects?.some(effect => effect.excludeStakeholderWin));
+        const getDurationModification = (eventChoices: Record<string, string>) => Object.entries(eventChoices).reduce((acc, [eventName, choice]) => {
+          return acc + (config.events[eventName].choices?.[choice].effects?.reduce((acc, effect) => acc + (effect.durationModification || 0), 0) || 0);
+        }, 0);
 
         const sorting = ref<SortingState>([]);
 
@@ -202,6 +215,7 @@
               if (!row.status || row.totalBalance === undefined || row.week === undefined) {
                 return row;
               }
+              const durationModification = getDurationModification(row.eventChoices!);
               const planDurationDiff = row.week - row.promisedDuration;
               const actualCost = row.revisedPrice - row.totalBalance;
               const planCostDiff = Math.abs(row.totalBalance + row.expectedCost - row.revisedPrice);
@@ -209,12 +223,13 @@
               const costRank = bidSummaryMerge.filter(r => r.status === 'won' && r.revisedPrice - r.totalBalance! < actualCost).length + 1;
               const profitRank = bidSummaryMerge.filter(r => r.status === 'won' && r.totalBalance! > row.totalBalance!).length + 1;
               const planRank = bidSummaryMerge.filter(r => r.status === 'won' && Math.abs(r.totalBalance! + r.expectedCost - r.revisedPrice) < planCostDiff).length + 1;
-              const durationRank = bidSummaryMerge.filter(r => r.status === 'won' && r.week! < row.week!).length + 1;
+              const durationRank = bidSummaryMerge.filter(r => r.status === 'won' && (r.week! + getDurationModification(r.eventChoices!)) < (row.week! + durationModification)).length + 1;
               const projectManagerScore = priceRank + costRank + profitRank + planRank + durationRank;
               const stakeholderScore = priceRank + durationRank;
               const contractorScore = profitRank + durationRank;
               return {
                 ...row,
+                durationModification,
                 planDurationDiff,
                 actualCost,
                 planCostDiff,
