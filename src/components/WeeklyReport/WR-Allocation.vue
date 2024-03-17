@@ -14,11 +14,16 @@
     <span v-for="(worker, key) in config.workers" :key="key">{{ worker.shortLabel }}</span>
     <template v-for="(activity, index) in activities">
       <template v-if="!activityStore.isActivityHidden(activity)">
-        <span>{{ activity.label }}</span>
-        <span>{{ (progressActivities[index].progress /
-      activityStore.getDuration(progressActivities[index]) *
-      100).toFixed(0) }}%</span>
-        <span v-for="(worker, key) in config.workers" :key="key">{{ activity.allocation[key] }}</span>
+        <span :class="{ 'activityFinished': activityStore.weekActivityDone[activity.label] == week - 1 }">{{
+      activity.label
+    }}</span>
+        <span :class="{ 'activityFinished': activityStore.weekActivityDone[activity.label] == week - 1 }">{{
+      (progressActivities[index].progress /
+        activityStore.getDuration(progressActivities[index]) *
+        100).toFixed(0) }}%</span>
+        <span :class="{ 'activityFinished': activityStore.weekActivityDone[activity.label] == week - 1 }"
+          v-for="(worker, key) in config.workers" :key="key">{{ activity.allocation[key]
+          }}</span>
       </template>
     </template>
     <span>Total</span>
@@ -59,5 +64,9 @@ const props = defineProps<{
   grid-template-columns: repeat(v-bind('Object.keys(config.workers).length + 2'), auto);
   grid-template-rows: repeat(v-bind('activities.length'), auto);
   column-gap: 1em;
+}
+
+.activityFinished {
+  color: green;
 }
 </style>
