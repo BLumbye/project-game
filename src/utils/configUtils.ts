@@ -1,4 +1,4 @@
-import { ConfigActivities, EventEffect } from '../types/types';
+import { EventEffect } from '../types/types';
 
 /**
  * Adds extra required workers to the given activities.

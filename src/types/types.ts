@@ -4,9 +4,6 @@
  * This is where relevant general types and interfaces are defined.
  */
 
-import config from '~/config';
-import { Config } from './configInterface';
-
 export type EquipmentStatus = 'unordered' | 'ordered' | 'delivered';
 export type DeliveryType = 'regular' | 'express';
 export type bidType = 'bidPrice' | 'bidDuration' | 'expectedPrice' | 'expectedDuration';

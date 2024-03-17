@@ -1,62 +1,48 @@
 <template>
-  <h2 class="section-title"
-      v-show="show">Project team</h2>
-  <div class="question"
-       v-show="show">
-    <label class="prompt"
-           for="project-type">
-      What type of project are you studying?
-    </label>
-    <select id="project-type"
-            name="project-type"
-            :class="{ 'input-error': projectTypeError }"
-            v-model="projectType"
-            @input="() => projectTypeError = undefined">
-      <option v-for="projectType in projectTypes"
-              :key="projectType"
-              :value="projectType">{{ projectType }}</option>
+  <h2 v-show="show" class="section-title">Project team</h2>
+  <div v-show="show" class="question">
+    <label class="prompt" for="project-type"> What type of project are you studying? </label>
+    <select
+      id="project-type"
+      v-model="projectType"
+      name="project-type"
+      :class="{ 'input-error': projectTypeError }"
+      @input="() => (projectTypeError = undefined)"
+    >
+      <option v-for="type in projectTypes" :key="type" :value="type">{{ type }}</option>
     </select>
-    <span class="error-message"
-          v-if="projectTypeError">{{ projectTypeError }}</span>
+    <span v-if="projectTypeError" class="error-message">{{ projectTypeError }}</span>
   </div>
-  <div class="question"
-       v-show="show">
-    <p class="prompt"
-       for="case-industry">
-      In what industry does your case company (and project) mainly work?
-    </p>
-    <select id="case-industry"
-            name="case-industry"
-            :class="{ 'input-error': caseIndustryError }"
-            v-model="caseIndustry"
-            @input="() => caseIndustryError = undefined">
-      <option v-for="industry in caseIndustries"
-              :key="industry"
-              :value="industry">{{ industry }}</option>
+  <div v-show="show" class="question">
+    <p class="prompt" for="case-industry">In what industry does your case company (and project) mainly work?</p>
+    <select
+      id="case-industry"
+      v-model="caseIndustry"
+      name="case-industry"
+      :class="{ 'input-error': caseIndustryError }"
+      @input="() => (caseIndustryError = undefined)"
+    >
+      <option v-for="industry in caseIndustries" :key="industry" :value="industry">{{ industry }}</option>
     </select>
-    <span class="error-message"
-          v-if="caseIndustryError">{{ caseIndustryError }}</span>
+    <span v-if="caseIndustryError" class="error-message">{{ caseIndustryError }}</span>
   </div>
-  <div class="question"
-       v-show="show">
-    <label class="prompt"
-           for="location">
+  <div v-show="show" class="question">
+    <label class="prompt" for="location">
       Location: Where will you be playing the game (online / hybrid / in class)? If in class, which room?
     </label>
-    <input type="text"
-           id="location"
-           name="location"
-           :class="{ 'input-error': locationError }"
-           v-model.trim="location"
-           @input="() => locationError = undefined" />
-    <span class="error-message"
-          v-if="locationError">{{ locationError }}</span>
+    <input
+      id="location"
+      v-model.trim="location"
+      type="text"
+      name="location"
+      :class="{ 'input-error': locationError }"
+      @input="() => (locationError = undefined)"
+    />
+    <span v-if="locationError" class="error-message">{{ locationError }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
-import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
-
 const projectTypes = [
   '1. Aerospace/Defense Projects',
   '2. Business & Organization Change Projects',
@@ -93,11 +79,11 @@ const caseIndustries = [
   'R. Arts, entertainment and recreation (Creative, arts entertainment, libraries, archives, museums, sports, cultural activities,...)',
   'S. Other service activities (professional membership organizations, employers membership organizations, trade unions, repair activities...)',
   'T. Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use',
-  'U. Activities of extraterritorial organizations and bodies (international organisations like UN, EU...)'
+  'U. Activities of extraterritorial organizations and bodies (international organisations like UN, EU...)',
 ] as const;
 
-const projectType = ref<typeof projectTypes[number] | undefined>();
-const caseIndustry = ref<typeof caseIndustries[number] | undefined>();
+const projectType = ref<(typeof projectTypes)[number] | undefined>();
+const caseIndustry = ref<(typeof caseIndustries)[number] | undefined>();
 const location = ref<string | undefined>();
 
 const projectTypeError = ref<string | undefined>();
@@ -114,7 +100,7 @@ defineExpose({
       project_type: projectType.value,
       case_industry: caseIndustry.value,
       location: location.value,
-    }
+    };
   },
   errorCheck() {
     let error = false;
@@ -131,7 +117,7 @@ defineExpose({
       error = true;
     }
     return error;
-  }
+  },
 });
 </script>
 

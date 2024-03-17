@@ -17,18 +17,38 @@
         <p>Remember to allocate a sufficient amount of workers for the task to progress.</p>
       </v-tooltip>
     </div>
-    <span v-for="(worker, key) in config.workers" :key="key" :class="{ 'error-message': tooManyWorkers(key as string) }"
-      v-tooltip="{ content: `Because you are trying to use more ${worker.plural} than you have hired some activities will not progress.`, disabled: !tooManyWorkers(key as string) }">{{
-          worker.shortLabel }}</span>
-    <template v-for="(activity, index) in activityStore.activities">
+    <span
+      v-for="(worker, key) in config.workers"
+      :key="key"
+      v-tooltip="{
+        content: `Because you are trying to use more ${worker.plural} than you have hired some activities will not progress.`,
+        disabled: !tooManyWorkers(key as string),
+      }"
+      :class="{ 'error-message': tooManyWorkers(key as string) }"
+      >{{ worker.shortLabel }}</span
+    >
+    <template v-for="(activity, index) in activityStore.activities" :key="activity.label">
       <template v-if="!activityStore.isActivityHidden(activity)">
         <span>{{ activity.label }}</span>
-        <input v-for="(worker, key) in config.workers" :key="key" type="text" class="worker-input"
-          :class="{ 'last-row': index === activityStore.activities.filter(act => !act.hidden).length - 1, 'input-error': tooManyWorkers(key as string) && Number(inputs[key][index]) > 0 }"
-          v-tooltip="{ content: `Because you are trying to use more ${worker.plural} than you have hired this activity will not progress.`, disabled: !tooManyWorkers(key as string) || Number(inputs[key][index]) === 0 }"
-          name="LAB-input" v-model="inputs[key][index]" :disabled="gameStore.ready"
+        <input
+          v-for="(worker, key) in config.workers"
+          :key="key"
+          v-model="inputs[key][index]"
+          v-tooltip="{
+            content: `Because you are trying to use more ${worker.plural} than you have hired this activity will not progress.`,
+            disabled: !tooManyWorkers(key as string) || Number(inputs[key][index]) === 0,
+          }"
+          type="text"
+          class="worker-input"
+          :class="{
+            'last-row': index === activityStore.activities.filter((act) => !act.hidden).length - 1,
+            'input-error': tooManyWorkers(key as string) && Number(inputs[key][index]) > 0,
+          }"
+          name="LAB-input"
+          :disabled="gameStore.ready"
           @beforeinput="(evt) => validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent)"
-          @input="(evt) => change(evt, activity.label, key as string)" />
+          @input="(evt) => change(evt, activity.label, key as string)"
+        />
       </template>
     </template>
   </div>
@@ -46,21 +66,29 @@ const workersStore = useWorkersStore();
 const activityStore = useActivitiesStore();
 const activities = config.activities;
 
-const inputs = ref<Record<string, string[]>>(Object.keys(config.workers).reduce((acc, worker) => ({ ...acc, [worker]: [] }), {}));
+const inputs = ref<Record<string, string[]>>(
+  Object.keys(config.workers).reduce((acc, worker) => ({ ...acc, [worker]: [] }), {}),
+);
 
-const tooManyWorkers = computed(() => (worker: string) => workersStore.currentWorkers[worker] < inputs.value[worker].reduce((acc, input) => acc + Number(input), 0));
+const tooManyWorkers = computed(
+  () => (worker: string) =>
+    workersStore.currentWorkers[worker] < inputs.value[worker].reduce((acc, input) => acc + Number(input), 0),
+);
 
 const change = (evt: Event, activityLabel: string, workerType: string) => {
   activityStore.allocateWorker(activityLabel, workerType, Number((evt.target as HTMLInputElement).value));
-}
+};
 
-watch(() => gameStore.week, () => {
-  for (const worker in inputs.value) {
-    for (let i = 0; i < activities.length; i++) {
-      inputs.value[worker][i] = '';
+watch(
+  () => gameStore.week,
+  () => {
+    for (const worker in inputs.value) {
+      for (let i = 0; i < activities.length; i++) {
+        inputs.value[worker][i] = '';
+      }
     }
-  }
-});
+  },
+);
 
 watch(
   () => activityStore.loading,
@@ -70,7 +98,8 @@ watch(
         inputs.value[worker][i] = activity.allocation[worker] !== 0 ? activity.allocation[worker]?.toString() : '';
       }
     });
-  }, { immediate: true }
+  },
+  { immediate: true },
 );
 </script>
 
@@ -97,7 +126,7 @@ watch(
 }
 
 input {
-  &+input {
+  & + input {
     border-left: transparent;
   }
 

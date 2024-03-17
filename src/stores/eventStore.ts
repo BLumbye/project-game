@@ -51,7 +51,7 @@ export const useEventStore = defineStore('event', () => {
   const activeEventEffectsAtWeek = computed(() => (week?: number) => {
     week ??= useGameStore().week;
     return Object.entries(config.events)
-      .filter(([_, event]) => event.week <= week!)
+      .filter(([, event]) => event.week <= week!)
       .flatMap(
         ([name, event]) =>
           [...(event.effects ?? []), ...(event.choices?.[eventChoices.value[name]]?.effects ?? [])] as EventEffect[],

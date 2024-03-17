@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import { collections, isAdmin, pocketbase, updateExistingOrCreate } from '../pocketbase';
 import { GameState } from '~/types/types';
 import config from '~/config';
-import { ClientResponseError } from 'pocketbase';
 import { useStorage } from '@vueuse/core';
 
 /**
@@ -137,30 +136,30 @@ export const useGameStore = defineStore('game', () => {
     settingsLoaded.value = true;
   }
 
-  /**
-   * If the user has been disconnected, this will calculate finances and activities for the weeks that have been missed.
-   */
-  async function fastForward(gameWeek: number) {
-    let lastWeekOnline = 0;
-    let isReady = false;
-    try {
-      const readyRecord = await collections.ready.getFirstListItem(
-        `user.username="${pocketbase.authStore.model!.username}"`,
-      );
-      lastWeekOnline = readyRecord.week;
-      isReady = readyRecord.ready;
-    } catch (error) {
-      if (error instanceof ClientResponseError && error.status !== 404) {
-        throw error;
-      }
-    }
+  // /**
+  //  * If the user has been disconnected, this will calculate finances and activities for the weeks that have been missed.
+  //  */
+  // async function fastForward(gameWeek: number) {
+  //   let lastWeekOnline = 0;
+  //   let isReady = false;
+  //   try {
+  //     const readyRecord = await collections.ready.getFirstListItem(
+  //       `user.username="${pocketbase.authStore.model!.username}"`,
+  //     );
+  //     lastWeekOnline = readyRecord.week;
+  //     isReady = readyRecord.ready;
+  //   } catch (error) {
+  //     if (error instanceof ClientResponseError && error.status !== 404) {
+  //       throw error;
+  //     }
+  //   }
 
-    week.value = lastWeekOnline;
-    for (let i = week.value; i < gameWeek; i++) {
-      nextWeek();
-    }
-    ready.value = isReady;
-  }
+  //   week.value = lastWeekOnline;
+  //   for (let i = week.value; i < gameWeek; i++) {
+  //     nextWeek();
+  //   }
+  //   ready.value = isReady;
+  // }
 
   function updateSummary() {
     if (!synchronized.value || !pocketbase.authStore.isValid || isAdmin()) return;

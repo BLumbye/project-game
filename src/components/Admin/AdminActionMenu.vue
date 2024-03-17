@@ -1,8 +1,7 @@
 <template>
   <div class="action-menu">
     <span class="game-state">{{ gameState }}</span>
-    <button class="action-button"
-            @click="doAction">{{ actionButtonText }}</button>
+    <button class="action-button" @click="doAction">{{ actionButtonText }}</button>
   </div>
 </template>
 

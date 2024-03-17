@@ -1,9 +1,7 @@
 <template>
   <h2>Results</h2>
-  <p class="no-submissions"
-     v-if="adminStore.gameStates.length === 0">No one played the game...</p>
-  <ResultsTable class="results-table"
-                v-else />
+  <p v-if="adminStore.gameStates.length === 0" class="no-submissions">No one played the game...</p>
+  <ResultsTable v-else class="results-table" />
 </template>
 
 <script setup lang="ts">

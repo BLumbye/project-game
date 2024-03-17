@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-import { bidType } from '../types/types';
-import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
+import { Bid, collections, pocketbase } from '~/pocketbase';
 import { ClientResponseError } from 'pocketbase';
 import config from '~/config';
 
@@ -16,7 +15,7 @@ export const useBidStore = defineStore('bid', () => {
   // Getters
 
   // Actions
-  async function createBid(data: any) {
+  async function createBid(data: Bid) {
     price.value = data.price > config.bid.max || data.price < config.bid.min ? config.bid.default : data.price;
     promisedDuration.value = data.promised_duration;
     revised.value = price.value !== data.price;

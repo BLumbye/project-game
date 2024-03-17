@@ -1,16 +1,16 @@
 <template>
-  <div v-if="adminStore.users.length === 0"
-       class="clamped">
+  <div v-if="adminStore.users.length === 0" class="clamped">
     <p class="game-state">Waiting for users to be added to the game.</p>
     <button @click="addUsersModal?.open()">Add Users</button>
   </div>
-  <div v-else
-       class="clamped">
+  <div v-else class="clamped">
     <h2>Users ({{ adminStore.users.length }})</h2>
     <div class="users">
-      <div v-for="user in adminStore.users.sort((a, b) => a.username.localeCompare(b.username))"
-           :key="user.id"
-           class="user">
+      <div
+        v-for="user in adminStore.users.sort((a, b) => a.username.localeCompare(b.username))"
+        :key="user.id"
+        class="user"
+      >
         <span>{{ user.username }}</span>
       </div>
     </div>
@@ -40,7 +40,7 @@ const addUsersModal = inject('addUsersModal', ref<typeof AddUsersDialog | null>(
 .buttons {
   margin-top: 1.5rem;
 
-  & button+button {
+  & button + button {
     margin-left: 1rem;
   }
 }

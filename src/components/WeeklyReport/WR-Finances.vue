@@ -11,50 +11,55 @@
   <div class="finances boxed">
     <h3>Finance</h3>
     <div class="weekly">
-      <h4>{{capitalize(config.durationIdentifier.iterative)}}</h4>
+      <h4>{{ capitalize(config.durationIdentifier.iterative) }}</h4>
       <div class="outgoing">
         <h5>Outgoing</h5>
         <div class="finance-item">
           <span class="finance-item-label">Workers</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.workersTimeline.get(week - 1) || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.workersTimeline.get(week - 1) || 0)
           }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Equipment</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.equipmentTimeline.get(week - 1) || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.equipmentTimeline.get(week - 1) || 0)
           }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Overhead</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.overheadTimeline.get(week - 1) || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.overheadTimeline.get(week - 1) || 0)
           }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Consumables</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.consumablesTimeline.get(week - 1) || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.consumablesTimeline.get(week - 1) || 0)
           }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Project delay penalty</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.delayPenaltyTimeline.get(week - 1) || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.delayPenaltyTimeline.get(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item"
-             v-if="config.loansEnabled">
+        <div v-if="config.loansEnabled" class="finance-item">
           <span class="finance-item-label">Loan interest</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanInterestTimeline.get(week - 1) || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.loanInterestTimeline.get(week - 1) || 0)
           }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Overdraft interest</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.overdraftInterestTimeline.get(week - 1)
-            || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.overdraftInterestTimeline.get(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item"
-             v-if="config.loansEnabled">
+        <div v-if="config.loansEnabled" class="finance-item">
           <span class="finance-item-label">Loan repayment</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanRepayTimeline.get(week - 1) || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.loanRepayTimeline.get(week - 1) || 0)
           }}</span>
         </div>
       </div>
@@ -62,14 +67,17 @@
         <h5>Incoming</h5>
         <div class="finance-item">
           <span class="finance-item-label">Income</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.incomingTimeline.get(week - 1) || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.incomingTimeline.get(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item"
-             v-if="config.loansEnabled">
+        <div v-if="config.loansEnabled" class="finance-item">
           <span class="finance-item-label">Loan</span>
-          <span class="finance-item-value">{{ currencyFormat.format((financeStore.loanTimeline.get(week - 1) || 0) -
-            (financeStore.loanInterestTimeline.get(week - 1) || 0)) }}</span>
+          <span class="finance-item-value">{{
+            currencyFormat.format(
+              (financeStore.loanTimeline.get(week - 1) || 0) - (financeStore.loanInterestTimeline.get(week - 1) || 0),
+            )
+          }}</span>
         </div>
       </div>
       <div class="finance-item summary-item">
@@ -84,49 +92,50 @@
         <h5>Outgoing</h5>
         <div class="finance-item">
           <span class="finance-item-label">Workers</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.workersTimeline.getReduced(week - 1) ||
-            0) }}</span>
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.workersTimeline.getReduced(week - 1) || 0)
+          }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Equipment</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.equipmentTimeline.getReduced(week - 1) ||
-            0) }}</span>
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.equipmentTimeline.getReduced(week - 1) || 0)
+          }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Overhead</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.overheadTimeline.getReduced(week - 1) ||
-            0) }}</span>
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.overheadTimeline.getReduced(week - 1) || 0)
+          }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Consumables</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.consumablesTimeline.getReduced(week - 1)
-            || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.consumablesTimeline.getReduced(week - 1) || 0)
           }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Project delay penalty</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.delayPenaltyTimeline.getReduced(week - 1)
-            || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.delayPenaltyTimeline.getReduced(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item"
-             v-if="config.loansEnabled">
+        <div v-if="config.loansEnabled" class="finance-item">
           <span class="finance-item-label">Loan interest</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanInterestTimeline.getReduced(week - 1)
-            || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.loanInterestTimeline.getReduced(week - 1) || 0)
           }}</span>
         </div>
         <div class="finance-item">
           <span class="finance-item-label">Overdraft interest</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.overdraftInterestTimeline.getReduced(week
-            - 1) || 0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.overdraftInterestTimeline.getReduced(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item"
-             v-if="config.loansEnabled">
+        <div v-if="config.loansEnabled" class="finance-item">
           <span class="finance-item-label">Loan repayment</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanRepayTimeline.getReduced(week - 1) ||
-            0)
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.loanRepayTimeline.getReduced(week - 1) || 0)
           }}</span>
         </div>
       </div>
@@ -134,11 +143,11 @@
         <h5>Incoming</h5>
         <div class="finance-item">
           <span class="finance-item-label">Income</span>
-          <span class="finance-item-value">{{ currencyFormat.format(financeStore.incomingTimeline.getReduced(week - 1) ||
-            0) }}</span>
+          <span class="finance-item-value">{{
+            currencyFormat.format(financeStore.incomingTimeline.getReduced(week - 1) || 0)
+          }}</span>
         </div>
-        <div class="finance-item"
-             v-if="config.loansEnabled">
+        <div v-if="config.loansEnabled" class="finance-item">
           <span class="finance-item-label">Loan (with interest)</span>
           <span class="finance-item-value">{{ currencyFormat.format(financeStore.loanAtWeek(week - 1) || 0) }}</span>
         </div>
@@ -158,7 +167,7 @@ const financeStore = useFinanceStore();
 import config from '~/config';
 import { currencyFormat, capitalize } from '~/utils/formatters';
 
-const props = defineProps<{
+defineProps<{
   week: number;
 }>();
 </script>
@@ -174,4 +183,5 @@ const props = defineProps<{
   &.summary-item {
     font-weight: bold;
   }
-}</style>
+}
+</style>

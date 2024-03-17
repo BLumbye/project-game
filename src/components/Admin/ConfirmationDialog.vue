@@ -1,13 +1,17 @@
 <template>
-  <dialog ref="modal"
-          class="confirm-modal"
-          @click="backgroundClickClose">
+  <dialog ref="modal" class="confirm-modal" @click="backgroundClickClose">
     <h2>Confirm Action</h2>
     <p>{{ prompt }}</p>
     <div class="buttons">
-      <button @click="modal?.close"
-              class="text-button">Cancel</button>
-      <button @click="() => { func(); modal?.close(); }">
+      <button class="text-button" @click="modal?.close">Cancel</button>
+      <button
+        @click="
+          () => {
+            func();
+            modal?.close();
+          }
+        "
+      >
         Confirm
       </button>
     </div>
@@ -18,14 +22,14 @@
 import { backgroundClickClose } from '~/utils/dialog';
 
 const modal = ref<HTMLDialogElement | null>(null);
-const prompt = ref("");
-const func = ref<(() => void)>(() => null);
+const prompt = ref('');
+const func = ref<() => void>(() => null);
 
 const confirm = (text: string, action: () => void) => {
   prompt.value = text;
   func.value = action;
   modal.value?.showModal();
-}
+};
 
 defineExpose({
   confirm,

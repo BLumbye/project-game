@@ -13,12 +13,13 @@
 
 <template>
   <div class="decision-form">
-    <h2 class="boxed section-title">Decision form for {{config.durationIdentifier.singular}} {{ gameStore.decisionForm }}</h2>
+    <h2 class="boxed section-title">
+      Decision form for {{ config.durationIdentifier.singular }} {{ gameStore.decisionForm }}
+    </h2>
     <DFWorkers class="workers boxed" />
     <DFEquipment class="equipment boxed" />
     <DFAllocation class="allocation boxed" />
-    <DFLoan v-if="config.loansEnabled"
-            class="loan boxed" />
+    <DFLoan v-if="config.loansEnabled" class="loan boxed" />
     <DFBid class="bid boxed" />
     <DFDoneButton class="done-button" />
   </div>

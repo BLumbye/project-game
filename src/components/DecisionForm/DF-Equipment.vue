@@ -15,20 +15,20 @@
     <h3 class="component-title">Order equipment</h3>
     <span class="equipment-column-label">Equipment</span>
     <span class="equipment-column-label">Order</span>
-    <template v-for="([type, configEquipment], index) in Object.entries(config.equipment)">
-      <label :for="`${type}-input`"
-             class="equipment-label">{{ configEquipment.label }}</label>
-      <select v-model="values[index]"
-              :name="`${type}-input`"
-              :id="`${type}-input`"
-              class="equipment-input"
-              @input="(evt) => onInput((evt.target! as HTMLSelectElement).value, type)"
-              :disabled="previousEquipment[type].status !== 'unordered' || gameStore.ready">
+    <template v-for="([type, configEquipment], index) in Object.entries(config.equipment)" :key="type">
+      <label :for="`${type}-input`" class="equipment-label">{{ configEquipment.label }}</label>
+      <select
+        :id="`${type}-input`"
+        v-model="values[index]"
+        :name="`${type}-input`"
+        class="equipment-input"
+        :disabled="previousEquipment[type].status !== 'unordered' || gameStore.ready"
+        @input="(evt) => onInput((evt.target! as HTMLSelectElement).value, type)"
+      >
         <option value="0">Not ordered</option>
         <option value="1">Regular delivery</option>
         <option value="2">Express delivery</option>
-        <option v-if="equipmentStore.equipment[type].status === 'delivered'"
-                value="3">Delivered</option>
+        <option v-if="equipmentStore.equipment[type].status === 'delivered'" value="3">Delivered</option>
       </select>
     </template>
   </div>
@@ -72,22 +72,35 @@ const setInput = (type: string) => {
     }
     return true;
   } else {
-    values.value[index] = equipmentStore.equipment[type].status === 'unordered' ? '0' : equipmentStore.equipment[type].deliveryType === 'regular' ? '1' : '2';
+    values.value[index] =
+      equipmentStore.equipment[type].status === 'unordered'
+        ? '0'
+        : equipmentStore.equipment[type].deliveryType === 'regular'
+          ? '1'
+          : '2';
   }
   return false;
 };
 
-watch([() => equipmentStore.timeline, () => gameStore.week], () => {
-  for (const type in config.equipment) {
-    setInput(type);
-  }
-}, { deep: true });
+watch(
+  [() => equipmentStore.timeline, () => gameStore.week],
+  () => {
+    for (const type in config.equipment) {
+      setInput(type);
+    }
+  },
+  { deep: true },
+);
 
-watch(() => equipmentStore.loading, () => {
-  for (const type in config.equipment) {
-    setInput(type);
-  }
-}, { immediate: true });
+watch(
+  () => equipmentStore.loading,
+  () => {
+    for (const type in config.equipment) {
+      setInput(type);
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <!-- Styling -->
@@ -97,8 +110,7 @@ watch(() => equipmentStore.loading, () => {
   display: grid;
   grid-template-columns: repeat(2, auto);
   grid-template-rows: repeat(5, auto);
-  column-gap: 0.5rem;
-  row-gap: 4px;
+  gap: 4px 0.5rem;
 }
 
 .component-title {

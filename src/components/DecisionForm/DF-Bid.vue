@@ -7,8 +7,10 @@
 <template>
   <div :class="['bid', { 'bid-wide': !config.loansEnabled }]">
     <h3 class="bid-column-label">Bid</h3>
-    <span :class="bidStore.revised ? 'rejected-bid-label' : 'accepted-bid-label'">{{ currencyFormat.format(bidStore.price) }}</span>
-    <span class="accepted-bid-label">{{ bidStore.promisedDuration }} {{config.durationIdentifier.plural}}</span>
+    <span :class="bidStore.revised ? 'rejected-bid-label' : 'accepted-bid-label'">{{
+      currencyFormat.format(bidStore.price)
+    }}</span>
+    <span class="accepted-bid-label">{{ bidStore.promisedDuration }} {{ config.durationIdentifier.plural }}</span>
   </div>
 </template>
 

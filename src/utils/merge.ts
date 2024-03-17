@@ -1,27 +1,40 @@
 /**
  * Simple object check. From https://stackoverflow.com/a/34749873/5625612.
  */
-export function isObject(item: any) {
-  return item && typeof item === 'object' && !Array.isArray(item);
+type IsObject<T> = T extends object ? (T extends unknown[] ? false : true) : false;
+
+function isObject<T>(v: T): IsObject<T> {
+  return (typeof v === 'object' && !Array.isArray(v)) as IsObject<T>;
 }
 
 /**
  * Deep merge two objects. From https://stackoverflow.com/a/34749873/5625612.
  */
-export function mergeDeep(target: { [key: string]: any }, ...sources: any[]): { [key: string]: any } {
-  if (!sources.length) return target;
-  const source = sources.shift();
 
-  if (isObject(target) && isObject(source)) {
-    for (const key in source) {
-      if (isObject(source[key])) {
-        if (!target[key]) Object.assign(target, { [key]: {} });
-        mergeDeep(target[key], source[key]);
-      } else {
-        Object.assign(target, { [key]: source[key] });
-      }
-    }
-  }
+type Merge2<T, U> = IsObject<T> & IsObject<U> extends true
+  ? {
+      [K in keyof T]: K extends keyof U ? Merge2<T[K], U[K]> : T[K];
+    } & U
+  : U;
 
-  return mergeDeep(target, ...sources);
+function merge2<T, U>(a: T, b: U): Merge2<T, U> {
+  return (
+    isObject(a) && isObject(b)
+      ? Object.assign(
+          {},
+          a,
+          Object.fromEntries(Object.entries(b as never).map(([k, v]) => [k, merge2((a as never)[k], v)])),
+        )
+      : b
+  ) as Merge2<T, U>;
+}
+
+export type Merge<T extends unknown[]> = {
+  0: T[0];
+  1: T extends [infer Car, ...infer Cdr] ? Merge2<Car, Merge<Cdr>> : T;
+}[T extends [unknown, unknown, ...unknown[]] ? 1 : 0];
+
+export function mergeDeep<T extends unknown[]>(...objs: T): Merge<T> {
+  if (objs.length < 2) return objs[0];
+  return merge2(objs[0], mergeDeep(...objs.slice(1)));
 }

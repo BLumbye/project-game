@@ -4,8 +4,7 @@
   <main :class="{ 'not-started': !gameStore.synchronized }">
     <AdminNotStarted v-if="!gameStore.synchronized" />
     <router-view v-else></router-view>
-    <AdminActionMenu v-if="gameStore.synchronized"
-                     class="admin-action-menu" />
+    <AdminActionMenu v-if="gameStore.synchronized" class="admin-action-menu" />
   </main>
   <AddUsersDialog ref="addUsersModal" />
   <ConfirmationDialog ref="confirmModal" />
@@ -63,7 +62,7 @@ header,
   bottom: 20px;
 }
 </style>
-  
+
 <route>
 {
   name: "admin"

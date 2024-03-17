@@ -1,9 +1,7 @@
 <template>
   <h2>Survey Answers ({{ adminStore.surveyAnswers.length }}/{{ adminStore.users.length }})</h2>
-  <p class="no-submissions"
-     v-if="adminStore.surveyAnswers.length === 0">No answers yet...</p>
-  <SurveyTable class="survey-table"
-               v-else />
+  <p v-if="adminStore.surveyAnswers.length === 0" class="no-submissions">No answers yet...</p>
+  <SurveyTable v-else class="survey-table" />
 </template>
 
 <script setup lang="ts">

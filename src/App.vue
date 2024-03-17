@@ -4,8 +4,7 @@
 
 <template>
   <v-theme-provider :theme="isDark ? 'dark' : 'light'">
-    <span class="loading"
-          v-if="!gameStore.settingsLoaded">Loading...</span>
+    <span v-if="!gameStore.settingsLoaded" class="loading">Loading...</span>
     <router-view v-else></router-view>
   </v-theme-provider>
 </template>

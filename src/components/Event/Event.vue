@@ -2,31 +2,44 @@
   <div class="events">
     <span class="news-label">
       NEWS:
-      <span v-if="Object.entries(config.events).filter(([name, event]) => event.week <= gameStore.week).length === 0">No
-        news yet</span>
+      <span v-if="Object.entries(config.events).filter(([, event]) => event.week <= gameStore.week).length === 0"
+        >No news yet</span
+      >
     </span>
     <div class="event-items">
       <div v-for="(event, name, i) in config.events" :key="name">
-        <button @click="eventDialogues[i].showModal()" class="event-button"
-          v-if="event.week <= gameStore.week && event.title != 'NOTHING TO REPORT'">
+        <button
+          v-if="event.week <= gameStore.week && event.title != 'NOTHING TO REPORT'"
+          class="event-button"
+          @click="eventDialogues[i].showModal()"
+        >
           {{ capitalize(config.durationIdentifier.singular) }} {{ event.week }}: {{ event.title }}
         </button>
-        <dialog ref="eventDialogues" @keydown.escape.prevent
-          @click="(e) => preventCloseChoice(event, name, () => backgroundClickClose(e))">
+        <dialog
+          ref="eventDialogues"
+          @keydown.escape.prevent
+          @click="(e) => preventCloseChoice(event, name, () => backgroundClickClose(e))"
+        >
           <!-- An event with a choice should not be closeable without making a decision -->
           <div class="event-content">
-            <button class="close-button"
-              @click="(e) => preventCloseChoice(event, name, () => closeEvent(eventDialogues[i]))">
+            <button
+              class="close-button"
+              @click="(e) => preventCloseChoice(event, name, () => closeEvent(eventDialogues[i]))"
+            >
               &#10006;
             </button>
             <img :src="event.image" :alt="event.title" />
-            <div class="text" v-if="event.showTitle || event.showDescription">
+            <div v-if="event.showTitle || event.showDescription" class="text">
               <h2 v-if="event.showTitle">{{ event.title }}</h2>
               <p v-if="event.showDescription">{{ event.description }}</p>
               <div v-if="event.choices">
                 <div v-if="eventStore.eventChoices[name] === undefined" class="choices">
-                  <button class="choiceButton" @click="eventStore.setEventChoice(name, key as string)"
-                    v-for="(choice, key) in event.choices" :key="key">
+                  <button
+                    v-for="(choice, key) in event.choices"
+                    :key="key"
+                    class="choiceButton"
+                    @click="eventStore.setEventChoice(name, key as string)"
+                  >
                     {{ choice.label }}
                   </button>
                 </div>
@@ -54,9 +67,13 @@ const eventDialogues = ref<HTMLDialogElement[]>([]);
 watch(
   () => gameStore.week,
   () => {
-    const weekEvents = Object.entries(config.events).filter(([name, event]) => event.week === gameStore.week);
+    const weekEvents = Object.entries(config.events).filter(([, event]) => event.week === gameStore.week);
     //Show modal unless title is "NOTHING TO REPORT"
-    weekEvents.forEach(([name, event]) => event.title !== 'NOTHING TO REPORT' && eventDialogues.value[Object.keys(config.events).indexOf(name)].showModal());
+    weekEvents.forEach(
+      ([name, event]) =>
+        event.title !== 'NOTHING TO REPORT' &&
+        eventDialogues.value[Object.keys(config.events).indexOf(name)].showModal(),
+    );
   },
 );
 
@@ -132,7 +149,7 @@ dialog {
   cursor: pointer;
   padding: 0;
   margin: 0;
-  color: #ffffff;
+  color: #fff;
   opacity: 0.75;
   transition: opacity 0.2s ease-in-out;
   mix-blend-mode: difference;

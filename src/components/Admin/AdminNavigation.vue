@@ -1,14 +1,10 @@
 <template>
   <nav>
     <router-link to="/admin/users">Users</router-link>
-    <AdminNavigationLink to="/admin/bids"
-                         :disabled="!bidsEnabled">Bids</AdminNavigationLink>
-    <AdminNavigationLink to="/admin/survey"
-                         :disabled="!surveyEnabled">Survey answers</AdminNavigationLink>
-    <AdminNavigationLink to="/admin/game-progress"
-                         :disabled="!gameProgressEnabled">Game progress</AdminNavigationLink>
-    <AdminNavigationLink to="/admin/results"
-                         :disabled="!resultsEnabled">Results</AdminNavigationLink>
+    <AdminNavigationLink to="/admin/bids" :disabled="!bidsEnabled">Bids</AdminNavigationLink>
+    <AdminNavigationLink to="/admin/survey" :disabled="!surveyEnabled">Survey answers</AdminNavigationLink>
+    <AdminNavigationLink to="/admin/game-progress" :disabled="!gameProgressEnabled">Game progress</AdminNavigationLink>
+    <AdminNavigationLink to="/admin/results" :disabled="!resultsEnabled">Results</AdminNavigationLink>
   </nav>
 </template>
 
@@ -32,8 +28,8 @@ nav {
   padding: 1rem;
   border-top: 1px solid var(--background-color);
 
-  &>>>a,
-  &>>>span {
+  & >>> a,
+  & >>> span {
     padding: 0.5rem 1rem;
     text-decoration: none;
     color: var(--text-color);

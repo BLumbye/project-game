@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import config from '../config';
 import { Activity, ConfigActivity, EventEffect } from '../types/types';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
-import { ClientResponseError } from 'pocketbase';
 import { collections, deleteExisting, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 import { useStorage } from '@vueuse/core';
 
@@ -164,7 +163,10 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: Activity, week?: number) => {
       week ??= gameStore.week;
 
-      var eventWorkersModification: Partial<Record<string, number>> = getEventWorkersModification.value(activity, week);
+      const eventWorkersModification: Partial<Record<string, number>> = getEventWorkersModification.value(
+        activity,
+        week,
+      );
 
       if (!activity.requirements.workers && !eventWorkersModification) return true;
 
@@ -173,7 +175,7 @@ export const useActivitiesStore = defineStore('activities', () => {
           return true;
         const enoughAssigned =
           (activity.requirements.workers ? activity.requirements.workers[type] || 0 : 0) +
-          eventWorkersModification[type]! <=
+            eventWorkersModification[type]! <=
           activity.allocation[type];
         const enoughHired = totalWorkersAssigned.value(type, week) <= workersStore.workersAtWeek(week)[type];
         return enoughAssigned && enoughHired;
@@ -234,7 +236,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       let activityProgress = 0;
       if (!isActivityDone.value(activity) && requirementsMet.value(activity, gameStore.week)) {
         if (isActivityResourceDependant(activity)) {
-          let max = getDuration.value(activity) - activity.progress;
+          const max = getDuration.value(activity) - activity.progress;
           activityProgress = Math.min(max, getResourceDependancyMultiplier(activity));
         } else {
           activityProgress = 1;
@@ -257,7 +259,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       if (activityDone && !weekActivityDone.value[activity.label]) {
         weekActivityDone.value = { ...weekActivityDone.value, [activity.label]: gameStore.week + 1 };
       } else if (!activityDone) {
-        // @ts-expect-error
+        // @ts-expect-error - allow setting to undefined
         weekActivityDone.value = { ...weekActivityDone.value, [activity.label]: undefined };
       }
     }
@@ -275,10 +277,10 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
       week ??= gameStore.week;
       activityCompletion ??= weekActivityDone.value;
-      let durationModification = Object.entries(config.events)
+      const durationModification = Object.entries(config.events)
         .filter(
           // Filter out events that are not active
-          ([_, event]) =>
+          ([, event]) =>
             event.week <= week! &&
             (activityCompletion![activity.label] === undefined || activityCompletion![activity.label] > event.week),
         )
@@ -311,7 +313,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
       week ??= gameStore.week;
       activityCompletion ??= weekActivityDone.value;
-      let workersModification: Record<string, number> = Object.keys(config.workers).reduce(
+      const workersModification: Record<string, number> = Object.keys(config.workers).reduce(
         (acc, key) => ({ ...acc, [key]: 0 }),
         {},
       );
@@ -437,7 +439,8 @@ export const useActivitiesStore = defineStore('activities', () => {
       Object.keys(config.workers).forEach((type) => {
         updateExistingOrCreate(
           collections.allocation,
-          `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${activity.label
+          `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${
+            activity.label
           }" && worker_type="${type}"`,
           {
             user: pocketbase.authStore.model!.id,
@@ -453,7 +456,8 @@ export const useActivitiesStore = defineStore('activities', () => {
       // Update progress
       updateExistingOrCreate(
         collections.progress,
-        `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${activity.label
+        `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${
+          activity.label
         }"`,
         {
           user: pocketbase.authStore.model!.id,
