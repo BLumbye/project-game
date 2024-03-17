@@ -21,7 +21,7 @@
       v-tooltip="{ content: `Because you are trying to use more ${worker.plural} than you have hired some activities will not progress.`, disabled: !tooManyWorkers(key as string) }">{{
           worker.shortLabel }}</span>
     <template v-for="(activity, index) in activityStore.activities">
-      <template v-if="activity.hidden === undefined || activity.hidden == false">
+      <template v-if="!activityStore.isActivityHidden(activity)">
         <span>{{ activity.label }}</span>
         <input v-for="(worker, key) in config.workers" :key="key" type="text" class="worker-input"
           :class="{ 'last-row': index === activityStore.activities.filter(act => !act.hidden).length - 1, 'input-error': tooManyWorkers(key as string) && Number(inputs[key][index]) > 0 }"

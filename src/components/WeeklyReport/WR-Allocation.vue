@@ -13,7 +13,7 @@
     <span>%</span>
     <span v-for="(worker, key) in config.workers" :key="key">{{ worker.shortLabel }}</span>
     <template v-for="(activity, index) in activities">
-      <template v-if="activity.hidden === undefined || activity.hidden == false">
+      <template v-if="!activityStore.isActivityHidden(activity)">
         <span>{{ activity.label }}</span>
         <span>{{ (progressActivities[index].progress /
       activityStore.getDuration(progressActivities[index]) *

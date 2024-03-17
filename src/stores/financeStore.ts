@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import config from '../config';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
-import { ClientResponseError } from 'pocketbase';
+//import { ClientResponseError } from 'pocketbase';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 
 export const useFinanceStore = defineStore('finance', () => {
@@ -209,7 +209,7 @@ export const useFinanceStore = defineStore('finance', () => {
     },
   );
 
-  /** When the milestone activity is completed, the the milestone payment is added to the incoming timeline only once */
+  /** When the milestone activity is completed, then the milestone payment is added to the incoming timeline only once */
   watch(
     () => activityStore.weekActivityDone,
     (newDone, oldDone) => {
