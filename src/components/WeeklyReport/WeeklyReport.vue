@@ -8,19 +8,18 @@
 
 <template>
   <div class="weekly-report">
-    <h2 class="boxed section-title">{{ capitalize(config.durationIdentifier.iterative) }} report for
-      {{ config.durationIdentifier.singular }} {{ week - 1 }}</h2>
+    <h2 class="boxed section-title">
+      {{ capitalize(config.durationIdentifier.iterative) }} report for {{ config.durationIdentifier.singular }}
+      {{ week - 1 }}
+    </h2>
     <div class="week-buttons">
-      <button @click="week--"
-              :disabled="week <= 2">&lt;- Back</button>
-      <button @click="week++"
-              :disabled="(week >= gameStore.week && !gameStore.gameOver) || week >= gameStore.week + 1">Forward
-        -></button>
+      <button :disabled="week <= 2" @click="week--">&lt;- Back</button>
+      <button :disabled="(week >= gameStore.week && !gameStore.gameOver) || week >= gameStore.week + 1" @click="week++">
+        Forward ->
+      </button>
     </div>
-    <WRAllocation v-if="week > 1"
-                  :week="week" />
-    <WRWorkers v-if="week > 1"
-               :week="week" />
+    <WRAllocation v-if="week > 1" :week="week" />
+    <WRWorkers v-if="week > 1" :week="week" />
     <WRFinances :week="week" />
   </div>
 </template>
@@ -33,13 +32,19 @@ const week = ref(gameStore.week);
 import config from '~/config';
 import { capitalize } from '~/utils/formatters';
 
-watch(() => gameStore.week, () => {
-  week.value = gameStore.week;
-})
+watch(
+  () => gameStore.week,
+  () => {
+    week.value = gameStore.week;
+  },
+);
 
-watch(() => gameStore.gameWon, () => {
-  week.value = gameStore.week + 1;
-})
+watch(
+  () => gameStore.gameWon,
+  () => {
+    week.value = gameStore.week + 1;
+  },
+);
 </script>
 
 <!-- Styling -->

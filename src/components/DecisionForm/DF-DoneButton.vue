@@ -5,9 +5,7 @@
 -->
 
 <template>
-  <button class="done-button"
-          @click="handleClick"
-          :disabled="gameStore.gameOver">
+  <button class="done-button" :disabled="gameStore.gameOver" @click="handleClick">
     {{ buttonText }}
   </button>
 </template>
@@ -20,9 +18,9 @@ const gameStore = useGameStore();
 
 const buttonText = computed(() => {
   if (gameStore.gameOver) {
-    return gameStore.gameWon ? "Project Completed" : "Project not completed in time";
+    return gameStore.gameWon ? 'Project Completed' : 'Project not completed in time';
   } else if (gameStore.synchronized && gameStore.week === gameStore.maxWeek) {
-    return gameStore.ready ? "Not ready" : "Ready";
+    return gameStore.ready ? 'Not ready' : 'Ready';
   } else {
     return `Next ${config.durationIdentifier.singular} ->`;
   }
@@ -34,8 +32,7 @@ const handleClick = () => {
   } else {
     gameStore.nextWeek();
   }
-}
-
+};
 </script>
 
 <!-- Styling -->

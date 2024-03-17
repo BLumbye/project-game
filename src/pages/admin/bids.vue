@@ -1,13 +1,10 @@
 <template>
   <h2>Bid Submissions ({{ adminStore.bids.length }}/{{ adminStore.users.length }})</h2>
-  <p class="no-submissions"
-     v-if="adminStore.bids.length === 0">No submissions yet...</p>
-  <BidTable class="bid-table"
-            v-else />
+  <p v-if="adminStore.bids.length === 0" class="no-submissions">No submissions yet...</p>
+  <BidTable v-else class="bid-table" />
 </template>
 
 <script setup lang="ts">
-const gameStore = useGameStore();
 const adminStore = useAdminStore();
 </script>
 

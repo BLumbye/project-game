@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import config from '../config';
-import { ClientResponseError } from 'pocketbase';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 import { useStorage } from '@vueuse/core';
 
@@ -30,7 +29,7 @@ export const useWorkersStore = defineStore('workers', () => {
       week ??= useGameStore().week;
       const summedWorkers: WorkersState = Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
       for (let i = 0; i < week; i++) {
-        for (let key in summedWorkers) {
+        for (const key in summedWorkers) {
           summedWorkers[key] += workers.value[i][key];
         }
       }

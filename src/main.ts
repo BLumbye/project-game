@@ -4,6 +4,7 @@ import './style.pcss';
 import '@csstools/normalize.css';
 import App from './App.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+// eslint-disable-next-line import/no-unresolved
 import routes from '~pages';
 import FloatingVue from 'floating-vue';
 import 'floating-vue/dist/style.css';

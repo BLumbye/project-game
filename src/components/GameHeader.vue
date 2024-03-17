@@ -2,24 +2,17 @@
   <header>
     <span class="title">Project Game</span>
     <span v-if="$route.name === 'game' && gameStore.gameState === 'in_progress'">
-      {{capitalize(config.durationIdentifier.singular)}} {{ gameStore.week }}
+      {{ capitalize(config.durationIdentifier.singular) }} {{ gameStore.week }}
     </span>
     <span v-if="$route.name === 'game' && ['getting_bids', 'reviewing_bids'].includes(gameStore.gameState!)">
       Pre-Game Survey
     </span>
-    <span v-if="isAdmin()">
-      Admin Panel
-    </span>
-    <div class="right-side"
-         v-if="pocketbase.authStore.isValid">
+    <span v-if="isAdmin()"> Admin Panel </span>
+    <div v-if="pocketbase.authStore.isValid" class="right-side">
       <span>{{ pocketbase.authStore.model!.username }}</span>
-      <button class="logout-button"
-              @click="logout()">
-        Log out
-      </button>
+      <button class="logout-button" @click="logout()">Log out</button>
     </div>
-    <div class="right-side"
-         v-else>
+    <div v-else class="right-side">
       <span>Guest</span>
       <RestartGame />
     </div>
@@ -28,7 +21,7 @@
 
 <script setup lang="ts">
 import { pocketbase, isAdmin } from '~/pocketbase';
-import {capitalize} from '~/utils/formatters';
+import { capitalize } from '~/utils/formatters';
 import config from '~/config';
 
 const gameStore = useGameStore();
@@ -39,7 +32,7 @@ function logout() {
   router.push('/');
 }
 </script>
-  
+
 <style scoped lang="postcss">
 .right-side {
   display: flex;
@@ -58,7 +51,7 @@ header {
   width: 100%;
   background-color: var(--boxed-background-color);
 
-  &>* {
+  & > * {
     flex: 1;
   }
 }
@@ -73,7 +66,7 @@ span {
   text-align: left;
 }
 </style>
-  
+
 <style lang="postcss">
 #app {
   padding-top: 0 !important;

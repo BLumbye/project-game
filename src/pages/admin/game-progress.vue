@@ -1,9 +1,7 @@
 <template>
-   <h2>Game Progress ({{config.durationIdentifier.singular}} {{ gameStore.maxWeek! }})</h2>
-   <p class="no-submissions"
-      v-if="adminStore.gameStates.length === 0">No users connected...</p>
-   <GameProgressTable class="progress-table"
-                      v-else />
+  <h2>Game Progress ({{ config.durationIdentifier.singular }} {{ gameStore.maxWeek! }})</h2>
+  <p v-if="adminStore.gameStates.length === 0" class="no-submissions">No users connected...</p>
+  <GameProgressTable v-else class="progress-table" />
 </template>
 
 <script setup lang="ts">
@@ -15,6 +13,6 @@ const adminStore = useAdminStore();
 <style scoped lang="postcss">
 .progress-table,
 .no-submissions {
-   margin-top: 1rem;
+  margin-top: 1rem;
 }
 </style>

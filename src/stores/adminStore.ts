@@ -2,12 +2,9 @@ import { defineStore } from 'pinia';
 import { ClientResponseError } from 'pocketbase';
 import { saveAs } from 'file-saver';
 import { collections, EventChoice, isAdmin, GameSummary as PBGameSummary, TotalProgress } from '~/pocketbase';
-import { User, Bid, SurveyAnswer, AdminGameState, DeliveryType, ConfigActivity, GameSummary } from '~/types/types';
+import { User, Bid, SurveyAnswer, AdminGameState, GameSummary } from '~/types/types';
 import { generatePassword } from '~/utils/passwordGenerator';
 import config from '~/config';
-import { sumReducer } from '~/utils/timeline';
-
-const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
 export const useAdminStore = defineStore('admin', () => {
   const gameStore = useGameStore();
@@ -26,7 +23,7 @@ export const useAdminStore = defineStore('admin', () => {
     const gameStates: AdminGameState[] = [];
     users.value.forEach((user) => {
       const summary = gameSummaries.value.find((summary) => summary.userID === user.id);
-      let status: AdminGameState['status'] = summary?.status ?? 'not_started';
+      const status: AdminGameState['status'] = summary?.status ?? 'not_started';
       const progress = userProgress.value[user.id]?.slice(0, gameStore.maxWeek!).findLast((val) => val !== 0) ?? 0;
       const ready =
         (readyStatus.value[user.id]?.ready ?? false) && readyStatus.value[user.id]?.week === gameStore.maxWeek!;
@@ -315,7 +312,7 @@ export const useAdminStore = defineStore('admin', () => {
       usernames.map(async (username) => {
         const password = generatePassword(8);
         try {
-          const user = await collections.users.create({
+          await collections.users.create({
             username,
             password,
             passwordConfirm: password,

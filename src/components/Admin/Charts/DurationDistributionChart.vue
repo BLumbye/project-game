@@ -1,28 +1,24 @@
 <template>
   <div class="options">
     <label>
-      <input type="checkbox"
-             v-model="hideOutliers" />
+      <input v-model="hideOutliers" type="checkbox" />
       Hide outliers
     </label>
   </div>
-  <Bar :options="durationDistributionOptions"
-       :data="durationDistributionData" />
+  <Bar :options="durationDistributionOptions" :data="durationDistributionData" />
 </template>
 
 <script setup lang="ts">
 import { Bar } from 'vue-chartjs';
-import { BarControllerChartOptions, ChartData, ChartOptions, CoreChartOptions, DatasetChartOptions, ElementChartOptions, PluginChartOptions, ScaleChartOptions, plugins } from 'chart.js'
-import { _DeepPartialObject } from 'chart.js/dist/types/utils';
+import { ChartData } from 'chart.js';
 
 const adminStore = useAdminStore();
 
 const hideOutliers = ref(false);
 
-type BarOptions = _DeepPartialObject<CoreChartOptions<"bar"> & ElementChartOptions<"bar"> & PluginChartOptions<"bar"> & DatasetChartOptions<"bar"> & ScaleChartOptions<"bar"> & BarControllerChartOptions>;
-type BarData = ChartData<"bar", (number | [number, number] | null)[], unknown>;
+type BarData = ChartData<'bar', (number | [number, number] | null)[], unknown>;
 
-const durationDistributionOptions: BarOptions = {
+const durationDistributionOptions: (typeof Bar)['options'] = {
   responsive: true,
   devicePixelRatio: 4,
   plugins: {
@@ -35,21 +31,21 @@ const durationDistributionOptions: BarOptions = {
       type: 'linear',
       ticks: {
         precision: 0,
-      }
+      },
     },
     y: {
       type: 'linear',
       ticks: {
         precision: 0,
-      }
+      },
     },
-  }
-}
+  },
+};
 
 const durationDistributionData = computed<BarData>(() => {
-  let data: { x: number, y: number }[] = [];
+  let data: { x: number; y: number }[] = [];
   adminStore.bids.forEach(({ promisedDuration }) => {
-    const group = data.find(group => group.x === promisedDuration);
+    const group = data.find((group) => group.x === promisedDuration);
     if (group) {
       group.y++;
     } else {
@@ -63,10 +59,10 @@ const durationDistributionData = computed<BarData>(() => {
   return { datasets } as unknown as BarData;
 });
 
-function removeOutliers(data: { x: number, y: number }[]) {
+function removeOutliers(data: { x: number; y: number }[]) {
   const sortedData = data.sort((a, b) => a.x - b.x);
   const q1 = sortedData[Math.floor(sortedData.length / 4)].x;
-  const q3 = sortedData[Math.floor(sortedData.length * 3 / 4)].x;
+  const q3 = sortedData[Math.floor((sortedData.length * 3) / 4)].x;
   const iqr = q3 - q1;
   return data.filter(({ x }) => x >= q1 - iqr * 1.5 && x <= q3 + iqr * 1.5);
 }

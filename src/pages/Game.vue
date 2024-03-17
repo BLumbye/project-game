@@ -19,8 +19,10 @@
     <Event />
     <div class="container">
       <WeeklyReport v-if="gameStore.week > 1" />
-      <h2 v-else>No {{ config.durationIdentifier.iterative }} report in {{ config.durationIdentifier.singular }} {{
-        gameStore.week }}</h2>
+      <h2 v-else>
+        No {{ config.durationIdentifier.iterative }} report in {{ config.durationIdentifier.singular }}
+        {{ gameStore.week }}
+      </h2>
       <DecisionForm v-if="!gameStore.gameOver" />
       <GameFinished v-if="gameStore.gameOver" />
     </div>
@@ -35,8 +37,6 @@
 <script setup lang="ts">
 import { isAdmin, pocketbase } from '~/pocketbase';
 import config from '~/config';
-// @ts-ignore
-import ConfettiExplosion from 'vue-confetti-explosion';
 
 const gameStore = useGameStore();
 const bidStore = useBidStore();
@@ -62,12 +62,12 @@ if (!gameStore.synchronized) {
   gap: 1rem;
   padding-bottom: 1rem;
 
-  @media (max-width: 1050px) {
+  @media (width <=1050px) {
     flex-direction: column;
     align-items: center;
     gap: 2rem;
 
-    &>.decision-form {
+    & > .decision-form {
       order: -1;
     }
   }

@@ -1,22 +1,13 @@
 <template>
-  <dialog ref="modal"
-          class="add-users-modal"
-          @click="backgroundClickClose">
+  <dialog ref="modal" class="add-users-modal" @click="backgroundClickClose">
     <h2>Add Users</h2>
     <label for="usernames">Enter a comma separated list of user names.</label>
-    <input type="text"
-           placeholder="user1,user2..."
-           id="usernames"
-           v-model="usernames"
-           class="fancy-input" />
-    <p v-if="errorMessage"
-       class="error-message">{{ errorMessage }}</p>
+    <input id="usernames" v-model="usernames" type="text" placeholder="user1,user2..." class="fancy-input" />
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     <div class="buttons">
-      <button @click="modal?.close"
-              class="text-button">Cancel</button>
-      <button :disabled="loading"
-              @click="submit">
-        {{ loading ? "Loading..." : "Add Users" }}
+      <button class="text-button" @click="modal?.close">Cancel</button>
+      <button :disabled="loading" @click="submit">
+        {{ loading ? 'Loading...' : 'Add Users' }}
       </button>
     </div>
   </dialog>
@@ -30,22 +21,22 @@ const adminStore = useAdminStore();
 const modal = ref<HTMLDialogElement | null>(null);
 
 const loading = ref(false);
-const usernames = ref("");
+const usernames = ref('');
 const errorMessage = ref<string | null>(null);
 
 const open = () => {
-  usernames.value = "";
+  usernames.value = '';
   modal.value?.showModal();
-}
+};
 
 const submit = async () => {
   loading.value = true;
   errorMessage.value = null;
-  const response = await adminStore.addUsers(usernames.value.split(",").map(s => s.trim()));
+  const response = await adminStore.addUsers(usernames.value.split(',').map((s) => s.trim()));
   if (response === true) modal.value?.close();
   else errorMessage.value = response;
   loading.value = false;
-}
+};
 
 defineExpose({
   open,
@@ -65,7 +56,7 @@ defineExpose({
     text-align: center;
   }
 
-  & input+p {
+  & input + p {
     margin-top: 1rem;
   }
 

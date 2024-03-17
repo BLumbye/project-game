@@ -150,7 +150,7 @@ export const useFinanceStore = defineStore('finance', () => {
     const previousEquipment = equipmentStore.equipmentAtWeek(gameStore.week - 1);
     const equipment = equipmentStore.equipmentAtWeek(gameStore.week);
     let equipmentCost = 0;
-    for (let type in equipment) {
+    for (const type in equipment) {
       if (equipment[type].status === 'ordered' && previousEquipment[type].status !== 'ordered') {
         equipmentCost +=
           equipment[type].deliveryType! === 'regular'
@@ -183,7 +183,7 @@ export const useFinanceStore = defineStore('finance', () => {
     addInterestToLoan(
       hasActiveLoan.value(gameStore.week + 1)
         ? config.finances.loanInterest *
-        (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
+            (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
         : 0,
     );
 
@@ -227,19 +227,19 @@ export const useFinanceStore = defineStore('finance', () => {
     },
   );
 
-  /**
-   * When all activites are completed, the completion payment is added to the incoming timeline.
-   */
-  const stopFinishedWatcher = watch(
-    () => activityStore.allActivitiesDone(),
-    (finishedNow, finishedBefore) => {
-      if (!finishedBefore && finishedNow) {
-        incomingTimeline.add(bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
-      } else if (finishedBefore && !finishedNow) {
-        incomingTimeline.add(-bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
-      }
-    },
-  );
+  // /**
+  //  * When all activites are completed, the completion payment is added to the incoming timeline.
+  //  */
+  // const stopFinishedWatcher = watch(
+  //   () => activityStore.allActivitiesDone(),
+  //   (finishedNow, finishedBefore) => {
+  //     if (!finishedBefore && finishedNow) {
+  //       incomingTimeline.add(bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
+  //     } else if (finishedBefore && !finishedNow) {
+  //       incomingTimeline.add(-bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
+  //     }
+  //   },
+  // );
 
   const timelines = {
     incomingTimeline,

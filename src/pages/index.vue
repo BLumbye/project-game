@@ -3,52 +3,55 @@
     <h1>Project Game</h1>
     <template v-if="gameStore.synchronized || adminLogin">
       <h2>Log In</h2>
-      <form @submit.prevent="handleLogin"
-            class="login-form">
+      <form class="login-form" @submit.prevent="handleLogin">
         <div class="input-container">
           <label for="username">Username</label>
-          <input type="text"
-                 name="username"
-                 id="username"
-                 class="fancy-input"
-                 required
-                 placeholder="john@doe.com"
-                 v-model="username" />
+          <input
+            id="username"
+            v-model="username"
+            type="text"
+            name="username"
+            class="fancy-input"
+            required
+            placeholder="john@doe.com"
+          />
         </div>
         <div class="input-container">
           <label for="password">Password</label>
-          <input type="password"
-                 name="password"
-                 id="password"
-                 class="fancy-input"
-                 required
-                 placeholder="1234"
-                 v-model="password" />
+          <input
+            id="password"
+            v-model="password"
+            type="password"
+            name="password"
+            class="fancy-input"
+            required
+            placeholder="1234"
+          />
         </div>
-        <span v-if="errorMessage !== null"
-              class="error-message">{{ errorMessage }}</span>
-        <input type="submit"
-               value="Log in"
-               :disabled="loading">
+        <span v-if="errorMessage !== null" class="error-message">{{ errorMessage }}</span>
+        <input type="submit" value="Log in" :disabled="loading" />
       </form>
     </template>
     <template v-if="!gameStore.synchronized">
       <h2>Freeplay mode</h2>
       <p>
-        You are currently in freeplay mode. This means that you are not connected to a game server.
-        You can still play the game, but your progress will not be saved.
+        You are currently in freeplay mode. This means that you are not connected to a game server. You can still play
+        the game, but your progress will not be saved.
       </p>
-      <router-link class="button-link"
-                   to="/game">Start Game</router-link>
-      <button v-if="!adminLogin"
-              class="link-button admin-button"
-              @click="adminLogin = true">Log in as admin</button>
+      <router-link class="button-link" to="/game">Start Game</router-link>
+      <button v-if="!adminLogin" class="link-button admin-button" @click="adminLogin = true">Log in as admin</button>
     </template>
     <template v-if="devMode">
-      <button @click="() => {
-      gameStore.synchronized = false;
-      $router.push('/game');
-    }">Development Mode</button>
+      <button
+        @click="
+          () => {
+            gameStore.synchronized = false;
+            $router.push('/game');
+          }
+        "
+      >
+        Development Mode
+      </button>
     </template>
   </main>
   <footer>
@@ -60,105 +63,103 @@
 
 <!-- Script -->
 
-<script setup
-        lang="ts">
-        import { ClientResponseError } from 'pocketbase';
-        import { collections, pocketbase } from '../pocketbase';
+<script setup lang="ts">
+import { ClientResponseError } from 'pocketbase';
+import { collections, pocketbase } from '../pocketbase';
 
-        const loading = ref(false);
-        const username = ref("");
-        const password = ref("");
-        const errorMessage = ref<string | null>(null);
-        const adminLogin = ref(false);
+const loading = ref(false);
+const username = ref('');
+const password = ref('');
+const errorMessage = ref<string | null>(null);
+const adminLogin = ref(false);
 
-        const devMode = import.meta.env.MODE === 'development';
-        const version = import.meta.env.VITE_APP_VERSION as string;
+const devMode = import.meta.env.MODE === 'development';
+const version = import.meta.env.VITE_APP_VERSION as string;
 
-        const gameStore = useGameStore();
+const gameStore = useGameStore();
 
-        if (pocketbase.authStore.isValid) {
-          console.log('redirecting from auth...');
-          gameStore.connectAllDatabases();
-          gameStore.routeCorrectly();
-        }
+if (pocketbase.authStore.isValid) {
+  console.log('redirecting from auth...');
+  gameStore.connectAllDatabases();
+  gameStore.routeCorrectly();
+}
 
-        const handleLogin = async () => {
-          try {
-            loading.value = true;
-            errorMessage.value = null;
+const handleLogin = async () => {
+  try {
+    loading.value = true;
+    errorMessage.value = null;
 
-            const user = await collections.users.authWithPassword(username.value, password.value);
+    const user = await collections.users.authWithPassword(username.value, password.value);
 
-            if (!user.record.admin && (user.record.game_id !== gameStore.gameID || !gameStore.synchronized)) {
-              errorMessage.value = "This user cannot be used for the current game.";
-              pocketbase.authStore.clear();
-              return;
-            }
+    if (!user.record.admin && (user.record.game_id !== gameStore.gameID || !gameStore.synchronized)) {
+      errorMessage.value = 'This user cannot be used for the current game.';
+      pocketbase.authStore.clear();
+      return;
+    }
 
-            gameStore.connectAllDatabases();
-            gameStore.routeCorrectly();
-          } catch (error) {
-            if (!(error instanceof ClientResponseError)) {
-              errorMessage.value = "An unknown error occurred. Please contact an administrator.";
-              console.error('unknown error during login', error);
-            } else {
-              if (error.status === 400) {
-                errorMessage.value = "Invalid username or password.";
-              } else {
-                errorMessage.value = "A server error occurred. Please contact an administrator.";
-                console.error('server error during login', error);
-              }
-            }
-          } finally {
-            loading.value = false;
-          }
-        }
+    gameStore.connectAllDatabases();
+    gameStore.routeCorrectly();
+  } catch (error) {
+    if (!(error instanceof ClientResponseError)) {
+      errorMessage.value = 'An unknown error occurred. Please contact an administrator.';
+      console.error('unknown error during login', error);
+    } else {
+      if (error.status === 400) {
+        errorMessage.value = 'Invalid username or password.';
+      } else {
+        errorMessage.value = 'A server error occurred. Please contact an administrator.';
+        console.error('server error during login', error);
+      }
+    }
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <!-- Styling -->
 
-<style scoped
-       lang="postcss">
-      .login-form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1em;
+<style scoped lang="postcss">
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
 
-        .input-container {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-          & label {
-            font-size: .875rem;
-          }
-        }
+    & label {
+      font-size: 0.875rem;
+    }
+  }
 
-        & input[type="submit"] {
-          padding-inline: 1.5em;
-        }
-      }
+  & input[type='submit'] {
+    padding-inline: 1.5em;
+  }
+}
 
-      .button-link {
-        display: block;
-        margin-top: 1em;
-        margin-inline: 5em;
-      }
+.button-link {
+  display: block;
+  margin-top: 1em;
+  margin-inline: 5em;
+}
 
-      .admin-button {
-        margin-top: 1em;
-        opacity: 0.9;
-      }
+.admin-button {
+  margin-top: 1em;
+  opacity: 0.9;
+}
 
-      form+h2 {
-        margin-top: 2em;
-      }
+form + h2 {
+  margin-top: 2em;
+}
 
-      main {
-        width: clamp(300px, 80%, 600px);
-      }
-    </style>
+main {
+  width: clamp(300px, 80%, 600px);
+}
+</style>
 
 <style lang="postcss">
 #app {

@@ -5,22 +5,16 @@
 -->
 
 <template>
-  <button class="restart-button"
-          @click="handleClick">
-    Restart
-  </button>
+  <button class="restart-button" @click="handleClick">Restart</button>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-const gameStore = useGameStore();
-
 const handleClick = () => {
   localStorage.clear();
   location.reload();
-}
-
+};
 </script>
 
 <!-- Styling -->

@@ -185,7 +185,11 @@ export const collections = {
   eventChoices: pocketbase.collection('event_choices'),
 };
 
-export const updateExistingOrCreate = async (collection: RecordService, filter: string, data: Record<string, any>) => {
+export const updateExistingOrCreate = async (
+  collection: RecordService,
+  filter: string,
+  data: Record<string, unknown>,
+) => {
   try {
     return await collection.create(data);
   } catch (error) {

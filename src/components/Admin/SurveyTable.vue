@@ -1,6 +1,5 @@
 <template>
-  <AdminTable :loading="loading"
-              :table="table">
+  <AdminTable :loading="loading" :table="table">
     <template #charts>
       <details>
         <summary>Confidence</summary>
@@ -13,63 +12,70 @@
 </template>
 
 <script setup lang="ts">
-import { useVueTable, createColumnHelper, getCoreRowModel, SortingState, getSortedRowModel, Table, CellContext } from '@tanstack/vue-table';
+import {
+  useVueTable,
+  createColumnHelper,
+  getCoreRowModel,
+  SortingState,
+  getSortedRowModel,
+  Table,
+} from '@tanstack/vue-table';
 import { SurveyAnswer } from '~/types/types';
 
 const adminStore = useAdminStore();
 
 const columnHelper = createColumnHelper<SurveyAnswer>();
 const columns = [
-  columnHelper.accessor(row => adminStore.users.find(user => user.id === row.userID)?.username, {
+  columnHelper.accessor((row) => adminStore.users.find((user) => user.id === row.userID)?.username, {
     id: 'username',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Username',
   }),
-  columnHelper.accessor(row => row.projectType, {
+  columnHelper.accessor((row) => row.projectType, {
     id: 'project-type',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Project Type',
     minSize: 200,
   }),
-  columnHelper.accessor(row => row.caseIndustry, {
+  columnHelper.accessor((row) => row.caseIndustry, {
     id: 'case-industry',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Case Industry',
     minSize: 250,
   }),
-  columnHelper.accessor(row => row.location, {
+  columnHelper.accessor((row) => row.location, {
     id: 'location',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Location',
   }),
-  columnHelper.accessor(row => row.profitConfidence, {
+  columnHelper.accessor((row) => row.profitConfidence, {
     id: 'profit-confidence',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Profit Confidence',
   }),
-  columnHelper.accessor(row => row.timeConfidence, {
+  columnHelper.accessor((row) => row.timeConfidence, {
     id: 'time-confidence',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Time Confidence',
   }),
-  columnHelper.accessor(row => row.topPerformerConfidence, {
+  columnHelper.accessor((row) => row.topPerformerConfidence, {
     id: 'top-performer-confidence',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Top Performer Confidence',
   }),
-  columnHelper.accessor(row => row.projectAbility, {
+  columnHelper.accessor((row) => row.projectAbility, {
     id: 'project-ability',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Project Ability',
   }),
-  columnHelper.accessor(row => row.projectKnowledge, {
+  columnHelper.accessor((row) => row.projectKnowledge, {
     id: 'project-knowledge',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Project Knowledge',
   }),
-  columnHelper.accessor(row => row.superiorKnowledge, {
+  columnHelper.accessor((row) => row.superiorKnowledge, {
     id: 'superior-knowledge',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     header: 'Superior Knowledge',
   }),
 ];
@@ -87,9 +93,9 @@ const createTable = () => {
     state: {
       get sorting() {
         return sorting.value;
-      }
+      },
     },
-    onSortingChange: updaterOrValue => {
+    onSortingChange: (updaterOrValue) => {
       sorting.value = typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue;
     },
     getCoreRowModel: getCoreRowModel(),
@@ -102,13 +108,16 @@ if (adminStore.users.length > 0) {
   createTable();
   loading.value = false;
 } else {
-  const loadingWatcher = watch(() => adminStore.users, () => {
-    if (adminStore.users.length > 0) {
-      createTable();
-      loading.value = false;
-      loadingWatcher();
-    }
-  });
+  const loadingWatcher = watch(
+    () => adminStore.users,
+    () => {
+      if (adminStore.users.length > 0) {
+        createTable();
+        loading.value = false;
+        loadingWatcher();
+      }
+    },
+  );
 }
 </script>
 
