@@ -20,7 +20,7 @@ const buttonText = computed(() => {
   if (gameStore.gameOver) {
     return gameStore.gameWon ? 'Project Completed' : 'Project not completed in time';
   } else if (gameStore.synchronized && gameStore.week === gameStore.maxWeek) {
-    return gameStore.ready ? "You are ready (Click to unready)" : "You are not ready (Click to ready)";
+    return gameStore.ready ? 'You are ready (Click to unready)' : 'You are not ready (Click to ready)';
   } else {
     return `Next ${config.durationIdentifier.singular} ->`;
   }
