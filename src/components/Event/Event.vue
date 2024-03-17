@@ -2,7 +2,7 @@
   <div class="events">
     <span class="news-label">
       NEWS:
-      <span v-if="Object.entries(config.events).filter(([name, event]) => event.week <= gameStore.week).length === 0"
+      <span v-if="Object.entries(config.events).filter(([, event]) => event.week <= gameStore.week).length === 0"
         >No news yet</span
       >
     </span>
@@ -68,7 +68,12 @@ watch(
   () => gameStore.week,
   () => {
     const weekEvents = Object.entries(config.events).filter(([, event]) => event.week === gameStore.week);
-    weekEvents.forEach(([name]) => eventDialogues.value[Object.keys(config.events).indexOf(name)].showModal());
+    //Show modal unless title is "NOTHING TO REPORT"
+    weekEvents.forEach(
+      ([name, event]) =>
+        event.title !== 'NOTHING TO REPORT' &&
+        eventDialogues.value[Object.keys(config.events).indexOf(name)].showModal(),
+    );
   },
 );
 

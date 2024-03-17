@@ -306,8 +306,8 @@ export const useActivitiesStore = defineStore('activities', () => {
   });
 
   /**
-   * Returns the duration modification of an activity based on events.
-   * The duration modification is the time added or subtracted from the duration of an activity.
+   * Returns the workersRequired modification of an activity based on events.
+   * The modification is the additional/less workers added or subtracted from an activity's requirements.
    */
   const getEventWorkersModification = computed(() => {
     return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
