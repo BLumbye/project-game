@@ -38,7 +38,7 @@ export const useEventStore = defineStore('event', () => {
         collections.eventChoices,
         `user.username="${pocketbase.authStore.model!.username}" && event="${name}"`,
         {
-          user: pocketbase.authStore.model!.username,
+          user: pocketbase.authStore.model!.id,
           game_id: gameStore.gameID,
           week: gameStore.week,
           event: name,
