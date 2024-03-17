@@ -230,9 +230,9 @@ const columns = [
     header: 'Stakeholder',
     sortDescFirst: false,
     sortingFn: (a, b) =>
-      canWinStakeholder(a.original)
+      canWinStakeholder(b.original)
         ? 1
-        : canWinStakeholder(b.original)
+        : canWinStakeholder(a.original)
           ? -1
           : a.original.stakeholderScore! - b.original.stakeholderScore!,
   }),
@@ -260,7 +260,7 @@ const getDurationModification = (eventChoices: Record<string, string>) =>
     return (
       acc +
       (config.events[eventName].choices?.[choice].effects?.reduce(
-        (acc, effect) => acc + (effect.durationModification || 0),
+        (acc, effect) => acc + (effect.resultsDurationModification || 0),
         0,
       ) || 0)
     );
@@ -291,7 +291,7 @@ const createTable = () => {
 };
 
 watch(
-  () => [adminStore.bids, adminStore.gameSummaries],
+  () => [adminStore.bids, adminStore.gameSummaries, adminStore.eventChoices],
   () => {
     if (adminStore.bids.length > 0 && adminStore.gameSummaries.length > 0) {
       const bidSummaryMerge = adminStore.bids.map((bid) => ({
