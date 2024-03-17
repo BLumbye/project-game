@@ -102,6 +102,7 @@ const baseConfig: Omit<Config, 'events'> = {
   ],
 };
 
+// @ts-expect-error not used right now
 const events: Config['events'] = [
   {
     week: 1,

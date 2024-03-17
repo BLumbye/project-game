@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
+import { merge } from 'ts-deepmerge';
 import { Equipment, DeliveryType, EquipmentStatus } from '../types/types';
-import { mergeDeep } from '../utils/merge';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 import { createWeeklyTimeline } from '~/utils/timeline';
 import config from '~/config';
@@ -15,7 +15,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
   const timeline = createWeeklyTimeline<Partial<Record<string, Partial<Equipment>>>>(
     'equipment',
     {},
-    (accumulator, current) => mergeDeep(accumulator, current),
+    (accumulator, current) => merge(accumulator, current),
     Object.keys(config.equipment).reduce(
       (accumulator, type) => ({ ...accumulator, [type]: { status: 'unordered' } }),
       {},

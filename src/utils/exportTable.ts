@@ -2,7 +2,7 @@ import { Table } from '@tanstack/vue-table';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
 
-export async function exportTable(table: Table<unknown>, filename: string, filetype: 'xlsx' | 'csv') {
+export async function exportTable<T extends object>(table: Table<T>, filename: string, filetype: 'xlsx' | 'csv') {
   const wb = new Workbook();
   const ws = wb.addWorksheet('Sheet 1');
 
@@ -29,10 +29,10 @@ export async function exportTable(table: Table<unknown>, filename: string, filet
   saveAs(new Blob([buffer]), `${filename}.${filetype}`);
 }
 
-export async function exportXLSX(table: Table<unknown>, filename: string) {
+export async function exportXLSX<T extends object>(table: Table<T>, filename: string) {
   return await exportTable(table, filename, 'xlsx');
 }
 
-export async function exportCSV(table: Table<unknown>, filename: string) {
+export async function exportCSV<T extends object>(table: Table<T>, filename: string) {
   return await exportTable(table, filename, 'csv');
 }

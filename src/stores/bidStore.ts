@@ -15,7 +15,7 @@ export const useBidStore = defineStore('bid', () => {
   // Getters
 
   // Actions
-  async function createBid(data: Bid) {
+  async function createBid(data: Omit<Bid, 'user' | 'game_id' | 'revised_price' | 'id'>) {
     price.value = data.price > config.bid.max || data.price < config.bid.min ? config.bid.default : data.price;
     promisedDuration.value = data.promised_duration;
     revised.value = price.value !== data.price;

@@ -1,7 +1,7 @@
 {
   "name": "project-game-prototype",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "browserslist": "defaults",
   "scripts": {
@@ -21,6 +21,7 @@
     "floating-vue": "5.2.2",
     "pinia": "^2.1.7",
     "pocketbase": "^0.21.1",
+    "ts-deepmerge": "^7.0.0",
     "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.4.21",
     "vue-chartjs": "^5.3.0",

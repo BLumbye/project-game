@@ -27,7 +27,7 @@ const getNextVal = (evt: InputEvent) => {
  * Sees if the next value matches the given predicate. If not, the event is prevented. Can be used with the `beforeinput` event.
  * @param predicate The predicate to match.
  */
-export const validate = (predicate: (element: unknown) => boolean) => (evt: InputEvent) => {
+export const validate = (predicate: (element: string) => boolean) => (evt: InputEvent) => {
   const value = getNextVal(evt);
   if (!predicate(value)) {
     evt.preventDefault();

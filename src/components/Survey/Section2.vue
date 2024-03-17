@@ -84,10 +84,10 @@ defineProps<{
 defineExpose({
   getData() {
     return {
-      price: price.value,
-      promised_duration: promisedDuration.value,
-      expected_cost: expectedCost.value,
-      expected_duration: expectedDuration.value,
+      price: price.value!,
+      promised_duration: promisedDuration.value!,
+      expected_cost: expectedCost.value!,
+      expected_duration: expectedDuration.value!,
     };
   },
   errorCheck() {

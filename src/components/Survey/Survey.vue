@@ -57,7 +57,8 @@ const submitSurvey = () => {
     user: pocketbase.authStore.model!.id,
     game_id: gameStore.gameID,
   });
-  bidStore.createBid(sectionRefs.value[0].getData()); // This needs to be manually changed to always reference section 2 (bid section)
+  // @ts-expect-error - This needs to be manually changed to always reference section 2 (bid section)
+  bidStore.createBid(sectionRefs.value[0].getData());
   answered.value = true;
 };
 

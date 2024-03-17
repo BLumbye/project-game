@@ -49,7 +49,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends object">
 import { Table, FlexRender } from '@tanstack/vue-table';
 import { exportCSV, exportXLSX } from '~/utils/exportTable';
 
@@ -57,6 +57,6 @@ const showCharts = ref(false);
 
 defineProps<{
   loading: boolean;
-  table: Table<unknown>;
+  table: Table<T>;
 }>();
 </script>

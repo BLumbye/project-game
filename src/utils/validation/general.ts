@@ -9,8 +9,8 @@ export const not = (predicate: (element: unknown) => boolean) => (element: unkno
  * @param predicates The predicates to combine.
  */
 export const and =
-  (...predicates: ((element: unknown) => boolean)[]) =>
-  (element: unknown) =>
+  (...predicates: ((element: string) => boolean)[]) =>
+  (element: string) =>
     predicates.every((predicate) => predicate(element));
 
 /**
