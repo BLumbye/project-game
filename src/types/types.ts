@@ -100,6 +100,7 @@ export interface AdminGameState {
   week: number;
   progress: number;
   ready: boolean;
+  eventChoices: Record<string, string>;
 }
 
 export interface GameSummary {

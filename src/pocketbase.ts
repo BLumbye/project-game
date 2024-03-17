@@ -1,6 +1,6 @@
 import PocketBase, { ClientResponseError, RecordService } from 'pocketbase';
 
-interface User {
+export interface User {
   id: string;
   username: string;
   email: string;
@@ -8,7 +8,7 @@ interface User {
   game_id: number;
 }
 
-interface ActivityCompletion {
+export interface ActivityCompletion {
   id: string;
   /// References the user id
   user: string;
@@ -17,7 +17,7 @@ interface ActivityCompletion {
   activity: string;
 }
 
-interface Allocation {
+export interface Allocation {
   id: string;
   /// References the user id
   user: string;
@@ -28,7 +28,7 @@ interface Allocation {
   value: number;
 }
 
-interface Bid {
+export interface Bid {
   id: string;
   /// References the user id
   user: string;
@@ -40,7 +40,7 @@ interface Bid {
   revised_price: number;
 }
 
-interface Equipment {
+export interface Equipment {
   id: string;
   /// References the user id
   user: string;
@@ -51,7 +51,7 @@ interface Equipment {
   delivery_type: string;
 }
 
-interface Finance {
+export interface Finance {
   id: string;
   /// References the user id
   user: string;
@@ -61,7 +61,7 @@ interface Finance {
   value: number;
 }
 
-interface GameSummary {
+export interface GameSummary {
   id: string;
   /// References the user id
   user: string;
@@ -73,7 +73,7 @@ interface GameSummary {
   status: 'playing' | 'won' | 'lost';
 }
 
-interface Progress {
+export interface Progress {
   id: string;
   /// References the user id
   user: string;
@@ -83,7 +83,7 @@ interface Progress {
   progress: number;
 }
 
-interface Ready {
+export interface Ready {
   id: string;
   /// References the user id
   user: string;
@@ -92,7 +92,7 @@ interface Ready {
   ready: boolean;
 }
 
-interface Settings {
+export interface Settings {
   id: string;
   synchronized: boolean;
   current_week: number;
@@ -100,7 +100,7 @@ interface Settings {
   game_state: 'adding_users' | 'getting_bids' | 'reviewing_bids' | 'in_progress' | 'finished';
 }
 
-interface SurveyAnswer {
+export interface SurveyAnswer {
   id: string;
   /// References the user id
   user: string;
@@ -116,7 +116,7 @@ interface SurveyAnswer {
   superior_knowledge: string;
 }
 
-interface TotalProgress {
+export interface TotalProgress {
   id: string;
   /// References the user id
   user: string;
@@ -125,7 +125,7 @@ interface TotalProgress {
   progress: number;
 }
 
-interface Workers {
+export interface Workers {
   id: string;
   /// References the user id
   user: string;
@@ -135,7 +135,7 @@ interface Workers {
   change: number;
 }
 
-interface EventChoice {
+export interface EventChoice {
   id: string;
   /// References the user id
   user: string;

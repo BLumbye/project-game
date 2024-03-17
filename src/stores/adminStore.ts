@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ClientResponseError } from 'pocketbase';
 import { saveAs } from 'file-saver';
-import { collections, isAdmin } from '~/pocketbase';
+import { collections, EventChoice, isAdmin, GameSummary as PBGameSummary, TotalProgress } from '~/pocketbase';
 import { User, Bid, SurveyAnswer, AdminGameState, DeliveryType, ConfigActivity, GameSummary } from '~/types/types';
 import { generatePassword } from '~/utils/passwordGenerator';
 import config from '~/config';
@@ -19,6 +19,7 @@ export const useAdminStore = defineStore('admin', () => {
   const readyStatus = ref<Partial<Record<string, { ready: boolean; week: number }>>>({});
   const gameSummaries = ref<GameSummary[]>([]);
   const userProgress = ref<Partial<Record<string, number[]>>>({});
+  const eventChoices = ref<Record<string, Record<string, string>>>({});
 
   // Getters
   const gameStates = computed<AdminGameState[]>(() => {
@@ -35,6 +36,7 @@ export const useAdminStore = defineStore('admin', () => {
         progress,
         ready,
         week: summary?.week || 0,
+        eventChoices: eventChoices.value[user.id] ?? {},
       });
     });
     return gameStates;
@@ -221,7 +223,7 @@ export const useAdminStore = defineStore('admin', () => {
     });
 
     // Game summaries
-    function createSummary(data: any) {
+    function createSummary(data: PBGameSummary) {
       gameSummaries.value = [
         ...gameSummaries.value,
         {
@@ -257,7 +259,7 @@ export const useAdminStore = defineStore('admin', () => {
     });
 
     // Total progress
-    function updateProgress(data: any) {
+    function updateProgress(data: TotalProgress) {
       if (userProgress.value[data.user] === undefined) {
         userProgress.value = { ...userProgress.value, [data.user]: Array(config.projectDuration + 1).fill(0) };
         userProgress.value[data.user]![data.week] = data.progress;
@@ -275,6 +277,29 @@ export const useAdminStore = defineStore('admin', () => {
       if (data.record.game_id !== gameStore.gameID) return;
       if (data.action === 'update' || data.action === 'create') {
         updateProgress(data.record);
+      }
+    });
+
+    // Event choices
+    function updateEventChoice(data: EventChoice) {
+      if (eventChoices.value[data.user] === undefined) {
+        eventChoices.value = { ...eventChoices.value, [data.user]: { [data.event]: data.choice } };
+      } else {
+        eventChoices.value = {
+          ...eventChoices.value,
+          [data.user]: { ...eventChoices.value[data.user], [data.event]: data.choice },
+        };
+      }
+    }
+
+    (await collections.eventChoices.getFullList({ filter: `game_id=${gameStore.gameID}` })).forEach((record) => {
+      updateEventChoice(record);
+    });
+
+    collections.eventChoices.subscribe('*', (data) => {
+      if (data.record.game_id !== gameStore.gameID) return;
+      if (data.action === 'update' || data.action === 'create') {
+        updateEventChoice(data.record);
       }
     });
   }
@@ -349,6 +374,7 @@ export const useAdminStore = defineStore('admin', () => {
     surveyAnswers,
     gameStates,
     gameSummaries,
+    eventChoices,
     createGame,
     startAcceptingBids,
     stopAcceptingBids,
