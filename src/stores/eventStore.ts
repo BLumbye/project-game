@@ -18,14 +18,15 @@ export const useEventStore = defineStore('event', () => {
     // Add the immediate reward to the finances
     if (config.events[name].choices![choice].effects?.some((effect) => effect.immediateReward)) {
       useFinanceStore().recieveReward(
-        config.events[name].effects?.find((effect) => effect.immediateReward)?.immediateReward as number,
+        config.events[name].choices![choice].effects?.find((effect) => effect.immediateReward)
+          ?.immediateReward as number,
         useGameStore().week,
       );
     }
 
     // Apply bid duration modification effect if accepted
     if (config.events[name].choices![choice].effects?.some((effect) => effect.bidDurationModification)) {
-      useBidStore().promisedDuration += config.events[name].effects!.reduce(
+      useBidStore().promisedDuration += config.events[name].choices![choice].effects!.reduce(
         (acc, effect) => acc + (effect.bidDurationModification || 0),
         0,
       );
