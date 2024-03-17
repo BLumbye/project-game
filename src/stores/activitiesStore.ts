@@ -208,11 +208,12 @@ export const useActivitiesStore = defineStore('activities', () => {
   const totalProgress = computed(() => (week?: number) => {
     week ??= gameStore.week;
     const activities = activitiesAtWeek.value(week);
+    const filteredActivities = activities.filter((act) => !act.hidden);
     return (
-      activities
-        .filter((act) => !act.hidden)
-        .reduce((totalProgress, activity) => totalProgress + activity.progress / getDuration.value(activity, week), 0) /
-      activities.length
+      filteredActivities.reduce(
+        (totalProgress, activity) => totalProgress + activity.progress / getDuration.value(activity, week),
+        0,
+      ) / filteredActivities.length
     );
   });
 

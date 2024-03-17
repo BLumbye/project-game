@@ -2,9 +2,9 @@
   <div class="events">
     <span class="news-label">
       NEWS:
-      <span v-if="Object.entries(config.events).filter(([, event]) => event.week <= gameStore.week).length === 0"
-        >No news yet</span
-      >
+      <span v-if="Object.entries(config.events).filter(([, event]) => event.week <= gameStore.week).length === 0">
+        No news yet
+      </span>
     </span>
     <div class="event-items">
       <div v-for="(event, name, i) in config.events" :key="name">
