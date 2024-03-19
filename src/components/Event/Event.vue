@@ -17,7 +17,11 @@
         </button>
         <dialog
           ref="eventDialogues"
-          @keydown.escape.prevent
+          @cancel="
+            (e: Event) => {
+              if (event.choices && eventStore.eventChoices[name] === undefined) e.preventDefault();
+            }
+          "
           @click="(e) => preventCloseChoice(event, name, () => backgroundClickClose(e))"
         >
           <!-- An event with a choice should not be closeable without making a decision -->
@@ -57,7 +61,7 @@
 import config from '../../config';
 import { backgroundClickClose } from '~/utils/dialog';
 import { capitalize } from '~/utils/formatters';
-import { Event } from '../../types/types';
+import { Event as TEvent } from '../../types/types';
 
 const gameStore = useGameStore();
 const eventStore = useEventStore();
@@ -77,7 +81,7 @@ watch(
   },
 );
 
-const preventCloseChoice = (event: Event, eventName: string, func: () => void) => {
+const preventCloseChoice = (event: TEvent, eventName: string, func: () => void) => {
   if (event.choices && eventStore.eventChoices[eventName] === undefined) {
     return; // Do not close the dialog if the user has not made a decision
   }
@@ -141,13 +145,14 @@ dialog {
 
 .close-button {
   position: absolute;
+  line-height: 1;
   top: 0;
   right: 0;
-  font-size: 2rem;
+  font-size: 1.5rem;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0.3rem;
   margin: 0;
   color: #fff;
   opacity: 0.75;
@@ -167,5 +172,6 @@ dialog {
 
 .decision {
   font-weight: bold;
+  margin-top: 1rem;
 }
 </style>

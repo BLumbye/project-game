@@ -232,19 +232,19 @@ const events: Config['events'] = {
   },
   corona: {
     week: 3,
-    image: '/images/Week3.png',
-    title: 'NEW CORONA WAVE?',
+    image: '/images/StockCrash.jpg',
+    title: 'Economic Uncertainty',
     description:
-      'A new strain of COVID has been discovered. How contagious it is, is as of yet unknown. The government is considering a lockdown.',
+      'The stock market is plummeting and people are getting nervous. Experts are predicting a labour shortage in the near future.',
     // NO EFFECT!
-    showTitle: false,
-    showDescription: false,
+    showTitle: true,
+    showDescription: true,
   },
   delayedDeliveries: {
     week: 4,
-    image: '/images/Week4.jpg',
+    image: '/images/SuezBlock.jpg',
     title: 'DELAYED DELIVERIES',
-    description: `Supply chains have been disrupted and Lab Equipment (Task C) is delayed by one ${baseConfig.durationIdentifier.singular}`,
+    description: `Due to a ship blocking the Suez Canal, the delivery of Lab Equipment (Task C) is delayed by one ${baseConfig.durationIdentifier.singular}.`,
     effects: [
       {
         activityLabels: ['C'],
@@ -272,7 +272,7 @@ const events: Config['events'] = {
     week: 6,
     image: '/images/ExtraActivity.jpg',
     title: 'OPPORTUNITY FROM PROJECT OWNER',
-    description: `Your project owner has an offer for you. You have been given an optional task to build a terrace extension (Task M).
+    description: `Your project owner has an offer for you. You have been given an optional task to build a rooftop terrace (Task M).
       It requires six labourers, takes one ${baseConfig.durationIdentifier.singular} and every other activity must be completed before it can begin. You will be given an extra ${baseConfig.durationIdentifier.singular}, but the overall deadline of ${baseConfig.projectDuration} ${baseConfig.durationIdentifier.plural} will not be increased. You can deny the request, but you will immediately be paid an extra 3.000.000,00 ${baseConfig.currency.currency} if you accept it.
       \n Do you accept?`,
     showTitle: true,
