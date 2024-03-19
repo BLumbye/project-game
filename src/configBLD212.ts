@@ -235,7 +235,7 @@ const events: Config['events'] = {
     image: '/images/StockCrash.jpg',
     title: 'Economic Uncertainty',
     description:
-      'The stock market is plummeting and people are getting nervous. Experts are predicting a labour shortage in the near future.',
+      'The stock market is plummeting and people are getting nervous. Experts unsure whether it will result in a labour shortage.',
     // NO EFFECT!
     showTitle: true,
     showDescription: true,
