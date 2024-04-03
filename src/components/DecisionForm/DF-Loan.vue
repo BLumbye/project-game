@@ -35,9 +35,17 @@
     <input
       id="repay-input"
       v-model="repay"
+      v-tooltip="{
+        content:
+          'It seems like you might be trying to repay in percentages. If you wish to do so, rememember to add &quot;%&quot; at the end of the input.',
+        disabled: !repayWarning,
+      }"
       type="text"
       :disabled="gameStore.ready"
       class="loan-input"
+      :class="{
+        'input-warning': repayWarning,
+      }"
       name="repay-input"
     />
   </div>
@@ -54,6 +62,11 @@ const financeStore = useFinanceStore();
 
 const newLoan = ref(0);
 const repay = ref('0');
+
+const repayWarning = computed(
+  () =>
+    !repay.value.includes('%') && !isNaN(Number(repay.value)) && Number(repay.value) > 0 && Number(repay.value) <= 100,
+);
 
 watch(newLoan, () => {
   financeStore.takeLoan(Number(newLoan.value));

@@ -29,6 +29,7 @@
   --boxed-background-color: #333;
   --text-color: rgba(255 255 255 / 87%);
   --color-error: #ff6464;
+  --color-warning: #ffb700;
 }
 
 a {
@@ -211,6 +212,14 @@ select {
 
 .input-error {
   border-color: var(--color-error) !important;
+  outline-color: var(--color-error) !important;
+  color: var(--color-error) !important;
+}
+
+.input-warning {
+  border-color: var(--color-warning) !important;
+  outline-color: var(--color-warning) !important;
+  color: var(--color-warning) !important;
 }
 
 ::backdrop {

@@ -88,7 +88,7 @@ const props = defineProps<{
 }
 
 .incorrectWorkers {
-  color: red;
+  color: var(--color-error);
 }
 
 .activityFinished {
@@ -96,6 +96,6 @@ const props = defineProps<{
 }
 
 .dependancyMissing {
-  color: rgb(255, 183, 0);
+  color: var(--color-warning);
 }
 </style>

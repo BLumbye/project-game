@@ -74,7 +74,7 @@ const baseConfig: Omit<Config, 'events'> = {
     plural: 'months',
     iterative: 'monthly',
   },
-  loansEnabled: false,
+  loansEnabled: true,
   activities: [
     {
       label: 'A',
