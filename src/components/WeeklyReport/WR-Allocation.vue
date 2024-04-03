@@ -10,6 +10,14 @@
     <span class="activities-label">Activity</span>
     <span class="progress-label">Progress</span>
     <span class="component-title">Allocation</span>
+    <v-tooltip activator="parent" location="top">
+      <p>Here you see how your workers were allocated to work last {{ config.durationIdentifier.singular }}.</p>
+      <p><span class="activityFinished">Green</span> means the activity was finished at the end of that {{
+        config.durationIdentifier.singular }}.</p>
+      <p><span class="dependancyMissing">Orange</span> means you did not meet the requirements for the activity to
+        progress (incorrect dependencies).</p>
+      <p><span class="incorrectWorkers">Red</span> means you allocated an incorrect amount of workers.</p>
+    </v-tooltip>
     <span>%</span>
     <span v-for="(worker, key) in config.workers" :key="key">{{ worker.shortLabel }}</span>
     <template v-for="(activity, index) in activities" :key="activity.label">
@@ -17,28 +25,26 @@
         <span :class="{ activityFinished: activityStore.weekActivityDone[activity.label] == week - 1 }">
           {{ activity.label }}
         </span>
-        <span :class="{ activityFinished: activityStore.weekActivityDone[activity.label] == week - 1 }"
-          >{{
-            ((progressActivities[index].progress / activityStore.getDuration(progressActivities[index])) * 100).toFixed(
-              0,
-            )
-          }}%</span
-        >
-        <span
-          v-for="(worker, key) in config.workers"
-          :key="key"
-          :class="{ activityFinished: activityStore.weekActivityDone[activity.label] == week - 1,
-          dependancyMissing: (!activityStore.equipmentRequirementMet(activity,week-1) || !activityStore.activityRequirementMet(activity,week-1)) && activity.allocation[key] > 0,
-          incorrectWorkers: !activityStore.workerRequirementMet(activity,week-1) && activity.allocation[key] > 0}"
-          >{{ activity.allocation[key] }}</span
-        >
+        <span :class="{ activityFinished: activityStore.weekActivityDone[activity.label] == week - 1 }">{{
+        ((progressActivities[index].progress / activityStore.getDuration(progressActivities[index])) * 100).toFixed(
+          0,
+        )
+      }}%</span>
+        <span v-for="(worker, key) in config.workers" :key="key" :class="{
+        activityFinished: activityStore.weekActivityDone[activity.label] == week - 1,
+        dependancyMissing: (!activityStore.equipmentRequirementMet(activity, week - 1) || !activityStore.activityRequirementMet(activity, week - 1)) && activity.allocation[key] > 0,
+        incorrectWorkers: !activityStore.workerRequirementMet(activity, week - 1) && activity.allocation[key] > 0
+      }">{{
+        activity.allocation[key] }}</span>
       </template>
     </template>
     <span>Total</span>
     <span>{{ (activityStore.totalProgress(week - 1) * 100).toFixed(0) }}%</span>
-    <span v-for="(worker, key) in config.workers" :key="key" :class="{incorrectWorkers: activityStore.totalWorkersAssigned(key as string, week - 2) > useWorkersStore().workersAtWeek(week-1)[config.workers[key].label]}"> {{
-      activityStore.totalWorkersAssigned(key as string, week - 2)
-    }}</span>
+    <span v-for="(worker, key) in config.workers" :key="key"
+      :class="{ incorrectWorkers: activityStore.totalWorkersAssigned(key as string, week - 2) > useWorkersStore().workersAtWeek(week - 1)[key] }">
+      {{
+        activityStore.totalWorkersAssigned(key as string, week - 2)
+      }}</span>
   </div>
 </template>
 
@@ -46,6 +52,7 @@
 
 <script setup lang="ts">
 import config from '~/config';
+import Info from '~/assets/info-small.svg';
 
 const activityStore = useActivitiesStore();
 const progressActivities = computed(() => activityStore.activitiesAtWeek(props.week - 1));
@@ -82,11 +89,7 @@ const props = defineProps<{
   color: green;
 }
 
-.dependancyMissing{
+.dependancyMissing {
   color: rgb(255, 183, 0);
 }
-
-
-
-
 </style>
