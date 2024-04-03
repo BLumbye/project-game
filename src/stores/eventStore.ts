@@ -2,7 +2,7 @@ import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import config from '~/config';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
-import { EventEffect } from '~/types/types';
+import { EventChoiceEffects, EventEffect } from '~/types/types';
 
 type EventChoices = Record<string, string>;
 
@@ -21,14 +21,6 @@ export const useEventStore = defineStore('event', () => {
         config.events[name].choices![choice].effects?.find((effect) => effect.immediateReward)
           ?.immediateReward as number,
         useGameStore().week,
-      );
-    }
-
-    // Apply bid duration modification effect if accepted
-    if (config.events[name].choices![choice].effects?.some((effect) => effect.bidDurationModification)) {
-      useBidStore().promisedDuration += config.events[name].choices![choice].effects!.reduce(
-        (acc, effect) => acc + (effect.bidDurationModification || 0),
-        0,
       );
     }
 
@@ -54,7 +46,8 @@ export const useEventStore = defineStore('event', () => {
       .filter(([, event]) => event.week <= week!)
       .flatMap(
         ([name, event]) =>
-          [...(event.effects ?? []), ...(event.choices?.[eventChoices.value[name]]?.effects ?? [])] as EventEffect[],
+          [...(event.effects ?? []), ...(event.choices?.[eventChoices.value[name]]?.effects ?? [])] as (EventEffect &
+            EventChoiceEffects)[],
       );
   });
   const activeEventEffects = computed(() => activeEventEffectsAtWeek.value());
