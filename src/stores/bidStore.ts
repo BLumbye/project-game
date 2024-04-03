@@ -13,6 +13,11 @@ export const useBidStore = defineStore('bid', () => {
   const revised = ref(false);
 
   // Getters
+  const durationWithModifications = computed(
+    () =>
+      promisedDuration.value +
+      useEventStore().activeEventEffects.reduce((acc, effect) => acc + (effect.bidDurationModification || 0), 0),
+  );
 
   // Actions
   async function createBid(data: Omit<Bid, 'user' | 'game_id' | 'revised_price' | 'id'>) {
@@ -81,7 +86,7 @@ export const useBidStore = defineStore('bid', () => {
   return {
     loading,
     price,
-    promisedDuration,
+    promisedDuration: durationWithModifications,
     revised,
     connectWithDatabase,
     createBid,
