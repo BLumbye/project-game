@@ -13,12 +13,12 @@ const generateProgressTimelines = () => {
   return timelines;
 };
 
+const generateDefaultAllocation = () => Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
+
 const generateAllocationState = () => {
   const allocations: Record<string, Record<string, number>[]> = {};
   for (const activity of config.activities) {
-    allocations[activity.label] = Array.from({ length: config.projectDuration + 1 }, () =>
-      Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
-    );
+    allocations[activity.label] = Array.from({ length: config.projectDuration + 1 }, generateDefaultAllocation);
   }
   return allocations;
 };
@@ -47,7 +47,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       return config.activities.map((activity) => ({
         ...activity,
         progress: progressTimelines[activity.label].getReduced.value(week),
-        allocation: allocations.value[activity.label][week!],
+        allocation: allocations.value[activity.label][week!] || generateDefaultAllocation(),
         hidden: isActivityHidden(activity, week),
       })) satisfies Activity[];
     };
@@ -117,7 +117,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (type: string, week?: number) => {
       week ??= gameStore.week;
       return config.activities.reduce(
-        (totalWorkers, activity) => totalWorkers + allocations.value[activity.label][week!][type],
+        (totalWorkers, activity) => totalWorkers + (allocations.value[activity.label][week!]?.[type] || 0),
         0,
       );
     };

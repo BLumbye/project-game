@@ -46,8 +46,7 @@
       :key="key"
       :class="{
         incorrectWorkers:
-          activityStore.totalWorkersAssigned(key as string, week - 2) >
-          useWorkersStore().workersAtWeek(week - 1)[config.workers[key].label],
+          activityStore.totalWorkersAssigned(key as string, week - 2) > workersStore.workersAtWeek(week - 1)[key],
       }"
     >
       {{ activityStore.totalWorkersAssigned(key as string, week - 2) }}</span
@@ -61,6 +60,7 @@
 import config from '~/config';
 
 const activityStore = useActivitiesStore();
+const workersStore = useWorkersStore();
 const progressActivities = computed(() => activityStore.activitiesAtWeek(props.week - 1));
 const activities = computed(() => activityStore.activitiesAtWeek(props.week - 2));
 
