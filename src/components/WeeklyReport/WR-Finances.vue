@@ -26,19 +26,19 @@
             currencyFormat.format(financeStore.equipmentTimeline.get(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div v-if="config.displayOverhead !== false" class="finance-item">
           <span class="finance-item-label">Overhead</span>
           <span class="finance-item-value">{{
             currencyFormat.format(financeStore.overheadTimeline.get(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div v-if="config.displayConsumables !== false" class="finance-item">
           <span class="finance-item-label">Consumables</span>
           <span class="finance-item-value">{{
             currencyFormat.format(financeStore.consumablesTimeline.get(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div v-if="config.displayProjectDelayPenalty !== false" class="finance-item">
           <span class="finance-item-label">Project delay penalty</span>
           <span class="finance-item-value">{{
             currencyFormat.format(financeStore.delayPenaltyTimeline.get(week - 1) || 0)
@@ -102,19 +102,19 @@
             currencyFormat.format(financeStore.equipmentTimeline.getReduced(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div v-if="config.displayOverhead !== false" class="finance-item">
           <span class="finance-item-label">Overhead</span>
           <span class="finance-item-value">{{
             currencyFormat.format(financeStore.overheadTimeline.getReduced(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div v-if="config.displayConsumables !== false" class="finance-item">
           <span class="finance-item-label">Consumables</span>
           <span class="finance-item-value">{{
             currencyFormat.format(financeStore.consumablesTimeline.getReduced(week - 1) || 0)
           }}</span>
         </div>
-        <div class="finance-item">
+        <div v-if="config.displayProjectDelayPenalty !== false" class="finance-item">
           <span class="finance-item-label">Project delay penalty</span>
           <span class="finance-item-value">{{
             currencyFormat.format(financeStore.delayPenaltyTimeline.getReduced(week - 1) || 0)

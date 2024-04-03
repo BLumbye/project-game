@@ -14,6 +14,7 @@ const baseConfig: Omit<Config, 'events'> = {
     max: 1200000,
     min: 800000,
     default: 850000,
+    defaultDuration: 10,
   },
   finances: {
     loanInterest: 0.01,

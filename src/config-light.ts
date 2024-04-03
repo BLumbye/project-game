@@ -14,23 +14,25 @@ const baseConfig: Omit<Config, 'events'> = {
     max: 6000,
     min: 4000,
     default: 5000,
+    defaultDuration: 8,
   },
   finances: {
     loanInterest: 0.01,
     overdraftInterest: 0.1,
     consumables: 100,
     overhead: 0,
-    projectDelayPenalty: 20000,
+    projectDelayPenalty: 0,
     expressMultiplier: 1.1,
   },
   equipment: {
     fridges: {
       label: 'Fridges (Task D)',
-      cost: 38000,
+      cost: 3000,
     },
     drinks: {
       label: 'Drinks (Task E)',
-      cost: 28000,
+      cost: 1000,
+      hasExpressDelivery: false,
     },
   },
   workers: {
@@ -38,13 +40,13 @@ const baseConfig: Omit<Config, 'events'> = {
       label: 'student',
       shortLabel: 'STU',
       plural: 'students',
-      cost: 800,
+      cost: 30,
     },
     technician: {
       label: 'technician',
       shortLabel: 'TEC',
       plural: 'technicians',
-      cost: 1500,
+      cost: 200,
     },
   },
   payments: {
@@ -64,6 +66,8 @@ const baseConfig: Omit<Config, 'events'> = {
     iterative: 'daily',
   },
   loansEnabled: false,
+  displayOverhead: false,
+  displayProjectDelayPenalty: false,
   activities: [
     {
       label: 'A',
@@ -102,9 +106,8 @@ const baseConfig: Omit<Config, 'events'> = {
   ],
 };
 
-// @ts-expect-error not used right now
-const events: Config['events'] = [
-  {
+const events: Config['events'] = {
+  opportunity: {
     week: 1,
     image: '/images/Week1.jpg',
     title: 'OPPORTUNITY',
@@ -114,7 +117,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  slowInstallation: {
     week: 2,
     image: '/images/install.jpg',
     title: 'SLOW INSTALLATION',
@@ -129,7 +132,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  studentParty: {
     week: 3,
     image: '/images/rumour.jpg',
     title: 'STUDENT PARTY',
@@ -138,7 +141,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-  {
+  hangovers: {
     week: 4,
     image: '/images/hungover.jpg',
     title: 'HANGOVERS',
@@ -148,7 +151,7 @@ const events: Config['events'] = [
     showTitle: true,
     showDescription: true,
   },
-];
+};
 
 export default {
   ...baseConfig,
