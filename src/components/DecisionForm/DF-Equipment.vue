@@ -27,7 +27,7 @@
       >
         <option value="0">Not ordered</option>
         <option value="1">Regular delivery</option>
-        <option value="2">Express delivery</option>
+        <option v-if="configEquipment.hasExpressDelivery !== false" value="2">Express delivery</option>
         <option v-if="equipmentStore.equipment[type].status === 'delivered'" value="3">Delivered</option>
       </select>
     </template>

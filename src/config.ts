@@ -1,4 +1,5 @@
-import configBLD212 from './configBLD212';
-// import config3Week from './config3Week';
+import config from './configBLD212';
+// import config from './config3Week';
+// import config from './config-light';
 
-export default configBLD212; //Change this export to set up the config for the course
+export default config; //Change this export to set up the config for the course

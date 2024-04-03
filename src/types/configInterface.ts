@@ -10,6 +10,8 @@ export interface Config {
      * if the user submitted bid is invalid or is outside the range set by min and max.
      */
     default: number;
+    /** The default duration of the bid. Only used in free play mode. */
+    defaultDuration: number;
   };
   finances: {
     loanInterest: number;
@@ -23,6 +25,8 @@ export interface Config {
     [key: string]: {
       label: string;
       cost: number;
+      /** If it is possible to have this equipment type express delivred. Default is true. */
+      hasExpressDelivery?: boolean;
     };
   };
   workers: {
@@ -50,6 +54,9 @@ export interface Config {
     iterative: string; // e.g. "weekly"
   };
   loansEnabled: boolean;
+  displayOverhead?: boolean;
+  displayConsumables?: boolean;
+  displayProjectDelayPenalty?: boolean;
   activities: ConfigActivities;
   events: Record<string, Event>;
 }

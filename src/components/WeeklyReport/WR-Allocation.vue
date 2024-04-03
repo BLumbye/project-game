@@ -32,19 +32,21 @@
       }}%</span>
         <span v-for="(worker, key) in config.workers" :key="key" :class="{
         activityFinished: activityStore.weekActivityDone[activity.label] == week - 1,
-        dependancyMissing: (!activityStore.equipmentRequirementMet(activity, week - 1) || !activityStore.activityRequirementMet(activity, week - 1)) && activity.allocation[key] > 0,
-        incorrectWorkers: !activityStore.workerRequirementMet(activity, week - 1) && activity.allocation[key] > 0
-      }">{{
-        activity.allocation[key] }}</span>
+        dependancyMissing:
+          (!activityStore.equipmentRequirementMet(activity, week - 1) ||
+            !activityStore.activityRequirementMet(activity, week - 1)) &&
+          activity.allocation[key] > 0,
+        incorrectWorkers: !activityStore.workerRequirementMet(activity, week - 1) && activity.allocation[key] > 0,
+      }">{{ activity.allocation[key] }}</span>
       </template>
     </template>
     <span>Total</span>
     <span>{{ (activityStore.totalProgress(week - 1) * 100).toFixed(0) }}%</span>
-    <span v-for="(worker, key) in config.workers" :key="key"
-      :class="{ incorrectWorkers: activityStore.totalWorkersAssigned(key as string, week - 2) > useWorkersStore().workersAtWeek(week - 1)[key] }">
-      {{
-        activityStore.totalWorkersAssigned(key as string, week - 2)
-      }}</span>
+    <span v-for="(worker, key) in config.workers" :key="key" :class="{
+        incorrectWorkers:
+          activityStore.totalWorkersAssigned(key as string, week - 2) > workersStore.workersAtWeek(week - 1)[key],
+      }">
+      {{ activityStore.totalWorkersAssigned(key as string, week - 2) }}</span>
   </div>
 </template>
 
@@ -52,9 +54,9 @@
 
 <script setup lang="ts">
 import config from '~/config';
-import Info from '~/assets/info-small.svg';
 
 const activityStore = useActivitiesStore();
+const workersStore = useWorkersStore();
 const progressActivities = computed(() => activityStore.activitiesAtWeek(props.week - 1));
 const activities = computed(() => activityStore.activitiesAtWeek(props.week - 2));
 
