@@ -227,19 +227,19 @@ export const useFinanceStore = defineStore('finance', () => {
     },
   );
 
-  // /**
-  //  * When all activites are completed, the completion payment is added to the incoming timeline.
-  //  */
-  // const stopFinishedWatcher = watch(
-  //   () => activityStore.allActivitiesDone(),
-  //   (finishedNow, finishedBefore) => {
-  //     if (!finishedBefore && finishedNow) {
-  //       incomingTimeline.add(bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
-  //     } else if (finishedBefore && !finishedNow) {
-  //       incomingTimeline.add(-bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
-  //     }
-  //   },
-  // );
+  /**
+   * When all activites are completed, the completion payment is added to the incoming timeline.
+   */
+  watch(
+    () => activityStore.allActivitiesDone(),
+    (finishedNow, finishedBefore) => {
+      if (!finishedBefore && finishedNow) {
+        incomingTimeline.add(bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
+      } else if (finishedBefore && !finishedNow) {
+        incomingTimeline.add(-bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
+      }
+    },
+  );
 
   const timelines = {
     incomingTimeline,
