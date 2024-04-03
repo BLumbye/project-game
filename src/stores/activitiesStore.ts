@@ -542,6 +542,8 @@ export const useActivitiesStore = defineStore('activities', () => {
     totalWorkersAssigned,
     workerRequirementMet,
     requirementsMet,
+    activityRequirementMet,
+    equipmentRequirementMet,
     totalProgress,
     allocateWorker,
     progressActivities,

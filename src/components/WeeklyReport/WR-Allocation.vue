@@ -27,14 +27,16 @@
         <span
           v-for="(worker, key) in config.workers"
           :key="key"
-          :class="{ activityFinished: activityStore.weekActivityDone[activity.label] == week - 1 }"
+          :class="{ activityFinished: activityStore.weekActivityDone[activity.label] == week - 1,
+          dependancyMissing: (!activityStore.equipmentRequirementMet(activity,week-1) || !activityStore.activityRequirementMet(activity,week-1)) && activity.allocation[key] > 0,
+          incorrectWorkers: !activityStore.workerRequirementMet(activity,week-1) && activity.allocation[key] > 0}"
           >{{ activity.allocation[key] }}</span
         >
       </template>
     </template>
     <span>Total</span>
     <span>{{ (activityStore.totalProgress(week - 1) * 100).toFixed(0) }}%</span>
-    <span v-for="(worker, key) in config.workers" :key="key">{{
+    <span v-for="(worker, key) in config.workers" :key="key" :class="{incorrectWorkers: activityStore.totalWorkersAssigned(key as string, week - 2) > useWorkersStore().workersAtWeek(week-1)[config.workers[key].label]}"> {{
       activityStore.totalWorkersAssigned(key as string, week - 2)
     }}</span>
   </div>
@@ -72,7 +74,19 @@ const props = defineProps<{
   column-gap: 1em;
 }
 
+.incorrectWorkers {
+  color: red;
+}
+
 .activityFinished {
   color: green;
 }
+
+.dependancyMissing{
+  color: rgb(255, 183, 0);
+}
+
+
+
+
 </style>
