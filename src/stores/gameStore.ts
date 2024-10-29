@@ -27,7 +27,7 @@ export const useGameStore = defineStore('game', () => {
    * Synchronized mode means that the player can only progress to the next week when allowed by the admins.
    */
   const synchronized = ref<boolean | undefined>(undefined);
-  const gameID = ref<number | undefined>(undefined);
+  const gameID = useStorage<number | undefined>('gameID', undefined);
   const gameState = ref<GameState | undefined>(undefined);
   const ready = ref(false);
   const gameWon = useStorage('gameWon', false);
@@ -71,6 +71,13 @@ export const useGameStore = defineStore('game', () => {
   // Logic
   async function connectWithDatabase() {
     const settingsRecord = (await collections.settings.getList(1, 1)).items[0];
+
+    // Reset game if the game id is not the same as the one in the database
+    if (gameID.value !== undefined && gameID.value !== settingsRecord.game_id) {
+      localStorage.clear();
+      window.location.reload();
+    }
+
     synchronized.value = settingsRecord.synchronized;
     settingsRecordID.value = settingsRecord.id;
     gameID.value = settingsRecord.game_id;
