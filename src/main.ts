@@ -4,8 +4,7 @@ import './style.pcss';
 import '@csstools/normalize.css';
 import App from './App.vue';
 import { createRouter, createWebHistory } from 'vue-router';
-// eslint-disable-next-line import/no-unresolved
-import routes from '~pages';
+import { routes, handleHotUpdate } from 'vue-router/auto-routes';
 import FloatingVue from 'floating-vue';
 import 'floating-vue/dist/style.css';
 import { createVuetify } from 'vuetify';
@@ -15,6 +14,10 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+if (import.meta.hot) {
+  handleHotUpdate(router);
+}
 
 const pinia = createPinia();
 const app = createApp(App);

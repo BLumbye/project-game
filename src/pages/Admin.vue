@@ -3,8 +3,10 @@
   <AdminNavigation v-if="gameStore.synchronized" />
   <main :class="{ 'not-started': !gameStore.synchronized }">
     <AdminNotStarted v-if="!gameStore.synchronized" />
-    <router-view v-else></router-view>
-    <AdminActionMenu v-if="gameStore.synchronized" class="admin-action-menu" />
+    <template v-else>
+      <router-view></router-view>
+      <AdminActionMenu class="admin-action-menu" />
+    </template>
   </main>
   <AddUsersDialog ref="addUsersModal" />
   <ConfirmationDialog ref="confirmModal" />

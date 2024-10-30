@@ -4,8 +4,9 @@ import vue from '@vitejs/plugin-vue';
 import postcssNesting from 'postcss-nesting';
 import autoprefixer from 'autoprefixer';
 import AutoImport from 'unplugin-auto-import/vite';
+import { VueRouterAutoImports } from 'unplugin-vue-router';
 import Components from 'unplugin-vue-components/vite';
-import Pages from 'vite-plugin-pages';
+import VueRouter from 'unplugin-vue-router/vite';
 import svgLoader from 'vite-svg-loader';
 import vuetify from 'vite-plugin-vuetify';
 
@@ -18,10 +19,10 @@ export default defineConfig({
   },
 
   plugins: [
+    VueRouter(),
     vue(),
-    Pages(),
     AutoImport({
-      imports: ['vue', 'vue-router'],
+      imports: ['vue', VueRouterAutoImports],
       dts: 'src/auto-imports.d.ts',
       dirs: ['src/composables', 'src/stores', 'src/types'],
       vueTemplate: true,

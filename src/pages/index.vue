@@ -42,7 +42,9 @@
       <button v-if="!adminLogin" class="link-button admin-button" @click="adminLogin = true">Log in as admin</button>
     </template>
     <template v-if="devMode">
+      <br />
       <button
+        style="margin-top: 1rem"
         @click="
           () => {
             gameStore.synchronized = false;

@@ -24,6 +24,7 @@ nav {
   flex-direction: column;
   background-color: var(--boxed-background-color);
   height: 100%;
+  min-width: 200px;
   text-align: left;
   padding: 1rem;
   border-top: 1px solid var(--background-color);
