@@ -13,6 +13,7 @@ import {
 } from '@tanstack/vue-table';
 import { AdminGameState } from '~/types/types';
 import config from '~/config';
+import { capitalize } from '~/utils/formatters';
 
 const adminStore = useAdminStore();
 
@@ -36,7 +37,7 @@ const columns = [
   columnHelper.accessor((row) => row.week, {
     id: 'week',
     cell: (info) => info.getValue(),
-    header: 'Week',
+    header: `${capitalize(config.durationIdentifier.singular)}`,
   }),
   columnHelper.accessor((row) => (row.ready ? 'Yes' : 'No'), {
     id: 'ready',
