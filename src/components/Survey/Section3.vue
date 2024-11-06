@@ -7,7 +7,6 @@
     <v-slider v-model="profitConfidence" :min="50" :max="100" :step="1" thumb-label="always">
       <template #prepend>50%</template>
       <template #append>100%</template>
-      <!-- @vue-expect-error -->
       <template #thumb-label="{ modelValue }">{{ modelValue }}%</template>
     </v-slider>
     <span v-if="profitConfidenceError" class="error-message">{{ profitConfidenceError }}</span>
@@ -19,7 +18,6 @@
     <v-slider v-model="timeConfidence" :min="50" :max="100" :step="1" thumb-label="always">
       <template #prepend>50%</template>
       <template #append>100%</template>
-      <!-- @vue-expect-error -->
       <template #thumb-label="{ modelValue }">{{ modelValue }}%</template>
     </v-slider>
     <span v-if="timeConfidenceError" class="error-message">{{ timeConfidenceError }}</span>
@@ -32,7 +30,6 @@
     <v-slider v-model="topPerformerConfidence" :min="50" :max="100" :step="1" thumb-label="always">
       <template #prepend>50%</template>
       <template #append>100%</template>
-      <!-- @vue-expect-error -->
       <template #thumb-label="{ modelValue }">{{ modelValue }}%</template>
     </v-slider>
     <span v-if="topPerformerConfidenceError" class="error-message">{{ topPerformerConfidenceError }}</span>

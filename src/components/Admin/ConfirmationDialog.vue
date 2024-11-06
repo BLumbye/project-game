@@ -3,7 +3,7 @@
     <h2>Confirm Action</h2>
     <p>{{ prompt }}</p>
     <div class="buttons">
-      <button class="text-button" @click="modal?.close">Cancel</button>
+      <button class="text-button" @click="() => modal?.close()">Cancel</button>
       <button
         @click="
           () => {

@@ -1,7 +1,10 @@
 <template>
-  <main>
+  <template v-if="pageLoading">
+    <p>Loading...</p>
+  </template>
+  <main v-else>
     <h1>Project Game</h1>
-    <template v-if="gameStore.synchronized || adminLogin">
+    <template v-if="isGameInProgress || adminLogin">
       <h2>Log In</h2>
       <form class="login-form" @submit.prevent="handleLogin">
         <div class="input-container">
@@ -29,10 +32,10 @@
           />
         </div>
         <span v-if="errorMessage !== null" class="error-message">{{ errorMessage }}</span>
-        <input type="submit" value="Log in" :disabled="loading" />
+        <input type="submit" value="Log in" :disabled="loginLoading" />
       </form>
     </template>
-    <template v-if="!gameStore.synchronized">
+    <template v-if="!isGameInProgress">
       <h2>Freeplay mode</h2>
       <p>
         You are currently in freeplay mode. This means that you are not connected to a game server. You can still play
@@ -47,7 +50,6 @@
         style="margin-top: 1rem"
         @click="
           () => {
-            gameStore.synchronized = false;
             $router.push('/game');
           }
         "
@@ -67,40 +69,58 @@
 
 <script setup lang="ts">
 import { ClientResponseError } from 'pocketbase';
-import { collections, pocketbase } from '../pocketbase';
+import { collections, isAdmin, pocketbase } from '../pocketbase';
 
-const loading = ref(false);
+const router = useRouter();
+
+const pageLoading = ref(true);
+const loginLoading = ref(false);
 const username = ref('');
 const password = ref('');
 const errorMessage = ref<string | null>(null);
 const adminLogin = ref(false);
+const isGameInProgress = ref(false);
 
 const devMode = import.meta.env.MODE === 'development';
 const version = import.meta.env.VITE_APP_VERSION as string;
 
-const gameStore = useGameStore();
+function routeAway() {
+  if (isAdmin()) {
+    router.push('/admin');
+  } else {
+    router.push('/game');
+  }
+}
 
 if (pocketbase.authStore.isValid) {
   console.log('redirecting from auth...');
-  gameStore.connectAllDatabases();
-  gameStore.routeCorrectly();
+  routeAway();
 }
+
+// Check if a game is in progress
+collections.games
+  .getFirstListItem('game_state != "finished"')
+  .then(() => {
+    isGameInProgress.value = true;
+    pageLoading.value = false;
+  })
+  .catch(() => {
+    isGameInProgress.value = false;
+    pageLoading.value = false;
+  });
 
 const handleLogin = async () => {
   try {
-    loading.value = true;
+    loginLoading.value = true;
     errorMessage.value = null;
 
-    const user = await collections.users.authWithPassword(username.value, password.value);
+    // Clear possible previous game data
+    localStorage.clear();
 
-    if (!user.record.admin && (user.record.game_id !== gameStore.gameID || !gameStore.synchronized)) {
-      errorMessage.value = 'This user cannot be used for the current game.';
-      pocketbase.authStore.clear();
-      return;
-    }
+    await collections.users.authWithPassword(username.value, password.value);
 
-    gameStore.connectAllDatabases();
-    gameStore.routeCorrectly();
+    // Ensures that the previous data is gone and triggers re-routing
+    location.reload();
   } catch (error) {
     if (!(error instanceof ClientResponseError)) {
       errorMessage.value = 'An unknown error occurred. Please contact an administrator.';
@@ -114,7 +134,7 @@ const handleLogin = async () => {
       }
     }
   } finally {
-    loading.value = false;
+    loginLoading.value = false;
   }
 };
 </script>

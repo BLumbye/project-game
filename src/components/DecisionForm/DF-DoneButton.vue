@@ -13,21 +13,20 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import config from '~/config';
 const gameStore = useGameStore();
 
 const buttonText = computed(() => {
   if (gameStore.gameOver) {
     return gameStore.gameWon ? 'Project Completed' : 'Project not completed in time';
-  } else if (gameStore.synchronized && gameStore.week === gameStore.maxWeek) {
+  } else if (gameStore.synchronized && gameStore.week === gameStore.game!.current_week) {
     return gameStore.ready ? 'You are ready (Click to unready)' : 'You are not ready (Click to ready)';
   } else {
-    return `Next ${config.durationIdentifier.singular} ->`;
+    return `Next ${gameStore.config.durationIdentifier.singular} ->`;
   }
 });
 
 const handleClick = () => {
-  if (gameStore.synchronized && gameStore.week === gameStore.maxWeek) {
+  if (gameStore.synchronized && gameStore.week === gameStore.game!.current_week) {
     gameStore.toggleReady();
   } else {
     gameStore.nextWeek();

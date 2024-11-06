@@ -11,8 +11,9 @@
 <script setup lang="ts">
 import { Bar } from 'vue-chartjs';
 import { ChartData } from 'chart.js';
+import { AdminData } from '~/hooks/adminData';
 
-const adminStore = useAdminStore();
+const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
 const hideOutliers = ref(false);
 
@@ -44,7 +45,7 @@ const durationDistributionOptions: (typeof Bar)['options'] = {
 
 const durationDistributionData = computed<BarData>(() => {
   let data: { x: number; y: number }[] = [];
-  adminStore.bids.forEach(({ promisedDuration }) => {
+  currentGameData.value.bids.forEach(({ promisedDuration }) => {
     const group = data.find((group) => group.x === promisedDuration);
     if (group) {
       group.y++;

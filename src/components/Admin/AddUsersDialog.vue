@@ -5,7 +5,7 @@
     <input id="usernames" v-model="usernames" type="text" placeholder="user1,user2..." class="fancy-input" />
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     <div class="buttons">
-      <button class="text-button" @click="modal?.close">Cancel</button>
+      <button class="text-button" @click="() => modal?.close()">Cancel</button>
       <button :disabled="loading" @click="submit">
         {{ loading ? 'Loading...' : 'Add Users' }}
       </button>
@@ -14,9 +14,11 @@
 </template>
 
 <script setup lang="ts">
+import { Games } from '~/pocketbase';
 import { backgroundClickClose } from '~/utils/dialog';
 
 const adminStore = useAdminStore();
+const currentGame = inject<Ref<Games>>('currentGame')!;
 
 const modal = ref<HTMLDialogElement | null>(null);
 
@@ -32,7 +34,10 @@ const open = () => {
 const submit = async () => {
   loading.value = true;
   errorMessage.value = null;
-  const response = await adminStore.addUsers(usernames.value.split(',').map((s) => s.trim()));
+  const response = await adminStore.addUsers(
+    currentGame.value.game_id,
+    usernames.value.split(',').map((s) => s.trim()),
+  );
   if (response === true) modal.value?.close();
   else errorMessage.value = response;
   loading.value = false;

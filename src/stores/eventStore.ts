@@ -1,6 +1,5 @@
 import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import config from '~/config';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 import { EventChoiceEffects, EventEffect } from '~/types/types';
 
@@ -16,9 +15,9 @@ export const useEventStore = defineStore('event', () => {
     eventChoices.value[name] = choice;
 
     // Add the immediate reward to the finances
-    if (config.events[name].choices![choice].effects?.some((effect) => effect.immediateReward)) {
+    if (gameStore.config.events[name].choices![choice].effects?.some((effect) => effect.immediateReward)) {
       useFinanceStore().recieveReward(
-        config.events[name].choices![choice].effects?.find((effect) => effect.immediateReward)
+        gameStore.config.events[name].choices![choice].effects?.find((effect) => effect.immediateReward)
           ?.immediateReward as number,
         useGameStore().week,
       );
@@ -31,7 +30,7 @@ export const useEventStore = defineStore('event', () => {
         `user.username="${pocketbase.authStore.model!.username}" && event="${name}"`,
         {
           user: pocketbase.authStore.model!.id,
-          game_id: gameStore.gameID,
+          game_id: gameStore.game!.game_id,
           week: gameStore.week,
           event: name,
           choice,
@@ -42,7 +41,7 @@ export const useEventStore = defineStore('event', () => {
 
   const activeEventEffectsAtWeek = computed(() => (week?: number) => {
     week ??= useGameStore().week;
-    return Object.entries(config.events)
+    return Object.entries(gameStore.config.events)
       .filter(([, event]) => event.week <= week!)
       .flatMap(
         ([name, event]) =>

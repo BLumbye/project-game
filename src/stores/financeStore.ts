@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import config from '../config';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 //import { ClientResponseError } from 'pocketbase';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
@@ -137,13 +136,16 @@ export const useFinanceStore = defineStore('finance', () => {
 
   function applyWeeklyFinances() {
     if (gameStore.week === 0) {
-      incomingTimeline.set(bidStore.price * config.payments.startBudget, 0);
+      incomingTimeline.set(bidStore.price * gameStore.config.payments.startBudget, 0);
     }
 
     // Worker pay
     const previousWorkers = workersStore.workersAtWeek(gameStore.week);
     workersTimeline.set(
-      Object.entries(previousWorkers).reduce((acc, [key, amount]) => acc + amount * config.workers[key].cost, 0),
+      Object.entries(previousWorkers).reduce(
+        (acc, [key, amount]) => acc + amount * gameStore.config.workers[key].cost,
+        0,
+      ),
     );
 
     // Equipment costs
@@ -154,15 +156,16 @@ export const useFinanceStore = defineStore('finance', () => {
       if (equipment[type].status === 'ordered' && previousEquipment[type].status !== 'ordered') {
         equipmentCost +=
           equipment[type].deliveryType! === 'regular'
-            ? config.equipment[type as keyof typeof config.equipment].cost
-            : config.equipment[type as keyof typeof config.equipment].cost * config.finances.expressMultiplier;
+            ? gameStore.config.equipment[type as keyof typeof gameStore.config.equipment].cost
+            : gameStore.config.equipment[type as keyof typeof gameStore.config.equipment].cost *
+              gameStore.config.finances.expressMultiplier;
       }
     }
     equipmentTimeline.set(equipmentCost);
 
     // Overhead charge. No overhead week 0
     if (!gameStore.gameOver) {
-      overheadTimeline.set(config.finances.overhead, gameStore.week + 1);
+      overheadTimeline.set(gameStore.config.finances.overhead, gameStore.week + 1);
     }
 
     // Consumables charge: charge only if any workers are working
@@ -174,15 +177,17 @@ export const useFinanceStore = defineStore('finance', () => {
           Object.values(activity.requirements.workers).some((worker) => worker !== undefined && worker !== 0) &&
           activityStore.workerRequirementMet(activity, gameStore.week),
       );
-    consumablesTimeline.set(consumables ? config.finances.consumables : 0, gameStore.week + 1);
+    consumablesTimeline.set(consumables ? gameStore.config.finances.consumables : 0, gameStore.week + 1);
 
     // Project delayed penalty
-    delayPenaltyTimeline.set(gameStore.week > bidStore.promisedDuration ? config.finances.projectDelayPenalty : 0);
+    delayPenaltyTimeline.set(
+      gameStore.week > bidStore.promisedDuration ? gameStore.config.finances.projectDelayPenalty : 0,
+    );
 
     //Loan increase
     addInterestToLoan(
       hasActiveLoan.value(gameStore.week + 1)
-        ? config.finances.loanInterest *
+        ? gameStore.config.finances.loanInterest *
             (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
         : 0,
     );
@@ -190,7 +195,7 @@ export const useFinanceStore = defineStore('finance', () => {
     //Overdraft
     overdraftInterestTimeline.set(
       balanceAtWeek.value(gameStore.week) < 0
-        ? config.finances.overdraftInterest * -balanceAtWeek.value(gameStore.week)
+        ? gameStore.config.finances.overdraftInterest * -balanceAtWeek.value(gameStore.week)
         : 0,
     );
 
@@ -213,15 +218,21 @@ export const useFinanceStore = defineStore('finance', () => {
   watch(
     () => activityStore.weekActivityDone,
     (newDone, oldDone) => {
-      if (oldDone[config.payments.milestoneActivity] && !newDone[config.payments.milestoneActivity]) {
+      if (
+        oldDone[gameStore.config.payments.milestoneActivity] &&
+        !newDone[gameStore.config.payments.milestoneActivity]
+      ) {
         incomingTimeline.add(
-          -bidStore.price * config.payments.milestoneReward,
-          oldDone[config.payments.milestoneActivity],
+          -bidStore.price * gameStore.config.payments.milestoneReward,
+          oldDone[gameStore.config.payments.milestoneActivity],
         );
-      } else if (!oldDone[config.payments.milestoneActivity] && newDone[config.payments.milestoneActivity]) {
+      } else if (
+        !oldDone[gameStore.config.payments.milestoneActivity] &&
+        newDone[gameStore.config.payments.milestoneActivity]
+      ) {
         incomingTimeline.add(
-          bidStore.price * config.payments.milestoneReward,
-          newDone[config.payments.milestoneActivity],
+          bidStore.price * gameStore.config.payments.milestoneReward,
+          newDone[gameStore.config.payments.milestoneActivity],
         );
       }
     },
@@ -234,9 +245,9 @@ export const useFinanceStore = defineStore('finance', () => {
     () => activityStore.allActivitiesDone(),
     (finishedNow, finishedBefore) => {
       if (!finishedBefore && finishedNow) {
-        incomingTimeline.add(bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
+        incomingTimeline.add(bidStore.price * gameStore.config.payments.allActivitiesCompleteReward, gameStore.week);
       } else if (finishedBefore && !finishedNow) {
-        incomingTimeline.add(-bidStore.price * config.payments.allActivitiesCompleteReward, gameStore.week);
+        incomingTimeline.add(-bidStore.price * gameStore.config.payments.allActivitiesCompleteReward, gameStore.week);
       }
     },
   );
@@ -303,7 +314,7 @@ export const useFinanceStore = defineStore('finance', () => {
         `user.username="${pocketbase.authStore.model!.username}" && week=${week} && timeline="${timelineName}"`,
         {
           user: pocketbase.authStore.model!.id,
-          game_id: gameStore.gameID,
+          game_id: gameStore.game!.game_id,
           week,
           timeline: timelineName,
           value: timelines[timelineName as keyof typeof timelines].get.value(week) || 0,
@@ -312,13 +323,13 @@ export const useFinanceStore = defineStore('finance', () => {
     });
   }
 
-  if (gameStore.settingsLoaded) {
+  if (gameStore.loaded) {
     connectWithDatabase();
   } else {
     const synchronizedWatcher = watch(
-      () => gameStore.settingsLoaded,
+      () => gameStore.loaded,
       () => {
-        if (gameStore.settingsLoaded) {
+        if (gameStore.loaded) {
           synchronizedWatcher();
           connectWithDatabase();
         }

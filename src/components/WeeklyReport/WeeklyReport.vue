@@ -9,7 +9,8 @@
 <template>
   <div class="weekly-report">
     <h2 class="boxed section-title">
-      {{ capitalize(config.durationIdentifier.iterative) }} report for {{ config.durationIdentifier.singular }}
+      {{ capitalize(gameStore.config.durationIdentifier.iterative) }} report for
+      {{ gameStore.config.durationIdentifier.singular }}
       {{ week - 1 }}
     </h2>
     <div class="week-buttons">
@@ -29,7 +30,6 @@
 <script setup lang="ts">
 const gameStore = useGameStore();
 const week = ref(gameStore.week);
-import config from '~/config';
 import { capitalize } from '~/utils/formatters';
 
 watch(

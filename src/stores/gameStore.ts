@@ -1,41 +1,43 @@
 import { defineStore } from 'pinia';
-import { collections, isAdmin, pocketbase, updateExistingOrCreate } from '../pocketbase';
-import { GameState } from '~/types/types';
-import config from '~/config';
+import { collections, Games, isAdmin, pocketbase, updateExistingOrCreate } from '../pocketbase';
+import baseConfig from '~/config';
 import { useStorage } from '@vueuse/core';
 
 /**
  * This store contains overall information about the game, and also controls the flow
  * of the game if synchronized mode is enabled.
+ * ! It is important that this store does not use any other stores in the setup, as they are not yet initialized and cannot be before this store is fully initialized.
+ * ! Likewise, it is important that this store is the very first to be initialized, and that no others are initialized asynchronously meanwhile this one is not fully initialized.
  */
 export const useGameStore = defineStore('game', () => {
   const router = useRouter();
-  const bidStore = useBidStore();
-  const activitiesStore = useActivitiesStore();
-  const financeStore = useFinanceStore();
-  const workersStore = useWorkersStore();
-  const equipmentStore = useEquipmentStore();
 
   //Uses setup store
   // State
+  const game = ref<Games | undefined>(undefined);
   const week = useStorage('week', 0);
-  const maxWeek = ref<number | undefined>(undefined);
-  const settingsLoaded = ref(false);
-  const settingsRecordID = ref<string | undefined>(undefined);
+  const loaded = ref(false);
   /**
-   * Whether a not the server is running in synchronized mode.
+   * Whether a not the server is running in synchronized mode or the user is in freeplay mode.
    * Synchronized mode means that the player can only progress to the next week when allowed by the admins.
    */
   const synchronized = ref<boolean | undefined>(undefined);
-  const gameID = useStorage<number>('gameID', -1);
-  const gameState = ref<GameState | undefined>(undefined);
   const ready = ref(false);
   const gameWon = useStorage('gameWon', false);
 
   // Getters
   const decisionForm = computed(() => week.value + 1);
+  const config = computed(() => {
+    if (synchronized.value) {
+      return game.value!.config;
+    } else {
+      return baseConfig;
+    }
+  });
 
-  const gameOver = computed(() => gameWon.value || week.value >= config.projectDuration);
+  initialize();
+
+  const gameOver = computed(() => gameWon.value || week.value >= config.value.projectDuration);
   const stopUpdates = ref(false); //One final update before not updating server and sheets anymore.
 
   // Actions
@@ -45,11 +47,11 @@ export const useGameStore = defineStore('game', () => {
    */
   function nextWeek() {
     if (stopUpdates.value) return;
-    activitiesStore.progressActivities();
-    financeStore.applyWeeklyFinances();
+    useActivitiesStore().progressActivities();
+    useFinanceStore().applyWeeklyFinances();
     if (synchronized.value) {
-      workersStore.updateDatabase();
-      equipmentStore.updateDatabase();
+      useWorkersStore().updateDatabase();
+      useEquipmentStore().updateDatabase();
     }
     week.value++;
     if (synchronized.value) {
@@ -62,119 +64,65 @@ export const useGameStore = defineStore('game', () => {
     ready.value = value ?? !ready.value;
     updateExistingOrCreate(collections.ready, `user.username="${pocketbase.authStore.model!.username}"`, {
       user: pocketbase.authStore.model!.id,
-      game_id: gameID.value,
+      game_id: game.value!.game_id,
       week: week.value,
       ready: ready.value,
     });
   }
 
   // Logic
-  async function connectWithDatabase() {
-    const settingsRecord = (await collections.settings.getList(1, 1)).items[0];
+  async function initialize() {
+    if (pocketbase.authStore.isValid) {
+      synchronized.value = true;
+      await connectWithDatabase();
+    } else {
+      if (import.meta.env.MODE === 'development') {
+        synchronized.value = false;
+      } else {
+        try {
+          await collections.games.getFirstListItem('game_state != "finished"');
 
-    // Reset game if the game id is not the same as the one in the database
-    if (gameID.value !== -1 && gameID.value !== settingsRecord.game_id) {
-      localStorage.clear();
-      window.location.reload();
-    }
-
-    synchronized.value = settingsRecord.synchronized;
-    settingsRecordID.value = settingsRecord.id;
-    gameID.value = settingsRecord.game_id;
-    maxWeek.value = settingsRecord.current_week;
-    if (synchronized.value) {
-      gameState.value = settingsRecord.game_state;
-    }
-
-    if (!synchronized.value && pocketbase.authStore.isValid && !pocketbase.authStore.model?.admin) {
-      pocketbase.authStore.clear();
-    }
-
-    collections.settings.subscribe(settingsRecord.id, (data) => {
-      if (data.record.synchronized !== synchronized.value) synchronized.value = data.record.synchronized;
-      if (data.record.game_id !== gameID.value) gameID.value = data.record.game_id;
-      if (data.record.game_state !== gameState.value) gameState.value = data.record.game_state;
-      if (data.record.current_week !== maxWeek.value) {
-        maxWeek.value = data.record.current_week;
-        if (synchronized.value && ready.value && week.value < maxWeek.value!) {
-          nextWeek();
+          // A game is in progress, so unauthorized users should not be in a game
+          localStorage.clear();
+          router.push('/');
+          return;
+        } catch (error) {
+          // User is playing in freeplay mode
+          synchronized.value = false;
         }
       }
-      // if (data.record.current_week !== week.value) {
-      //   if (isAdmin()) {
-      //     week.value = data.record.current_week;
-      //   } else {
-      //     for (let i = week.value; i < data.record.current_week; i++) {
-      //       nextWeek();
-      //     }
-      //   }
-      // }
-    });
 
-    // if (synchronized.value && !isAdmin()) {
-    //   if (
-    //     !activitiesStore.loading &&
-    //     !financeStore.loading &&
-    //     !workersStore.loading &&
-    //     !equipmentStore.loading &&
-    //     !bidStore.loading
-    //   ) {
-    //     fastForward(settingsRecord.current_week);
-    //   } else {
-    //     const loadWatcher = watchEffect(() => {
-    //       if (
-    //         !activitiesStore.loading &&
-    //         !financeStore.loading &&
-    //         !workersStore.loading &&
-    //         !equipmentStore.loading &&
-    //         !bidStore.loading
-    //       ) {
-    //         loadWatcher();
-    //         fastForward(settingsRecord.current_week);
-    //       }
-    //     });
-    //   }
-    // } else if (synchronized.value) {
-    //   week.value = settingsRecord.current_week;
-    // }
+      await initializeStores();
+    }
 
-    updateSummary();
-
-    settingsLoaded.value = true;
+    loaded.value = true;
   }
 
-  // /**
-  //  * If the user has been disconnected, this will calculate finances and activities for the weeks that have been missed.
-  //  */
-  // async function fastForward(gameWeek: number) {
-  //   let lastWeekOnline = 0;
-  //   let isReady = false;
-  //   try {
-  //     const readyRecord = await collections.ready.getFirstListItem(
-  //       `user.username="${pocketbase.authStore.model!.username}"`,
-  //     );
-  //     lastWeekOnline = readyRecord.week;
-  //     isReady = readyRecord.ready;
-  //   } catch (error) {
-  //     if (error instanceof ClientResponseError && error.status !== 404) {
-  //       throw error;
-  //     }
-  //   }
+  async function connectWithDatabase() {
+    // Get game from database
+    game.value = (await collections.games.getFirstListItem(`game_id=${pocketbase.authStore.model!.game_id}`))!;
 
-  //   week.value = lastWeekOnline;
-  //   for (let i = week.value; i < gameWeek; i++) {
-  //     nextWeek();
-  //   }
-  //   ready.value = isReady;
-  // }
+    synchronized.value = true;
 
-  function updateSummary() {
+    collections.games.subscribe(game.value.id, (data) => {
+      game.value = data.record;
+      if (ready.value && week.value < data.record.current_week) {
+        nextWeek();
+      }
+    });
+
+    await connectAllDatabases();
+    await updateSummary();
+  }
+
+  async function updateSummary() {
     if (!synchronized.value || !pocketbase.authStore.isValid || isAdmin()) return;
 
-    console.log('updating summary', gameOver.value ? (gameWon.value ? 'won' : 'lost') : 'playing');
-    updateExistingOrCreate(collections.gameSummary, `user.username="${pocketbase.authStore.model!.username}"`, {
+    const financeStore = useFinanceStore();
+
+    await updateExistingOrCreate(collections.gameSummary, `user.username="${pocketbase.authStore.model!.username}"`, {
       user: pocketbase.authStore.model!.id,
-      game_id: gameID.value,
+      game_id: game.value!.game_id,
       week: week.value,
       total_balance: financeStore.balanceAtWeek(),
       total_loaned: financeStore.loanTimeline.getReduced(),
@@ -183,28 +131,30 @@ export const useGameStore = defineStore('game', () => {
     });
   }
 
-  function routeCorrectly() {
-    if (synchronized.value && !pocketbase.authStore.isValid && router.currentRoute.value.name !== 'auth')
-      router.push({ name: 'auth' });
-    else if (router.currentRoute.value.name !== 'admin' && isAdmin()) router.push({ name: 'admin' });
-    else if (router.currentRoute.value.name !== 'game' && synchronized.value && !isAdmin())
-      router.push({ name: 'game' });
+  async function initializeStores() {
+    await useWorkersStore().initialize(config.value);
+    await useEquipmentStore();
+    await useActivitiesStore();
+    await useFinanceStore();
+    await useBidStore();
   }
 
-  function connectAllDatabases() {
-    activitiesStore.connectWithDatabase();
-    financeStore.connectWithDatabase();
-    workersStore.connectWithDatabase();
-    equipmentStore.connectWithDatabase();
-    bidStore.connectWithDatabase();
+  async function connectAllDatabases() {
+    await initializeStores();
+    await Promise.all([
+      useActivitiesStore().connectWithDatabase(),
+      useFinanceStore().connectWithDatabase(),
+      useWorkersStore().connectWithDatabase(),
+      useEquipmentStore().connectWithDatabase(),
+      useBidStore().connectWithDatabase(),
+    ]);
   }
-
-  connectWithDatabase();
 
   watchEffect(() => {
-    const noWorkers = Object.values(workersStore.currentWorkers).every((worker) => worker === 0);
-    const activitiesDone = activitiesStore.allActivitiesDone();
-    const loanRepaid = !financeStore.hasActiveLoan();
+    if (!loaded.value) return;
+    const noWorkers = Object.values(useWorkersStore().currentWorkers).every((worker) => worker === 0);
+    const activitiesDone = useActivitiesStore().allActivitiesDone();
+    const loanRepaid = !useFinanceStore().hasActiveLoan();
 
     gameWon.value = noWorkers && activitiesDone && loanRepaid;
   });
@@ -213,10 +163,10 @@ export const useGameStore = defineStore('game', () => {
     () => gameWon.value,
     () => {
       if (gameWon.value) {
-        activitiesStore.progressActivities();
-        financeStore.applyWeeklyFinances();
-        workersStore.updateDatabase();
-        equipmentStore.updateDatabase();
+        useActivitiesStore().progressActivities();
+        useFinanceStore().applyWeeklyFinances();
+        useWorkersStore().updateDatabase();
+        useEquipmentStore().updateDatabase();
         updateSummary();
         stopUpdates.value = true;
       }
@@ -224,22 +174,17 @@ export const useGameStore = defineStore('game', () => {
   );
 
   return {
+    game,
+    config,
     week,
-    maxWeek,
     decisionForm,
     ready,
     synchronized,
-    settingsLoaded,
-    settingsRecordID,
-    gameID,
-    gameState,
+    loaded,
     gameWon,
     gameOver,
     stopUpdates,
     nextWeek,
     toggleReady,
-    routeCorrectly,
-    connectWithDatabase,
-    connectAllDatabases,
   };
 });

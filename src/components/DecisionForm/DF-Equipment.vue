@@ -15,7 +15,7 @@
     <h3 class="component-title">Order equipment</h3>
     <span class="equipment-column-label">Equipment</span>
     <span class="equipment-column-label">Order</span>
-    <template v-for="([type, configEquipment], index) in Object.entries(config.equipment)" :key="type">
+    <template v-for="([type, configEquipment], index) in Object.entries(gameStore.config.equipment)" :key="type">
       <label :for="`${type}-input`" class="equipment-label">{{ configEquipment.label }}</label>
       <select
         :id="`${type}-input`"
@@ -37,13 +37,11 @@
 <!-- Script -->
 
 <script setup lang="ts">
-import config from '~/config';
-
-const values = ref<('0' | '1' | '2' | '3')[]>(Object.values(config.equipment).map(() => '0'));
-
 const gameStore = useGameStore();
 const equipmentStore = useEquipmentStore();
 const previousEquipment = computed(() => equipmentStore.equipmentAtWeek(gameStore.week - 1));
+
+const values = ref<('0' | '1' | '2' | '3')[]>(Object.values(gameStore.config.equipment).map(() => '0'));
 
 /**
  * Watches for input from the player.
@@ -59,11 +57,11 @@ const onInput = (input: string, type: string) => {
   } else {
     equipmentStore.setDeliveryStatus(type, 'ordered', 'express');
   }
-  values.value[Object.keys(config.equipment).indexOf(type)] = input as '0' | '1' | '2' | '3';
+  values.value[Object.keys(gameStore.config.equipment).indexOf(type)] = input as '0' | '1' | '2' | '3';
 };
 
 const setInput = (type: string) => {
-  const index = Object.keys(config.equipment).indexOf(type);
+  const index = Object.keys(gameStore.config.equipment).indexOf(type);
   if (previousEquipment.value[type].status !== 'unordered') {
     if (equipmentStore.equipment[type].status === 'ordered') {
       values.value[index] = equipmentStore.equipment[type].deliveryType === 'regular' ? '1' : '2';
@@ -85,7 +83,7 @@ const setInput = (type: string) => {
 watch(
   [() => equipmentStore.timeline, () => gameStore.week],
   () => {
-    for (const type in config.equipment) {
+    for (const type in gameStore.config.equipment) {
       setInput(type);
     }
   },
@@ -95,7 +93,7 @@ watch(
 watch(
   () => equipmentStore.loading,
   () => {
-    for (const type in config.equipment) {
+    for (const type in gameStore.config.equipment) {
       setInput(type);
     }
   },

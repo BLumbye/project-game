@@ -30,29 +30,37 @@ import {
 import { Bid } from '~/types/types';
 import { validate, and, isNumber, isWholeNumber, asNumber, isPositive } from '~/utils/validation';
 import { currencyFormat } from '~/utils/formatters';
+import { AdminData } from '~/hooks/adminData';
+import { Games } from '~/pocketbase';
 
 const adminStore = useAdminStore();
 
+const isGameInProgress = inject<Ref<boolean>>('isGameInProgress')!;
+const currentGame = inject<Ref<Games>>('currentGame');
+const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
+
 const inputCell = (info: CellContext<Bid, number>) => {
-  return h('input', {
-    value: info.getValue(),
-    onBeforeinput: (evt: InputEvent) =>
-      validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent),
-    onInput: (e: InputEvent) =>
-      adminStore.updateBid(info.row.original.id, Number((e.target as HTMLInputElement).value)),
-  });
+  return isGameInProgress
+    ? h('input', {
+        value: info.getValue(),
+        onBeforeinput: (evt: InputEvent) =>
+          validate(and(isNumber(), isWholeNumber(), asNumber(isPositive())))(evt as InputEvent),
+        onInput: (e: InputEvent) =>
+          adminStore.updateBid(info.row.original.id, Number((e.target as HTMLInputElement).value)),
+      })
+    : info.getValue();
 };
 
 const columnHelper = createColumnHelper<Bid>();
 const columns = [
-  columnHelper.accessor((row) => adminStore.users.find((user) => user.id === row.userID)?.username, {
+  columnHelper.accessor((row) => currentGameData.value.users.find((user) => user.id === row.userID)?.username, {
     id: 'username',
     cell: (info) => info.getValue(),
     header: 'Username',
   }),
   columnHelper.accessor((row) => row.price, {
     id: 'price',
-    cell: (info) => currencyFormat.format(info.getValue()),
+    cell: (info) => currencyFormat(currentGame!.value.config).format(info.getValue()),
     header: 'Price',
   }),
   columnHelper.accessor((row) => row.promisedDuration, {
@@ -62,7 +70,7 @@ const columns = [
   }),
   columnHelper.accessor((row) => row.expectedCost, {
     id: 'expectedCost',
-    cell: (info) => currencyFormat.format(info.getValue()),
+    cell: (info) => currencyFormat(currentGame!.value.config).format(info.getValue()),
     header: 'Expected Cost',
   }),
   columnHelper.accessor((row) => row.expectedDuration, {
@@ -89,7 +97,7 @@ let table: Table<Bid>;
 const createTable = () => {
   table = useVueTable({
     get data() {
-      return adminStore.bids;
+      return currentGameData.value.bids;
     },
     columns,
     state: {
@@ -106,14 +114,14 @@ const createTable = () => {
 };
 
 const loading = ref(true);
-if (adminStore.users.length > 0) {
+if (currentGameData.value.users.length > 0) {
   createTable();
   loading.value = false;
 } else {
   const loadingWatcher = watch(
-    () => adminStore.users,
+    () => currentGameData.value.users,
     () => {
-      if (adminStore.users.length > 0) {
+      if (currentGameData.value.users.length > 0) {
         createTable();
         loading.value = false;
         loadingWatcher();

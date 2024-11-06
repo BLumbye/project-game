@@ -1,15 +1,14 @@
 import { defineStore } from 'pinia';
 import { Bid, collections, pocketbase } from '~/pocketbase';
 import { ClientResponseError } from 'pocketbase';
-import config from '~/config';
 
 export const useBidStore = defineStore('bid', () => {
   const gameStore = useGameStore();
 
   // State
   const loading = ref(true);
-  const price = ref<number>(config.bid.default);
-  const promisedDuration = ref<number>(config.bid.defaultDuration);
+  const price = ref<number>(gameStore.config.bid.default);
+  const promisedDuration = ref<number>(gameStore.config.bid.defaultDuration);
   const revised = ref(false);
 
   // Getters
@@ -21,14 +20,17 @@ export const useBidStore = defineStore('bid', () => {
 
   // Actions
   async function createBid(data: Omit<Bid, 'user' | 'game_id' | 'revised_price' | 'id'>) {
-    price.value = data.price > config.bid.max || data.price < config.bid.min ? config.bid.default : data.price;
+    price.value =
+      data.price > gameStore.config.bid.max || data.price < gameStore.config.bid.min
+        ? gameStore.config.bid.default
+        : data.price;
     promisedDuration.value = data.promised_duration;
     revised.value = price.value !== data.price;
 
     const record = await collections.bids.create({
       ...data,
       user: pocketbase.authStore.model!.id,
-      game_id: gameStore.gameID,
+      game_id: gameStore.game!.game_id,
       revised_price: price.value,
     });
 
@@ -69,13 +71,13 @@ export const useBidStore = defineStore('bid', () => {
     loading.value = false;
   }
 
-  if (gameStore.settingsLoaded) {
+  if (gameStore.loaded) {
     connectWithDatabase();
   } else {
     const synchronizedWatcher = watch(
-      () => gameStore.settingsLoaded,
+      () => gameStore.loaded,
       () => {
-        if (gameStore.settingsLoaded) {
+        if (gameStore.loaded) {
           synchronizedWatcher();
           connectWithDatabase();
         }

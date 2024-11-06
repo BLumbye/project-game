@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import path from 'node:path';
 import vue from '@vitejs/plugin-vue';
-import postcssNesting from 'postcss-nesting';
 import autoprefixer from 'autoprefixer';
 import AutoImport from 'unplugin-auto-import/vite';
 import { VueRouterAutoImports } from 'unplugin-vue-router';
@@ -41,7 +40,7 @@ export default defineConfig({
 
   css: {
     postcss: {
-      plugins: [postcssNesting, autoprefixer({})],
+      plugins: [autoprefixer({})],
     },
   },
 });

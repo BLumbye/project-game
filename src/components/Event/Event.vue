@@ -2,18 +2,20 @@
   <div class="events">
     <span class="news-label">
       NEWS:
-      <span v-if="Object.entries(config.events).filter(([, event]) => event.week <= gameStore.week).length === 0">
+      <span
+        v-if="Object.entries(gameStore.config.events).filter(([, event]) => event.week <= gameStore.week).length === 0"
+      >
         No news yet
       </span>
     </span>
     <div class="event-items">
-      <div v-for="(event, name, i) in config.events" :key="name">
+      <div v-for="(event, name, i) in gameStore.config.events" :key="name">
         <button
           v-if="event.week <= gameStore.week && event.title != 'NOTHING TO REPORT'"
           class="event-button"
           @click="eventDialogues[i].showModal()"
         >
-          {{ capitalize(config.durationIdentifier.singular) }} {{ event.week }}: {{ event.title }}
+          {{ capitalize(gameStore.config.durationIdentifier.singular) }} {{ event.week }}: {{ event.title }}
         </button>
         <dialog
           ref="eventDialogues"
@@ -58,7 +60,6 @@
 </template>
 
 <script setup lang="ts">
-import config from '../../config';
 import { backgroundClickClose } from '~/utils/dialog';
 import { capitalize } from '~/utils/formatters';
 import { Event as TEvent } from '../../types/types';
@@ -71,12 +72,12 @@ const eventDialogues = ref<HTMLDialogElement[]>([]);
 watch(
   () => gameStore.week,
   () => {
-    const weekEvents = Object.entries(config.events).filter(([, event]) => event.week === gameStore.week);
+    const weekEvents = Object.entries(gameStore.config.events).filter(([, event]) => event.week === gameStore.week);
     //Show modal unless title is "NOTHING TO REPORT"
     weekEvents.forEach(
       ([name, event]) =>
         event.title !== 'NOTHING TO REPORT' &&
-        eventDialogues.value[Object.keys(config.events).indexOf(name)].showModal(),
+        eventDialogues.value[Object.keys(gameStore.config.events).indexOf(name)].showModal(),
     );
   },
 );

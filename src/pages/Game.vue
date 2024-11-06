@@ -1,54 +1,51 @@
 <template>
-  <GameHeader />
-  <!-- <ConfettiExplosion v-if="gameStore.gameWon"
-                     :duration="4000"
-                     :stageHeight="1200" /> -->
-  <template v-if="gameStore.gameState === 'adding_users'">
-    <h2 class="big-text">Wait for the survey submissions to open.</h2>
-  </template>
-  <template v-else-if="gameStore.gameState === 'getting_bids'">
-    <Survey />
-  </template>
-  <template v-else-if="gameStore.gameState === 'reviewing_bids'">
-    <h2 class="big-text">Survey submissions has been closed. The game is about to start.</h2>
-  </template>
-  <template v-else-if="bidStore.price === 0">
-    <h2 class="big-text">You did not submit a bid in time, and can therefore not participate in the game.</h2>
-  </template>
-  <template v-else-if="gameStore.gameState === 'in_progress'">
-    <Event />
-    <div class="container">
-      <WeeklyReport v-if="gameStore.week > 1" />
-      <h2 v-else>
-        No {{ config.durationIdentifier.iterative }} report in {{ config.durationIdentifier.singular }}
-        {{ gameStore.week }}
-      </h2>
-      <DecisionForm v-if="!gameStore.gameOver" />
-      <GameFinished v-if="gameStore.gameOver" />
-    </div>
+  <template v-if="!gameStore.loaded">
+    <p>Loading...</p>
   </template>
   <template v-else>
-    <h2 class="big-text">The game is now finished.</h2>
+    <GameHeader />
+    <!-- <ConfettiExplosion v-if="gameStore.gameWon"
+                     :duration="4000"
+                     :stageHeight="1200" /> -->
+    <template v-if="gameStore.synchronized && gameStore.game!.game_state === 'adding_users'">
+      <h2 class="big-text">Wait for the survey submissions to open.</h2>
+    </template>
+    <template v-else-if="gameStore.synchronized && gameStore.game!.game_state === 'getting_bids'">
+      <Survey />
+    </template>
+    <template v-else-if="gameStore.synchronized && gameStore.game!.game_state === 'reviewing_bids'">
+      <h2 class="big-text">Survey submissions has been closed. The game is about to start.</h2>
+    </template>
+    <template v-else-if="!gameStore.synchronized || gameStore.game!.game_state === 'in_progress'">
+      <Event />
+      <div class="container">
+        <WeeklyReport v-if="gameStore.week > 1" />
+        <h2 v-else>
+          No {{ gameStore.config.durationIdentifier.iterative }} report in
+          {{ gameStore.config.durationIdentifier.singular }}
+          {{ gameStore.week }}
+        </h2>
+        <DecisionForm v-if="!gameStore.gameOver" />
+        <GameFinished v-if="gameStore.gameOver" />
+      </div>
+    </template>
+    <template v-else>
+      <h2 class="big-text">The game is now finished.</h2>
+    </template>
   </template>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-import { isAdmin, pocketbase } from '~/pocketbase';
-import config from '~/config';
+import { isAdmin } from '~/pocketbase';
+
+if (isAdmin()) {
+  console.log('redirecting from game...');
+  useRouter().push('/admin');
+}
 
 const gameStore = useGameStore();
-const bidStore = useBidStore();
-
-if ((gameStore.synchronized && !pocketbase.authStore.isValid) || isAdmin()) {
-  console.log('redirecting from game...');
-  gameStore.routeCorrectly();
-}
-
-if (!gameStore.synchronized) {
-  gameStore.gameState = 'in_progress';
-}
 </script>
 
 <!-- Styling -->

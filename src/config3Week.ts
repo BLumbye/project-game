@@ -10,6 +10,7 @@ import { Config } from './types/configInterface';
 import { addWorkers } from './utils/configUtils';
 
 const baseConfig: Omit<Config, 'events'> = {
+  name: '3 Week',
   bid: {
     max: 1200000,
     min: 800000,

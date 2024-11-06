@@ -11,50 +11,67 @@
     <span class="progress-label">Progress</span>
     <span class="component-title">Allocation</span>
     <v-tooltip activator="parent" location="top">
-      <p>Here you see how your workers were allocated to work last {{ config.durationIdentifier.singular }}.</p>
-      <p><span class="activityFinished">Green</span> means the activity was finished at the end of that {{
-        config.durationIdentifier.singular }}.</p>
-      <p><span class="dependancyMissing">Orange</span> means you did not meet the requirements for the activity to
-        progress (incorrect dependencies).</p>
+      <p>
+        Here you see how your workers were allocated to work last {{ gameStore.config.durationIdentifier.singular }}.
+      </p>
+      <p>
+        <span class="activityFinished">Green</span> means the activity was finished at the end of that
+        {{ gameStore.config.durationIdentifier.singular }}.
+      </p>
+      <p>
+        <span class="dependancyMissing">Orange</span> means you did not meet the requirements for the activity to
+        progress (incorrect dependencies).
+      </p>
       <p><span class="incorrectWorkers">Red</span> means you allocated an incorrect amount of workers.</p>
     </v-tooltip>
     <span>%</span>
-    <span v-for="(worker, key) in config.workers" :key="key">{{ worker.shortLabel }}</span>
+    <span v-for="(worker, key) in gameStore.config.workers" :key="key">{{ worker.shortLabel }}</span>
     <template v-for="(activity, index) in activities" :key="activity.label">
       <template v-if="!activity.hidden">
         <span :class="{ activityFinished: activityStore.weekActivityDone[activity.label] == week - 1 }">
           {{ activity.label }}
         </span>
-        <span :class="{ activityFinished: activityStore.weekActivityDone[activity.label] == week - 1 }">{{
-        ((progressActivities[index].progress / activityStore.getDuration(progressActivities[index])) * 100).toFixed(
-          0,
-        )
-      }}%</span>
-        <span v-for="(worker, key) in config.workers" :key="key" :class="{
-        activityFinished: activityStore.weekActivityDone[activity.label] == week - 1,
-        dependancyMissing:
-          (!activityStore.equipmentRequirementMet(activity, week - 1) ||
-            !activityStore.activityRequirementMet(activity, week - 1)) &&
-          activity.allocation[key] > 0,
-        incorrectWorkers: !activityStore.workerRequirementMet(activity, week - 1) && activity.allocation[key] > 0,
-      }">{{ activity.allocation[key] }}</span>
+        <span :class="{ activityFinished: activityStore.weekActivityDone[activity.label] == week - 1 }"
+          >{{
+            ((progressActivities[index].progress / activityStore.getDuration(progressActivities[index])) * 100).toFixed(
+              0,
+            )
+          }}%</span
+        >
+        <span
+          v-for="(worker, key) in gameStore.config.workers"
+          :key="key"
+          :class="{
+            activityFinished: activityStore.weekActivityDone[activity.label] == week - 1,
+            dependancyMissing:
+              (!activityStore.equipmentRequirementMet(activity, week - 1) ||
+                !activityStore.activityRequirementMet(activity, week - 1)) &&
+              activity.allocation[key] > 0,
+            incorrectWorkers: !activityStore.workerRequirementMet(activity, week - 1) && activity.allocation[key] > 0,
+          }"
+          >{{ activity.allocation[key] }}</span
+        >
       </template>
     </template>
     <span>Total</span>
     <span>{{ (activityStore.totalProgress(week - 1) * 100).toFixed(0) }}%</span>
-    <span v-for="(worker, key) in config.workers" :key="key" :class="{
+    <span
+      v-for="(worker, key) in gameStore.config.workers"
+      :key="key"
+      :class="{
         incorrectWorkers:
           activityStore.totalWorkersAssigned(key as string, week - 2) > workersStore.workersAtWeek(week - 1)[key],
-      }">
-      {{ activityStore.totalWorkersAssigned(key as string, week - 2) }}</span>
+      }"
+    >
+      {{ activityStore.totalWorkersAssigned(key as string, week - 2) }}</span
+    >
   </div>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-import config from '~/config';
-
+const gameStore = useGameStore();
 const activityStore = useActivitiesStore();
 const workersStore = useWorkersStore();
 const progressActivities = computed(() => activityStore.activitiesAtWeek(props.week - 1));
@@ -73,12 +90,12 @@ const props = defineProps<{
 }
 
 .component-title {
-  grid-column: span v-bind('Object.keys(config.workers).length');
+  grid-column: span v-bind('Object.keys(gameStore.config.workers).length');
 }
 
 .allocation {
   display: grid;
-  grid-template-columns: repeat(v-bind('Object.keys(config.workers).length + 2'), auto);
+  grid-template-columns: repeat(v-bind('Object.keys(gameStore.config.workers).length + 2'), auto);
   grid-template-rows: repeat(v-bind('activities.length'), auto);
   column-gap: 1em;
 }

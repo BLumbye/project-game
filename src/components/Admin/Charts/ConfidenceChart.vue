@@ -15,8 +15,9 @@
 <script setup lang="ts">
 import { Line } from 'vue-chartjs';
 import { ChartData, Point } from 'chart.js';
+import { AdminData } from '~/hooks/adminData';
 
-const adminStore = useAdminStore();
+const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
 const hideLegend = ref(false);
 const hideMeans = ref(false);
@@ -78,9 +79,11 @@ const confidenceOptions = computed<(typeof Line)['options']>(() => ({
 // @ts-expect-error type error in library
 const confidenceData = computed<LineData>(() => {
   const labels = Array.from({ length: (100 - 50) / binSize + 1 }, (_, i) => i * binSize + 50);
-  const profitConfidences = adminStore.surveyAnswers.map(({ profitConfidence }) => profitConfidence);
-  const timeConfidences = adminStore.surveyAnswers.map(({ timeConfidence }) => timeConfidence);
-  const topPerformerConfidences = adminStore.surveyAnswers.map(({ topPerformerConfidence }) => topPerformerConfidence);
+  const profitConfidences = currentGameData.value.surveyAnswers.map(({ profitConfidence }) => profitConfidence);
+  const timeConfidences = currentGameData.value.surveyAnswers.map(({ timeConfidence }) => timeConfidence);
+  const topPerformerConfidences = currentGameData.value.surveyAnswers.map(
+    ({ topPerformerConfidence }) => topPerformerConfidence,
+  );
   const sharedStyles = { fill: false, tension: 0.4, pointStyle: false };
   const datasets = [
     {
@@ -118,8 +121,8 @@ function createHistogramData(binSize: number, data: number[]) {
 
 function getMeanLine(key: 'profitConfidence' | 'timeConfidence' | 'topPerformerConfidence') {
   return (
-    (adminStore.surveyAnswers.map(({ [key]: confidence }) => confidence).reduce((a, b) => a + b, 0) /
-      adminStore.surveyAnswers.length -
+    (currentGameData.value.surveyAnswers.map(({ [key]: confidence }) => confidence).reduce((a, b) => a + b, 0) /
+      currentGameData.value.surveyAnswers.length -
       50) /
     binSize
   );

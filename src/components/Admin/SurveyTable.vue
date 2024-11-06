@@ -20,13 +20,14 @@ import {
   getSortedRowModel,
   Table,
 } from '@tanstack/vue-table';
+import { AdminData } from '~/hooks/adminData';
 import { SurveyAnswer } from '~/types/types';
 
-const adminStore = useAdminStore();
+const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
 const columnHelper = createColumnHelper<SurveyAnswer>();
 const columns = [
-  columnHelper.accessor((row) => adminStore.users.find((user) => user.id === row.userID)?.username, {
+  columnHelper.accessor((row) => currentGameData.value.users.find((user) => user.id === row.userID)?.username, {
     id: 'username',
     cell: (info) => info.getValue(),
     header: 'Username',
@@ -87,7 +88,7 @@ let table: Table<SurveyAnswer>;
 const createTable = () => {
   table = useVueTable({
     get data() {
-      return adminStore.surveyAnswers;
+      return currentGameData.value.surveyAnswers;
     },
     columns,
     state: {
@@ -104,14 +105,14 @@ const createTable = () => {
 };
 
 const loading = ref(true);
-if (adminStore.users.length > 0) {
+if (currentGameData.value.users.length > 0) {
   createTable();
   loading.value = false;
 } else {
   const loadingWatcher = watch(
-    () => adminStore.users,
+    () => currentGameData.value.users,
     () => {
-      if (adminStore.users.length > 0) {
+      if (currentGameData.value.users.length > 0) {
         createTable();
         loading.value = false;
         loadingWatcher();

@@ -7,16 +7,17 @@
 <template>
   <div class="workers boxed">
     <span class="workers-title">Total workers on site:</span>
-    <span v-for="(worker, key) in config.workers" :key="key" class="workers-label">{{ worker.shortLabel }}</span>
-    <span v-for="(worker, key) in config.workers" :key="key">{{ workers[key] }}</span>
+    <span v-for="(worker, key) in gameStore.config.workers" :key="key" class="workers-label">{{
+      worker.shortLabel
+    }}</span>
+    <span v-for="(worker, key) in gameStore.config.workers" :key="key">{{ workers[key] }}</span>
   </div>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-import config from '~/config';
-
+const gameStore = useGameStore();
 const workersStore = useWorkersStore();
 const workers = computed(() => workersStore.workersAtWeek(props.week - 2));
 
@@ -30,7 +31,7 @@ const props = defineProps<{
 <style scoped lang="postcss">
 .workers {
   display: grid;
-  grid-template-columns: repeat(v-bind('Object.keys(config.workers).length + 1'), auto);
+  grid-template-columns: repeat(v-bind('Object.keys(gameStore.config.workers).length + 1'), auto);
   column-gap: 1em;
 }
 

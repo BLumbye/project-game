@@ -13,9 +13,11 @@ import {
 } from '@tanstack/vue-table';
 import { GameSummary, Bid } from '~/types/types';
 import { currencyFormat } from '~/utils/formatters';
-import config from '~/config';
+import { AdminData } from '~/hooks/adminData';
+import { Games } from '~/pocketbase';
 
-const adminStore = useAdminStore();
+const currentGame = inject<Ref<Games>>('currentGame')!;
+const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
 interface AdditionalData {
   eventChoices: Record<string, string>;
@@ -35,14 +37,14 @@ interface AdditionalData {
 type TableData = Bid & Partial<GameSummary> & Partial<AdditionalData>;
 const columnHelper = createColumnHelper<TableData>();
 const columns = [
-  columnHelper.accessor((row) => adminStore.users.find((user) => user.id === row.userID)?.username, {
+  columnHelper.accessor((row) => currentGameData.value.users.find((user) => user.id === row.userID)?.username, {
     id: 'username',
     cell: (info) => info.getValue(),
     header: 'Username',
   }),
   columnHelper.accessor((row) => row.price, {
     id: 'price',
-    cell: (info) => currencyFormat.format(info.getValue()),
+    cell: (info) => currencyFormat(currentGame!.value.config).format(info.getValue()),
     header: 'Price',
   }),
   columnHelper.accessor((row) => row.promisedDuration, {
@@ -52,7 +54,7 @@ const columns = [
   }),
   columnHelper.accessor((row) => row.expectedCost, {
     id: 'expectedCost',
-    cell: (info) => currencyFormat.format(info.getValue()),
+    cell: (info) => currencyFormat(currentGame!.value.config).format(info.getValue()),
     header: 'Expected Cost',
   }),
   columnHelper.accessor((row) => row.expectedDuration, {
@@ -67,15 +69,15 @@ const columns = [
   }),
   columnHelper.accessor((row) => row.revisedPrice, {
     id: 'revisedPrice',
-    cell: (info) => currencyFormat.format(info.getValue()),
+    cell: (info) => currencyFormat(currentGame!.value.config).format(info.getValue()),
     header: 'Revised Price',
   }),
-  columnHelper.accessor((row) => (row.status === 'playing' ? 'Disconnected' : row.status ?? 'Not started'), {
+  columnHelper.accessor((row) => (row.status === 'playing' ? 'Disconnected' : (row.status ?? 'Not started')), {
     id: 'status',
     cell: (info) => info.getValue(),
     header: 'Status',
   }),
-  ...Object.entries(config.events)
+  ...Object.entries(currentGame.value.config.events)
     .filter(([, event]) => event.choices !== undefined)
     .map(([eventName]) =>
       columnHelper.accessor((row) => row.eventChoices![eventName] || 'Undecided', {
@@ -84,18 +86,21 @@ const columns = [
         header: `Event: ${eventName}`,
       }),
     ),
-  columnHelper.accessor((row) => (row.status === 'won' ? currencyFormat.format(row.totalBalance!) : ''), {
-    id: 'finalProfit',
-    cell: (info) => info.getValue(),
-    header: 'Final Profit',
-    sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.totalBalance! - b.original.totalBalance!,
-  }),
+  columnHelper.accessor(
+    (row) => (row.status === 'won' ? currencyFormat(currentGame!.value.config).format(row.totalBalance!) : ''),
+    {
+      id: 'finalProfit',
+      cell: (info) => info.getValue(),
+      header: 'Final Profit',
+      sortDescFirst: false,
+      sortingFn: (a, b) =>
+        a.getValue('status') !== 'won'
+          ? 1
+          : b.getValue('status') !== 'won'
+            ? -1
+            : a.original.totalBalance! - b.original.totalBalance!,
+    },
+  ),
   columnHelper.accessor((row) => (row.status === 'won' ? row.week : ''), {
     id: 'actualDuration',
     cell: (info) => info.getValue(),
@@ -128,30 +133,36 @@ const columns = [
           ? -1
           : a.original.planDurationDiff! - b.original.planDurationDiff!,
   }),
-  columnHelper.accessor((row) => (row.status === 'won' ? currencyFormat.format(row.actualCost!) : ''), {
-    id: 'actualCost',
-    cell: (info) => info.getValue(),
-    header: 'Actual Cost',
-    sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.actualCost! - b.original.actualCost!,
-  }),
-  columnHelper.accessor((row) => (row.status === 'won' ? currencyFormat.format(row.planCostDiff!) : ''), {
-    id: 'planCostDiff',
-    cell: (info) => info.getValue(),
-    header: 'Plan vs actual costs',
-    sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.planCostDiff! - b.original.planCostDiff!,
-  }),
+  columnHelper.accessor(
+    (row) => (row.status === 'won' ? currencyFormat(currentGame!.value.config).format(row.actualCost!) : ''),
+    {
+      id: 'actualCost',
+      cell: (info) => info.getValue(),
+      header: 'Actual Cost',
+      sortDescFirst: false,
+      sortingFn: (a, b) =>
+        a.getValue('status') !== 'won'
+          ? 1
+          : b.getValue('status') !== 'won'
+            ? -1
+            : a.original.actualCost! - b.original.actualCost!,
+    },
+  ),
+  columnHelper.accessor(
+    (row) => (row.status === 'won' ? currencyFormat(currentGame!.value.config).format(row.planCostDiff!) : ''),
+    {
+      id: 'planCostDiff',
+      cell: (info) => info.getValue(),
+      header: 'Plan vs actual costs',
+      sortDescFirst: false,
+      sortingFn: (a, b) =>
+        a.getValue('status') !== 'won'
+          ? 1
+          : b.getValue('status') !== 'won'
+            ? -1
+            : a.original.planCostDiff! - b.original.planCostDiff!,
+    },
+  ),
   columnHelper.accessor((row) => (row.status === 'won' ? row.priceRank : ''), {
     id: 'priceRank',
     cell: (info) => info.getValue(),
@@ -253,13 +264,15 @@ const columns = [
 const canWinStakeholder = (data: TableData) =>
   data.status === 'won' &&
   !Object.entries(data.eventChoices!).some(([eventName, choice]) =>
-    config.events[eventName].choices?.[choice].effects?.some((effect) => effect.excludeStakeholderWin),
+    currentGame.value.config.events[eventName].choices?.[choice].effects?.some(
+      (effect) => effect.excludeStakeholderWin,
+    ),
   );
 const getDurationModification = (eventChoices: Record<string, string>) =>
   Object.entries(eventChoices).reduce((acc, [eventName, choice]) => {
     return (
       acc +
-      (config.events[eventName].choices?.[choice].effects?.reduce(
+      (currentGame.value.config.events[eventName].choices?.[choice].effects?.reduce(
         (acc, effect) => acc + (effect.resultsDurationModification || 0),
         0,
       ) || 0)
@@ -291,13 +304,13 @@ const createTable = () => {
 };
 
 watch(
-  () => [adminStore.bids, adminStore.gameSummaries, adminStore.eventChoices],
+  () => [currentGameData.value.bids, currentGameData.value.gameSummaries, currentGameData.value.eventChoices],
   () => {
-    if (adminStore.bids.length > 0 && adminStore.gameSummaries.length > 0) {
-      const bidSummaryMerge = adminStore.bids.map((bid) => ({
+    if (currentGameData.value.bids.length > 0 && currentGameData.value.gameSummaries.length > 0) {
+      const bidSummaryMerge = currentGameData.value.bids.map((bid) => ({
         ...bid,
-        ...adminStore.gameSummaries.find((summary) => summary.userID === bid.userID),
-        eventChoices: adminStore.eventChoices[bid.userID] || {},
+        ...currentGameData.value.gameSummaries.find((summary) => summary.userID === bid.userID),
+        eventChoices: currentGameData.value.eventChoices[bid.userID] || {},
       }));
       data.value = bidSummaryMerge.map((row) => {
         if (!row.status || row.totalBalance === undefined || row.week === undefined) {
@@ -348,14 +361,22 @@ watch(
 );
 
 const loading = ref(true);
-if (adminStore.users.length > 0 && adminStore.bids.length > 0 && adminStore.gameSummaries.length > 0) {
+if (
+  currentGameData.value.users.length > 0 &&
+  currentGameData.value.bids.length > 0 &&
+  currentGameData.value.gameSummaries.length > 0
+) {
   createTable();
   loading.value = false;
 } else {
   const loadingWatcher = watch(
-    () => [adminStore.users, adminStore.bids, adminStore.gameSummaries],
+    () => [currentGameData.value.users, currentGameData.value.bids, currentGameData.value.gameSummaries],
     () => {
-      if (adminStore.users.length > 0 && adminStore.bids.length > 0 && adminStore.gameSummaries.length > 0) {
+      if (
+        currentGameData.value.users.length > 0 &&
+        currentGameData.value.bids.length > 0 &&
+        currentGameData.value.gameSummaries.length > 0
+      ) {
         createTable();
         loading.value = false;
         loadingWatcher();

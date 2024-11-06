@@ -55,7 +55,7 @@ const submitSurvey = () => {
   collections.surveyAnswers.create({
     ...sectionRefs.value.reduce((acc, section) => ({ ...acc, ...section.getData() }), {}),
     user: pocketbase.authStore.model!.id,
-    game_id: gameStore.gameID,
+    game_id: gameStore.game!.game_id,
   });
   // @ts-expect-error - This needs to be manually changed to always reference section 2 (bid section)
   bidStore.createBid(sectionRefs.value[0].getData());

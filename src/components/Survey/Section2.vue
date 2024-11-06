@@ -1,7 +1,7 @@
 <template>
   <h2 v-show="show" class="section-title">Bid information</h2>
   <div v-show="show" class="question">
-    <label class="prompt" for="price"> Price (in {{ config.currency.currency }}): </label>
+    <label class="prompt" for="price"> Price (in {{ gameStore.config.currency.currency }}): </label>
     <input
       id="price"
       v-model="price"
@@ -15,8 +15,8 @@
   </div>
   <div v-show="show" class="question">
     <label class="prompt" for="promised-duration">
-      Promised duration (number of {{ config.durationIdentifier.plural }}, i.e. you promise your client that project
-      will be completed by the end of which {{ config.durationIdentifier.singular }}):
+      Promised duration (number of {{ gameStore.config.durationIdentifier.plural }}, i.e. you promise your client that
+      project will be completed by the end of which {{ gameStore.config.durationIdentifier.singular }}):
     </label>
     <input
       id="promised-duration"
@@ -31,8 +31,8 @@
   </div>
   <div v-show="show" class="question">
     <label class="prompt" for="expected-cost">
-      Expected cost (in {{ config.currency.currency }}) - This will not influence the measurement of success, and it is
-      only used so we know whether your calculations are more or less correct:
+      Expected cost (in {{ gameStore.config.currency.currency }}) - This will not influence the measurement of success,
+      and it is only used so we know whether your calculations are more or less correct:
     </label>
     <input
       id="expected-cost"
@@ -47,8 +47,8 @@
   </div>
   <div v-show="show" class="question">
     <label class="prompt" for="expected-duration">
-      Expected duration (in {{ config.durationIdentifier.plural }}) - This will not influence the measurement of
-      success:
+      Expected duration (in {{ gameStore.config.durationIdentifier.plural }}) - This will not influence the measurement
+      of success:
     </label>
     <input
       id="expected-duration"
@@ -65,7 +65,8 @@
 
 <script setup lang="ts">
 import { and, asNumber, isNumber, isPositive, isWholeNumber, validate } from '~/utils/validation';
-import config from '~/config';
+
+const gameStore = useGameStore();
 
 const price = ref<number | undefined>();
 const promisedDuration = ref<number | undefined>();

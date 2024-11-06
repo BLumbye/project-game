@@ -1,6 +1,7 @@
 import { ConfigActivities, Event } from './types';
 
 export interface Config {
+  name: string;
   bid: {
     /** If the user submitted bid exceeds this value set it to default */
     max: number;

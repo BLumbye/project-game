@@ -1,13 +1,7 @@
 <template>
   <header>
     <span class="title">Project Game</span>
-    <span v-if="$route.name === 'game' && gameStore.gameState === 'in_progress'">
-      {{ capitalize(config.durationIdentifier.singular) }} {{ gameStore.week }}
-    </span>
-    <span v-if="$route.name === 'game' && ['getting_bids', 'reviewing_bids'].includes(gameStore.gameState!)">
-      Pre-Game Survey
-    </span>
-    <span v-if="isAdmin()"> Admin Panel </span>
+    <span>{{ pageTitle }}</span>
     <div v-if="pocketbase.authStore.isValid" class="right-side">
       <span>{{ pocketbase.authStore.model!.username }}</span>
       <button class="logout-button" @click="logout()">Log out</button>
@@ -22,9 +16,15 @@
 <script setup lang="ts">
 import { pocketbase, isAdmin } from '~/pocketbase';
 import { capitalize } from '~/utils/formatters';
-import config from '~/config';
 
-const gameStore = useGameStore();
+const pageTitle = computed(() => {
+  if (isAdmin()) return 'Admin Panel';
+  const gameStore = useGameStore();
+  if (!gameStore.synchronized || gameStore.game!.game_state === 'in_progress')
+    return `${capitalize(gameStore.config.durationIdentifier.singular)} ${gameStore.week}`;
+  else if (gameStore.game!.game_state === 'finished') return 'Game Over';
+  else if (['getting_bids', 'reviewing_bids'].includes(gameStore.game!.game_state)) return 'Pre-Game Survey';
+});
 const router = useRouter();
 
 function logout() {

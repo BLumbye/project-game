@@ -1,4 +1,5 @@
 import PocketBase, { ClientResponseError, RecordService } from 'pocketbase';
+import { Config } from './types/configInterface';
 
 export interface User {
   id: string;
@@ -145,6 +146,14 @@ export interface EventChoice {
   choice: string;
 }
 
+export interface Games {
+  id: string;
+  game_id: number;
+  current_week: number;
+  game_state: 'adding_users' | 'getting_bids' | 'reviewing_bids' | 'in_progress' | 'finished';
+  config: Config;
+}
+
 interface TypedPocketBase extends PocketBase {
   collection(idOrName: string): RecordService;
   collection(idOrName: 'users'): RecordService<User>;
@@ -161,6 +170,7 @@ interface TypedPocketBase extends PocketBase {
   collection(idOrName: 'total_progress'): RecordService<TotalProgress>;
   collection(idOrName: 'workers'): RecordService<Workers>;
   collection(idOrName: 'event_choices'): RecordService<EventChoice>;
+  collection(idOrName: 'games'): RecordService<Games>;
 }
 
 const pocketbaseUrl = import.meta.env.VITE_POCKETBASE_URL;
@@ -183,6 +193,7 @@ export const collections = {
   totalProgress: pocketbase.collection('total_progress'),
   gameSummary: pocketbase.collection('game_summary'),
   eventChoices: pocketbase.collection('event_choices'),
+  games: pocketbase.collection('games'),
 };
 
 export const updateExistingOrCreate = async (

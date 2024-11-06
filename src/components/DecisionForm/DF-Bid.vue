@@ -5,21 +5,23 @@
 -->
 
 <template>
-  <div :class="['bid', { 'bid-wide': !config.loansEnabled }]">
+  <div :class="['bid', { 'bid-wide': !gameStore.config.loansEnabled }]">
     <h3 class="bid-column-label">Bid</h3>
     <span :class="bidStore.revised ? 'rejected-bid-label' : 'accepted-bid-label'">{{
-      currencyFormat.format(bidStore.price)
+      currencyFormat(gameStore.config).format(bidStore.price)
     }}</span>
-    <span class="accepted-bid-label">{{ bidStore.promisedDuration }} {{ config.durationIdentifier.plural }}</span>
+    <span class="accepted-bid-label"
+      >{{ bidStore.promisedDuration }} {{ gameStore.config.durationIdentifier.plural }}</span
+    >
   </div>
 </template>
 
 <!-- Script -->
 
 <script setup lang="ts">
-import config from '~/config';
 import { currencyFormat } from '~/utils/formatters';
 
+const gameStore = useGameStore();
 const bidStore = useBidStore();
 </script>
 

@@ -3,7 +3,6 @@ import { merge } from 'ts-deepmerge';
 import { Equipment, DeliveryType, EquipmentStatus } from '../types/types';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 import { createWeeklyTimeline } from '~/utils/timeline';
-import config from '~/config';
 
 type EquipmentState = Record<string, Equipment>;
 
@@ -16,7 +15,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
     'equipment',
     {},
     (accumulator, current) => merge(accumulator, current),
-    Object.keys(config.equipment).reduce(
+    Object.keys(gameStore.config.equipment).reduce(
       (accumulator, type) => ({ ...accumulator, [type]: { status: 'unordered' } }),
       {},
     ) as EquipmentState,
@@ -93,13 +92,13 @@ export const useEquipmentStore = defineStore('equipment', () => {
     }
 
     if (!timeline.get.value()) return;
-    Object.keys(config.equipment).forEach((type) => {
+    Object.keys(gameStore.config.equipment).forEach((type) => {
       updateExistingOrCreate(
         collections.equipment,
         `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && equipment_type="${type}"`,
         {
           user: pocketbase.authStore.model!.id,
-          game_id: gameStore.gameID,
+          game_id: gameStore.game!.game_id,
           week: gameStore.week,
           equipment_type: type,
           status: timeline.get.value()![type]?.status || timeline.getReduced.value()[type]?.status,
@@ -110,13 +109,13 @@ export const useEquipmentStore = defineStore('equipment', () => {
     });
   }
 
-  if (gameStore.settingsLoaded) {
+  if (gameStore.loaded) {
     connectWithDatabase();
   } else {
     const synchronizedWatcher = watch(
-      () => gameStore.settingsLoaded,
+      () => gameStore.loaded,
       () => {
-        if (gameStore.settingsLoaded) {
+        if (gameStore.loaded) {
           synchronizedWatcher();
           connectWithDatabase();
         }

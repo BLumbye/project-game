@@ -1,34 +1,24 @@
 <template>
   <GameHeader />
-  <AdminNavigation v-if="gameStore.synchronized" />
-  <main :class="{ 'not-started': !gameStore.synchronized }">
-    <AdminNotStarted v-if="!gameStore.synchronized" />
-    <template v-else>
-      <router-view></router-view>
-      <AdminActionMenu class="admin-action-menu" />
-    </template>
+  <AdminNavigation />
+  <main>
+    <router-view></router-view>
   </main>
-  <AddUsersDialog ref="addUsersModal" />
+
   <ConfirmationDialog ref="confirmModal" />
 </template>
 
 <script setup lang="ts">
 import { isAdmin, pocketbase } from '~/pocketbase';
-import AddUsersDialog from '~/components/Admin/AddUsersDialog.vue';
 import ConfirmationDialog from '~/components/Admin/ConfirmationDialog.vue';
 
-const gameStore = useGameStore();
-
-const addUsersModal = ref<typeof AddUsersDialog | null>(null);
 const confirmModal = ref<typeof ConfirmationDialog | null>(null);
 
 if (!pocketbase.authStore.isValid || !isAdmin()) {
   console.log('redirecting from admin...');
-  gameStore.connectAllDatabases();
-  gameStore.routeCorrectly();
+  useRouter().push('/');
 }
 
-provide('addUsersModal', addUsersModal);
 provide('confirmModal', confirmModal);
 </script>
 
@@ -54,8 +44,7 @@ main {
   grid-template-rows: auto minmax(0, 1fr);
 }
 
-header,
-.not-started {
+header {
   grid-column: 1 / 3;
 }
 

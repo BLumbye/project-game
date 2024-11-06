@@ -12,14 +12,16 @@ import {
   Table,
 } from '@tanstack/vue-table';
 import { AdminGameState } from '~/types/types';
-import config from '~/config';
 import { capitalize } from '~/utils/formatters';
+import { AdminData } from '~/hooks/adminData';
+import { Games } from '~/pocketbase';
 
-const adminStore = useAdminStore();
+const currentGame = inject<Ref<Games>>('currentGame')!;
+const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
 const columnHelper = createColumnHelper<AdminGameState>();
 const columns = [
-  columnHelper.accessor((row) => adminStore.users.find((user) => user.id === row.userID)?.username, {
+  columnHelper.accessor((row) => currentGameData.value.users.find((user) => user.id === row.userID)?.username, {
     id: 'username',
     cell: (info) => info.getValue(),
     header: 'Username',
@@ -37,14 +39,14 @@ const columns = [
   columnHelper.accessor((row) => row.week, {
     id: 'week',
     cell: (info) => info.getValue(),
-    header: `${capitalize(config.durationIdentifier.singular)}`,
+    header: `${capitalize(currentGame.value.config.durationIdentifier.singular)}`,
   }),
   columnHelper.accessor((row) => (row.ready ? 'Yes' : 'No'), {
     id: 'ready',
     cell: (info) => info.getValue(),
     header: 'Ready',
   }),
-  ...Object.entries(config.events)
+  ...Object.entries(currentGame.value.config.events)
     .filter(([, event]) => event.choices !== undefined)
     .map(([eventName]) =>
       columnHelper.accessor((row) => row.eventChoices[eventName] || 'Undecided', {
@@ -62,7 +64,7 @@ let table: Table<AdminGameState>;
 const createTable = () => {
   table = useVueTable({
     get data() {
-      return adminStore.gameStates;
+      return currentGameData.value.gameStates;
     },
     columns,
     state: {
@@ -79,14 +81,14 @@ const createTable = () => {
 };
 
 const loading = ref(true);
-if (adminStore.users.length > 0) {
+if (currentGameData.value.users.length > 0) {
   createTable();
   loading.value = false;
 } else {
   const loadingWatcher = watch(
-    () => adminStore.users,
+    () => currentGameData.value.users,
     () => {
-      if (adminStore.users.length > 0) {
+      if (currentGameData.value.users.length > 0) {
         createTable();
         loading.value = false;
         loadingWatcher();

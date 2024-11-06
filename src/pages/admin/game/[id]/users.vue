@@ -1,20 +1,20 @@
 <template>
-  <div v-if="adminStore.users.length === 0" class="clamped">
+  <div v-if="currentGameData.users.length === 0" class="clamped">
     <p class="game-state">Waiting for users to be added to the game.</p>
     <button @click="addUsersModal?.open()">Add Users</button>
   </div>
   <div v-else class="clamped">
-    <h2>Users ({{ adminStore.users.length }})</h2>
+    <h2>Users ({{ currentGameData.users.length }})</h2>
     <div class="users">
       <div
-        v-for="user in adminStore.users.sort((a, b) => a.username.localeCompare(b.username))"
+        v-for="user in currentGameData.users.sort((a, b) => a.username.localeCompare(b.username))"
         :key="user.id"
         class="user"
       >
         <span>{{ user.username }}</span>
       </div>
     </div>
-    <div class="buttons">
+    <div class="buttons" v-if="isGameInProgress">
       <button @click="addUsersModal?.open">Add More Users</button>
     </div>
   </div>
@@ -22,8 +22,10 @@
 
 <script setup lang="ts">
 import AddUsersDialog from '~/components/Admin/AddUsersDialog.vue';
+import { AdminData } from '~/hooks/adminData';
 
-const adminStore = useAdminStore();
+const isGameInProgress = inject<Ref<boolean>>('isGameInProgress')!;
+const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 const addUsersModal = inject('addUsersModal', ref<typeof AddUsersDialog | null>(null));
 </script>
 

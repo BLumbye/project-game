@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import config from '../config';
 import { collections, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 import { useStorage } from '@vueuse/core';
+import { Config } from '~/types/configInterface';
 
 type WorkersState = Record<string, number>;
 
@@ -10,13 +10,16 @@ export const useWorkersStore = defineStore('workers', () => {
 
   // State
   const loading = ref(true);
-  const workers = useStorage(
-    'workers',
-    Array.from(
-      { length: config.projectDuration + 1 },
-      () => Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}) as WorkersState,
-    ),
-  );
+  const workers = useStorage<WorkersState[]>('workers', []);
+
+  const initialize = async (config: Config) => {
+    if (workers.value.length === 0) {
+      workers.value = Array.from(
+        { length: config.projectDuration + 1 },
+        () => Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}) as WorkersState,
+      );
+    }
+  };
 
   // Getters
 
@@ -27,7 +30,10 @@ export const useWorkersStore = defineStore('workers', () => {
   const workersAtWeek = computed(() => {
     return (week?: number) => {
       week ??= useGameStore().week;
-      const summedWorkers: WorkersState = Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
+      const summedWorkers: WorkersState = Object.keys(gameStore.config.workers).reduce(
+        (acc, key) => ({ ...acc, [key]: 0 }),
+        {},
+      );
       for (let i = 0; i < week; i++) {
         for (const key in summedWorkers) {
           summedWorkers[key] += workers.value[i][key];
@@ -97,13 +103,13 @@ export const useWorkersStore = defineStore('workers', () => {
       return;
     }
 
-    Object.keys(config.workers).forEach((type) => {
+    Object.keys(gameStore.config.workers).forEach((type) => {
       updateExistingOrCreate(
         collections.workers,
         `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && worker_type="${type}"`,
         {
           user: pocketbase.authStore.model!.id,
-          game_id: gameStore.gameID,
+          game_id: gameStore.game!.game_id,
           week: gameStore.week,
           worker_type: type,
           change: workers.value[gameStore.week][type],
@@ -112,13 +118,13 @@ export const useWorkersStore = defineStore('workers', () => {
     });
   }
 
-  if (gameStore.settingsLoaded) {
+  if (gameStore.loaded) {
     connectWithDatabase();
   } else {
     const synchronizedWatcher = watch(
-      () => gameStore.settingsLoaded,
+      () => gameStore.loaded,
       () => {
-        if (gameStore.settingsLoaded) {
+        if (gameStore.loaded) {
           synchronizedWatcher();
           connectWithDatabase();
         }
@@ -131,6 +137,7 @@ export const useWorkersStore = defineStore('workers', () => {
     workers,
     workersAtWeek,
     currentWorkers,
+    initialize,
     change,
     updateDatabase,
     connectWithDatabase,

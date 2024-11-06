@@ -20,8 +20,8 @@
     <input
       id="new-loan-input"
       v-model="newLoan"
-      v-tooltip="{
-        content: 'You can only take one loan at a time.',
+      v-tooltip:top="{
+        text: 'You can only take one loan at a time.',
         disabled: newLoan === 0 || !financeStore.hasActiveLoan(),
       }"
       type="text"
@@ -35,9 +35,8 @@
     <input
       id="repay-input"
       v-model="repay"
-      v-tooltip="{
-        content:
-          'It seems like you might be trying to repay in percentages. If you wish to do so, rememember to add &quot;%&quot; at the end of the input.',
+      v-tooltip:top="{
+        text: 'It seems like you might be trying to repay in percentages. If you wish to do so, rememember to add &quot;%&quot; at the end of the input.',
         disabled: !repayWarning,
       }"
       type="text"

@@ -19,9 +19,11 @@
 <script setup lang="ts">
 import { ChartData } from 'chart.js';
 import { Bar } from 'vue-chartjs';
-import config from '~/config';
+import { AdminData } from '~/hooks/adminData';
+import { Games } from '~/pocketbase';
 
-const adminStore = useAdminStore();
+const currentGame = inject<Ref<Games>>('currentGame')!;
+const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
 const hideUsernames = ref(false);
 const hideCutoffs = ref(false);
@@ -42,8 +44,8 @@ const priceDistributionOptions = computed<(typeof Bar)['options']>(() => ({
           ? undefined
           : {
               type: 'line',
-              yMin: config.bid.min,
-              yMax: config.bid.min,
+              yMin: currentGame.value.config.bid.min,
+              yMax: currentGame.value.config.bid.min,
               borderColor: '#ff0000',
               borderWidth: 2,
             },
@@ -51,8 +53,8 @@ const priceDistributionOptions = computed<(typeof Bar)['options']>(() => ({
           ? undefined
           : {
               type: 'line',
-              yMin: config.bid.max,
-              yMax: config.bid.max,
+              yMin: currentGame.value.config.bid.max,
+              yMax: currentGame.value.config.bid.max,
               borderColor: '#ff0000',
               borderWidth: 2,
             },
@@ -67,26 +69,28 @@ const priceDistributionOptions = computed<(typeof Bar)['options']>(() => ({
     },
     y: {
       beginAtZero: true,
-      suggestedMax: !hideCutoffs.value ? config.bid.max * 1.05 : undefined,
+      suggestedMax: !hideCutoffs.value ? currentGame.value.config.bid.max * 1.05 : undefined,
     },
   },
 }));
 
 const priceDistributionData = computed<BarData>(() => {
-  let sortedBids = adminStore.bids.sort((a, b) => a.price - b.price);
+  let sortedBids = currentGameData.value.bids.sort((a, b) => a.price - b.price);
   if (hideOutliers.value) {
     sortedBids = removeOutliers(sortedBids);
   }
-  const labels = sortedBids.map((bid) => adminStore.users.find((user) => user.id === bid.userID)?.username);
+  const labels = sortedBids.map((bid) => currentGameData.value.users.find((user) => user.id === bid.userID)?.username);
   const datasets = [{ data: sortedBids.map((bid) => bid.price), backgroundColor: '#4285f4' }];
   return { labels, datasets };
 });
 
-function removeOutliers(sortedBids: typeof adminStore.bids) {
+function removeOutliers(sortedBids: typeof currentGameData.value.bids) {
   const q1 = sortedBids[Math.floor(sortedBids.length / 4)];
   const q3 = sortedBids[Math.floor((sortedBids.length / 4) * 3)];
   const iqr = q3.price - q1.price;
-  return adminStore.bids.filter((bid) => bid.price >= q1.price - iqr * 1.5 && bid.price <= q3.price + iqr * 1.5);
+  return currentGameData.value.bids.filter(
+    (bid) => bid.price >= q1.price - iqr * 1.5 && bid.price <= q3.price + iqr * 1.5,
+  );
 }
 </script>
 

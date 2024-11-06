@@ -15,12 +15,12 @@
     </div>
     <span class="workers-column-label">Worker</span>
     <span class="workers-column-label">Amount</span>
-    <template v-for="(worker, key) in config.workers" :key="key">
+    <template v-for="(worker, key) in gameStore.config.workers" :key="key">
       <label :for="`${key}-input`" class="worker-label">{{ capitalize(worker.label) }}</label>
       <input
         :id="`${key}-input`"
         v-model="inputs[key]"
-        v-tooltip="{ content: 'You cannot fire more workers than you have.', disabled: !inputError(key as string) }"
+        v-tooltip:top="{ text: 'You cannot fire more workers than you have.', disabled: !inputError(key as string) }"
         type="text"
         :disabled="gameStore.ready"
         class="worker-input"
@@ -37,18 +37,17 @@
 <script setup lang="ts">
 import { and, isNumber, isWholeNumber, validate } from '~/utils/validation';
 import Info from '~/assets/info-large.svg';
-import config from '~/config';
 import { capitalize } from '~/utils/formatters';
 
+const gameStore = useGameStore();
+const workersStore = useWorkersStore();
+
 const inputs = ref<Record<string, string>>(
-  Object.keys(config.workers).reduce((acc, worker) => ({ ...acc, [worker]: '' }), {}),
+  Object.keys(gameStore.config.workers).reduce((acc, worker) => ({ ...acc, [worker]: '' }), {}),
 );
 const inputError = computed(
   () => (worker: string) => workersStore.currentWorkers[worker] + Number(inputs.value[worker]) < 0,
 );
-
-const gameStore = useGameStore();
-const workersStore = useWorkersStore();
 
 watch(
   inputs,
@@ -87,7 +86,7 @@ watch(
 .workers {
   display: grid;
   grid-template-columns: repeat(2, auto);
-  grid-template-rows: repeat(v-bind('Object.keys(config.workers).length + 2'), auto);
+  grid-template-rows: repeat(v-bind('Object.keys(gameStore.config.workers).length + 2'), auto);
   gap: 4px 0.5rem;
 }
 

@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
-import config from '../config';
 import { Activity, ConfigActivity, EventEffect } from '../types/types';
 import { createWeeklyTimeline, sumReducer } from '../utils/timeline';
 import { collections, deleteExisting, pocketbase, updateExistingOrCreate } from '~/pocketbase';
 import { useStorage } from '@vueuse/core';
+import { Config } from '~/types/configInterface';
 
-const generateProgressTimelines = () => {
+const generateProgressTimelines = (config: Config) => {
   const timelines: Record<string, ReturnType<typeof createWeeklyTimeline<number>>> = {};
   for (const activity of config.activities) {
     timelines[activity.label] = createWeeklyTimeline(`activity-${activity.label}-timeline`, 0, sumReducer, 0);
@@ -13,12 +13,15 @@ const generateProgressTimelines = () => {
   return timelines;
 };
 
-const generateDefaultAllocation = () => Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
+const generateDefaultAllocation = (config: Config) =>
+  Object.keys(config.workers).reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
 
-const generateAllocationState = () => {
+const generateAllocationState = (config: Config) => {
   const allocations: Record<string, Record<string, number>[]> = {};
   for (const activity of config.activities) {
-    allocations[activity.label] = Array.from({ length: config.projectDuration + 1 }, generateDefaultAllocation);
+    allocations[activity.label] = Array.from({ length: config.projectDuration + 1 }, () =>
+      generateDefaultAllocation(config),
+    );
   }
   return allocations;
 };
@@ -31,8 +34,8 @@ export const useActivitiesStore = defineStore('activities', () => {
 
   // State
   const loading = ref(true);
-  const progressTimelines = generateProgressTimelines();
-  const allocations = useStorage('allocations', generateAllocationState());
+  const progressTimelines = generateProgressTimelines(gameStore.config);
+  const allocations = useStorage('allocations', generateAllocationState(gameStore.config));
   const weekActivityDone = useStorage<Record<string, number>>('weekActivityDone', {}); //Which week an activity is done. If an activity is not in the record, it is not done.
 
   // Getters
@@ -44,10 +47,10 @@ export const useActivitiesStore = defineStore('activities', () => {
   const activitiesAtWeek = computed(() => {
     return (week?: number) => {
       week ??= gameStore.week;
-      return config.activities.map((activity) => ({
+      return gameStore.config.activities.map((activity) => ({
         ...activity,
         progress: progressTimelines[activity.label].getReduced.value(week),
-        allocation: allocations.value[activity.label][week!] || generateDefaultAllocation(),
+        allocation: allocations.value[activity.label][week!] || generateDefaultAllocation(gameStore.config),
         hidden: isActivityHidden(activity, week),
       })) satisfies Activity[];
     };
@@ -60,7 +63,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const activityFromLabel = computed(() => {
     return (label: string, week?: number) => {
       week ??= gameStore.week;
-      const configActivity = config.activities.find((activity) => activity.label === label);
+      const configActivity = gameStore.config.activities.find((activity) => activity.label === label);
       if (configActivity === undefined) throw new Error(`Activity with label ${label} not found`);
       return {
         ...configActivity,
@@ -116,7 +119,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const totalWorkersAssigned = computed(() => {
     return (type: string, week?: number) => {
       week ??= gameStore.week;
-      return config.activities.reduce(
+      return gameStore.config.activities.reduce(
         (totalWorkers, activity) => totalWorkers + (allocations.value[activity.label][week!]?.[type] || 0),
         0,
       );
@@ -181,7 +184,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         return enoughAssigned && enoughHired;
       };
 
-      return Object.keys(config.workers).every(enoughWorkers);
+      return Object.keys(gameStore.config.workers).every(enoughWorkers);
     };
   });
 
@@ -278,7 +281,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
       week ??= gameStore.week;
       activityCompletion ??= weekActivityDone.value;
-      const durationModification = Object.entries(config.events)
+      const durationModification = Object.entries(gameStore.config.events)
         .filter(
           // Filter out events that are not active
           ([, event]) =>
@@ -314,7 +317,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     return (activity: ConfigActivity, week?: number, activityCompletion?: Record<string, number>) => {
       week ??= gameStore.week;
       activityCompletion ??= weekActivityDone.value;
-      const workersModification: Record<string, number> = Object.keys(config.workers).reduce(
+      const workersModification: Record<string, number> = Object.keys(gameStore.config.workers).reduce(
         (acc, key) => ({ ...acc, [key]: 0 }),
         {},
       );
@@ -323,7 +326,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       }
       eventStore.activeEventEffectsAtWeek(week).forEach((effect) => {
         if (!effect.activityLabels?.includes(activity.label) || effect.workersModification === undefined) return;
-        for (const key in config.workers) {
+        for (const key in gameStore.config.workers) {
           workersModification[key] += effect.workersModification[key] || 0;
         }
       });
@@ -335,7 +338,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     let multiplier = Infinity;
 
     let workersRequired: Partial<Record<string, number>> = getEventWorkersModification.value(activity);
-    workersRequired = Object.keys(config.workers).reduce(
+    workersRequired = Object.keys(gameStore.config.workers).reduce(
       (acc, key) => ({ ...acc, [key]: (workersRequired[key] || 0) + (activity.requirements.workers?.[key] || 0) }),
       {},
     );
@@ -437,7 +440,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
     activities.value.forEach((activity) => {
       // Update allocation
-      Object.keys(config.workers).forEach((type) => {
+      Object.keys(gameStore.config.workers).forEach((type) => {
         updateExistingOrCreate(
           collections.allocation,
           `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week} && activity="${
@@ -445,7 +448,7 @@ export const useActivitiesStore = defineStore('activities', () => {
           }" && worker_type="${type}"`,
           {
             user: pocketbase.authStore.model!.id,
-            game_id: gameStore.gameID,
+            game_id: gameStore.game!.game_id,
             week: gameStore.week,
             activity: activity.label,
             worker_type: type,
@@ -462,7 +465,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         }"`,
         {
           user: pocketbase.authStore.model!.id,
-          game_id: gameStore.gameID,
+          game_id: gameStore.game!.game_id,
           week: gameStore.week,
           activity: activity.label,
           progress: progressTimelines[activity.label].get.value(),
@@ -476,7 +479,7 @@ export const useActivitiesStore = defineStore('activities', () => {
           `user.username="${pocketbase.authStore.model!.username}" && activity="${activity.label}"`,
           {
             user: pocketbase.authStore.model!.id,
-            game_id: gameStore.gameID,
+            game_id: gameStore.game!.game_id,
             activity: activity.label,
             week: weekActivityDone.value[activity.label],
           },
@@ -495,14 +498,14 @@ export const useActivitiesStore = defineStore('activities', () => {
       `user.username="${pocketbase.authStore.model!.username}" && week=${gameStore.week}`,
       {
         user: pocketbase.authStore.model!.id,
-        game_id: gameStore.gameID,
+        game_id: gameStore.game!.game_id,
         week: gameStore.week,
         progress: totalProgress.value(),
       },
     );
   }
 
-  if (gameStore.settingsLoaded) {
+  if (gameStore.loaded) {
     connectWithDatabase();
     // Every time the week progresses, elligible activities are progressed.
     watch(
@@ -513,9 +516,9 @@ export const useActivitiesStore = defineStore('activities', () => {
     );
   } else {
     const synchronizedWatcher = watch(
-      () => gameStore.settingsLoaded,
+      () => gameStore.loaded,
       () => {
-        if (gameStore.settingsLoaded) {
+        if (gameStore.loaded) {
           synchronizedWatcher();
           connectWithDatabase();
           // Every time the week progresses, elligible activities are progressed.

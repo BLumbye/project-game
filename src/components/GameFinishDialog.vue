@@ -3,7 +3,8 @@
     <div class="contents">
       <h2>{{ gameStore.gameWon ? 'Project Completed' : 'Project not completed in time' }}</h2>
       <p v-if="gameStore.gameWon">
-        You've successfully completed the project in {{ gameStore.week }} {{ config.durationIdentifier.plural }} with
+        You've successfully completed the project in {{ gameStore.week }}
+        {{ gameStore.config.durationIdentifier.plural }} with
         {{ financeStore.balanceAtWeek() >= 0 ? `${formattedBalance} in profit.` : `${formattedBalance} over budget.` }}
       </p>
       <template v-else>
@@ -12,7 +13,7 @@
         <WRWorkers v-if="workersLeft && gameStore.week > 1" :week="gameStore.week + 2" />
         <WRFinances v-if="financeStore.loan !== 0 && gameStore.week > 1" :week="gameStore.week + 2" />
       </template>
-      <button @click="dialog?.close">Close</button>
+      <button @click="() => dialog?.close()">Close</button>
     </div>
   </dialog>
 </template>
@@ -20,7 +21,6 @@
 <script setup lang="ts">
 import { backgroundClickClose } from '~/utils/dialog';
 import { currencyFormat } from '~/utils/formatters';
-import config from '~/config';
 
 const gameStore = useGameStore();
 const financeStore = useFinanceStore();
@@ -45,7 +45,7 @@ const loseReasons = computed(() => {
 });
 
 const formattedBalance = computed(() =>
-  currencyFormat.format(Math.abs(financeStore.balanceAtWeek(gameStore.week + 1))),
+  currencyFormat(gameStore.config).format(Math.abs(financeStore.balanceAtWeek(gameStore.week + 1))),
 );
 
 const open = () => {
