@@ -12,7 +12,7 @@ import { addWorkers } from './utils/configUtils';
 const baseConfig: Omit<Config, 'events'> = {
   name: 'Light',
   bid: {
-    max: 6000,
+    max: 9000,
     min: 4000,
     default: 5000,
     defaultDuration: 8,

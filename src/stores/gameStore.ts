@@ -6,7 +6,7 @@ import { useStorage } from '@vueuse/core';
 /**
  * This store contains overall information about the game, and also controls the flow
  * of the game if synchronized mode is enabled.
- * ! It is important that this store does not use any other stores in the setup, as they are not yet initialized and cannot be before this store is fully initialized.
+ * ! It is important that this store does not use any other stores in the setup, as they are not yet initialized and depend on this store being initialized.
  * ! Likewise, it is important that this store is the very first to be initialized, and that no others are initialized asynchronously meanwhile this one is not fully initialized.
  */
 export const useGameStore = defineStore('game', () => {
@@ -124,7 +124,7 @@ export const useGameStore = defineStore('game', () => {
       user: pocketbase.authStore.model!.id,
       game_id: game.value!.game_id,
       week: week.value,
-      total_balance: financeStore.balanceAtWeek(),
+      total_balance: financeStore.balanceAtWeek(week.value + 1),
       total_loaned: financeStore.loanTimeline.getReduced(),
       total_repaid: financeStore.loanRepayTimeline.getReduced(),
       status: gameOver.value ? (gameWon.value ? 'won' : 'lost') : 'playing',
