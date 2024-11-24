@@ -13,8 +13,8 @@ const baseConfig: Omit<Config, 'events'> = {
   name: 'Light',
   bid: {
     max: 9000,
-    min: 4000,
-    default: 5000,
+    min: 5000,
+    default: 7000,
     defaultDuration: 8,
   },
   finances: {
