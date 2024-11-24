@@ -307,11 +307,21 @@ watch(
   () => [currentGameData.value.bids, currentGameData.value.gameSummaries, currentGameData.value.eventChoices],
   () => {
     if (currentGameData.value.bids.length > 0 && currentGameData.value.gameSummaries.length > 0) {
-      const bidSummaryMerge = currentGameData.value.bids.map((bid) => ({
-        ...bid,
-        ...currentGameData.value.gameSummaries.find((summary) => summary.userID === bid.userID),
-        eventChoices: currentGameData.value.eventChoices[bid.userID] || {},
+      const defaultBid = {
+        price: currentGame.value.config.bid.default,
+        expectedCost: currentGame.value.config.bid.default,
+        revisedPrice: currentGame.value.config.bid.default,
+        promisedDuration: currentGame.value.config.bid.defaultDuration,
+        expectedDuration: currentGame.value.config.bid.defaultDuration,
+      };
+
+      const bidSummaryMerge = currentGameData.value.gameSummaries.map((summary) => ({
+        ...summary,
+        ...(currentGameData.value.bids.find((bid) => bid.userID === summary.userID) || defaultBid),
+        eventChoices: currentGameData.value.eventChoices[summary.userID] || {},
       }));
+
+      // Add rank calculations
       data.value = bidSummaryMerge.map((row) => {
         if (!row.status || row.totalBalance === undefined || row.week === undefined) {
           return row;
