@@ -71,7 +71,7 @@ export const useAdminStore = defineStore('admin', () => {
     const game = gameByID.value(gameID);
     if (game === undefined) throw new Error('Game not found');
     collections.games.update(game.id, { game_state: 'getting_bids' });
-    router.push(`/admin/game/${game.id}/bids`);
+    router.push(`/admin/game/${game.game_id}/bids`);
   }
 
   function stopAcceptingBids(gameID: number) {
@@ -84,7 +84,7 @@ export const useAdminStore = defineStore('admin', () => {
     const game = gameByID.value(gameID);
     if (game === undefined) throw new Error('Game not found');
     collections.games.update(game.id, { game_state: 'in_progress' });
-    router.push(`/admin/game/${game.id}/game-progress`);
+    router.push(`/admin/game/${game.game_id}/game-progress`);
   }
 
   function progressWeek(gameID: number) {
@@ -97,7 +97,7 @@ export const useAdminStore = defineStore('admin', () => {
     const game = gameByID.value(gameID);
     if (game === undefined) throw new Error('Game not found');
     collections.games.update(game.id, { game_state: 'finished' });
-    router.push(`/admin/game/${game.id}/results`);
+    router.push(`/admin/game/${game.game_id}/results`);
   }
 
   function stopGameSession(gameID: number) {
