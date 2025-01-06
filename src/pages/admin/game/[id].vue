@@ -45,4 +45,8 @@ p {
   max-width: 60ch;
   text-wrap: balance;
 }
+
+.admin-action-menu {
+  align-self: center;
+}
 </style>

@@ -1,8 +1,8 @@
 import { saveAs } from 'file-saver';
 import { defineStore } from 'pinia';
 import { ClientResponseError } from 'pocketbase';
-import config from '~/config';
-import { collections, Games } from '~/pocketbase';
+import configs from '~/config';
+import { collections, Games, Settings } from '~/pocketbase';
 import { generatePassword } from '~/utils/passwordGenerator';
 
 export const useAdminStore = defineStore('admin', () => {
@@ -10,6 +10,7 @@ export const useAdminStore = defineStore('admin', () => {
 
   // State
   const games = ref<Games[]>([]);
+  const settings = ref<Settings | undefined>();
 
   // Getters
   const newestGame = computed(() => {
@@ -56,13 +57,25 @@ export const useAdminStore = defineStore('admin', () => {
     });
   }
 
-  async function createGame() {
+  async function fetchSettings() {
+    settings.value = (await collections.settings.getList(1, 1)).items[0];
+    collections.settings.subscribe(settings.value!.id, (data) => {
+      settings.value = data.record;
+    });
+  }
+
+  function setFreeplayConfig(name: string) {
+    if (settings.value === undefined) return;
+    collections.settings.update(settings.value.id, { freeplay_config: configs.find((config) => config.name === name) });
+  }
+
+  async function createGame(configName: string) {
     const newGameID = newestGame.value!.game_id + 1;
     await collections.games.create({
       game_id: newGameID,
       current_week: 0,
       game_state: 'adding_users',
-      config,
+      config: configs.find((config) => config.name === configName),
     });
     router.push(`/admin/game/${newGameID}/users`);
   }
@@ -152,10 +165,13 @@ export const useAdminStore = defineStore('admin', () => {
   }
 
   fetchGames();
+  fetchSettings();
 
   return {
     games,
+    settings,
     newestGame,
+    setFreeplayConfig,
     createGame,
     startAcceptingBids,
     stopAcceptingBids,

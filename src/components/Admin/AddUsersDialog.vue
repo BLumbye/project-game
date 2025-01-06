@@ -1,5 +1,5 @@
 <template>
-  <dialog ref="modal" class="add-users-modal" @click="backgroundClickClose">
+  <dialog ref="modal" class="create-game-modal" @click="backgroundClickClose">
     <h2>Add Users</h2>
     <label for="usernames">Enter a comma separated list of user names.</label>
     <input id="usernames" v-model="usernames" type="text" placeholder="user1,user2..." class="fancy-input" />
@@ -49,7 +49,7 @@ defineExpose({
 </script>
 
 <style scoped lang="postcss">
-.add-users-modal {
+.create-game-modal {
   width: clamp(200px, 50%, 500px);
   text-align: left;
 

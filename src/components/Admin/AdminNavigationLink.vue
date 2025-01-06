@@ -59,7 +59,7 @@ const isActive = computed(() => {
 });
 
 watch(
-  () => props.subRoutes,
+  () => [props.subRoutes, isActive.value],
   () => {
     if (!expanded.value) expanded.value = isActive.value;
   },

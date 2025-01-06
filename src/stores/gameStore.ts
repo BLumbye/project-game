@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { collections, Games, isAdmin, pocketbase, updateExistingOrCreate } from '../pocketbase';
+import { collections, Games, isAdmin, pocketbase, Settings, updateExistingOrCreate } from '../pocketbase';
 import baseConfig from '~/config';
 import { useStorage } from '@vueuse/core';
 
@@ -14,7 +14,8 @@ export const useGameStore = defineStore('game', () => {
 
   //Uses setup store
   // State
-  const game = ref<Games | undefined>(undefined);
+  const game = ref<Games | undefined>();
+  const settings = ref<Settings | undefined>();
   const week = useStorage('week', 0);
   const loaded = ref(false);
   /**
@@ -31,7 +32,7 @@ export const useGameStore = defineStore('game', () => {
     if (synchronized.value) {
       return game.value!.config;
     } else {
-      return baseConfig;
+      return settings.value!.freeplay_config;
     }
   });
 
@@ -92,6 +93,7 @@ export const useGameStore = defineStore('game', () => {
         }
       }
 
+      settings.value = (await collections.settings.getList(1, 1)).items[0];
       await initializeStores();
     }
 

@@ -95,10 +95,7 @@ export interface Ready {
 
 export interface Settings {
   id: string;
-  synchronized: boolean;
-  current_week: number;
-  game_id: number;
-  game_state: 'adding_users' | 'getting_bids' | 'reviewing_bids' | 'in_progress' | 'finished';
+  freeplay_config: Config;
 }
 
 export interface SurveyAnswer {

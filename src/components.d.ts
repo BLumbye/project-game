@@ -16,6 +16,8 @@ declare module 'vue' {
     BidTable: typeof import('./components/Admin/BidTable.vue')['default']
     ConfidenceChart: typeof import('./components/Admin/Charts/ConfidenceChart.vue')['default']
     ConfirmationDialog: typeof import('./components/Admin/ConfirmationDialog.vue')['default']
+    copy: typeof import('./components/Admin/AddUsersDialog copy.vue')['default']
+    CreateGameDialog: typeof import('./components/Admin/CreateGameDialog.vue')['default']
     DecisionForm: typeof import('./components/DecisionForm/DecisionForm.vue')['default']
     DFAllocation: typeof import('./components/DecisionForm/DF-Allocation.vue')['default']
     DFBid: typeof import('./components/DecisionForm/DF-Bid.vue')['default']

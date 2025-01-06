@@ -6,13 +6,16 @@
   </main>
 
   <ConfirmationDialog ref="confirmModal" />
+  <CreateGameDialog ref="createGameModal" />
 </template>
 
 <script setup lang="ts">
 import { isAdmin, pocketbase } from '~/pocketbase';
 import ConfirmationDialog from '~/components/Admin/ConfirmationDialog.vue';
+import CreateGameDialog from '~/components/Admin/CreateGameDialog.vue';
 
 const confirmModal = ref<typeof ConfirmationDialog | null>(null);
+const createGameModal = ref<typeof CreateGameDialog | null>(null);
 
 if (!pocketbase.authStore.isValid || !isAdmin()) {
   console.log('redirecting from admin...');
@@ -20,13 +23,14 @@ if (!pocketbase.authStore.isValid || !isAdmin()) {
 }
 
 provide('confirmModal', confirmModal);
+provide('createGameModal', createGameModal);
 </script>
 
 <style scoped lang="postcss">
 main {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  text-align: left;
   padding: 2rem;
   padding-bottom: 130px;
   align-self: flex-start;
