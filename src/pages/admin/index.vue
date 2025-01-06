@@ -9,4 +9,5 @@
 <script setup lang="ts">
 const adminStore = useAdminStore();
 const isGameInProgress = computed(() => adminStore.games.some((game) => game.game_state !== 'finished'));
+const gameInProgressId = computed(() => adminStore.games.find((game) => game.game_state !== 'finished')?.game_id);
 </script>
