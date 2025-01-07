@@ -7,9 +7,10 @@
     </p>
     <div class="config-select-wrapper">
       <label for="config-select">Freeplay Config: </label>
-      <select id="config-select" v-model="selectedConfig" @change="onConfigChange">
+      <select id="config-select" v-model="selectedConfig" @change="onConfigChange" v-if="selectedConfig !== undefined">
         <option v-for="config in configs" :key="config.name" :value="config.name">{{ config.name }}</option>
       </select>
+      <span v-else>Loading...</span>
     </div>
     <button @click="createGameModal?.open">Create Game</button>
   </div>
@@ -22,11 +23,18 @@ import CreateGameDialog from './CreateGameDialog.vue';
 const adminStore = useAdminStore();
 const createGameModal = inject('createGameModal', ref<typeof CreateGameDialog | null>(null));
 
-const selectedConfig = ref<string | undefined>(adminStore.settings?.freeplay_config?.name);
+const selectedConfig = ref<string | undefined>();
 
 const onConfigChange = () => {
+  console.log('onconfigchange');
   adminStore.setFreeplayConfig(selectedConfig.value!);
 };
+
+const settingsWatcher = watch(() => adminStore.settings, () => {
+  if (adminStore.settings === undefined) return;
+  selectedConfig.value = adminStore.settings.freeplay_config?.name;
+  settingsWatcher();
+}, { immediate: true });
 </script>
 
 <style scoped lang="postcss">
