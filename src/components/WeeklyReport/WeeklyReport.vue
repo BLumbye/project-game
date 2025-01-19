@@ -19,6 +19,7 @@
         Forward ->
       </button>
     </div>
+    <WRHelp :week="week" />
     <WRAllocation v-if="week > 1" :week="week" />
     <WRWorkers v-if="week > 1" :week="week" />
     <WRFinances :week="week" />

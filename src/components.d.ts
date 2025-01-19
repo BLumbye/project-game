@@ -44,6 +44,7 @@ declare module 'vue' {
     WeeklyReport: typeof import('./components/WeeklyReport/WeeklyReport.vue')['default']
     WRAllocation: typeof import('./components/WeeklyReport/WR-Allocation.vue')['default']
     WRFinances: typeof import('./components/WeeklyReport/WR-Finances.vue')['default']
+    WRHelp: typeof import('./components/WeeklyReport/WR-Help.vue')['default']
     WRWorkers: typeof import('./components/WeeklyReport/WR-Workers.vue')['default']
   }
 }

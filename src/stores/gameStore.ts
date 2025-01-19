@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { collections, Games, isAdmin, pocketbase, Settings, updateExistingOrCreate } from '../pocketbase';
-import baseConfig from '~/config';
 import { useStorage } from '@vueuse/core';
 
 /**
