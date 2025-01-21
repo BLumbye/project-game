@@ -93,6 +93,12 @@ export const useGameStore = defineStore('game', () => {
       }
 
       settings.value = (await collections.settings.getList(1, 1)).items[0];
+      settings.value.freeplay_config.workers = Object.fromEntries(
+        Object.entries(settings.value.freeplay_config.workers).sort((a, b) => a[1].order - b[1].order),
+      );
+      settings.value.freeplay_config.equipment = Object.fromEntries(
+        Object.entries(settings.value.freeplay_config.equipment).sort((a, b) => a[1].order - b[1].order),
+      );
       await initializeStores();
     }
 
@@ -102,11 +108,23 @@ export const useGameStore = defineStore('game', () => {
   async function connectWithDatabase() {
     // Get game from database
     game.value = (await collections.games.getFirstListItem(`game_id=${pocketbase.authStore.model!.game_id}`))!;
+    game.value.config.workers = Object.fromEntries(
+      Object.entries(game.value.config.workers).sort((a, b) => a[1].order - b[1].order),
+    );
+    game.value.config.equipment = Object.fromEntries(
+      Object.entries(game.value.config.equipment).sort((a, b) => a[1].order - b[1].order),
+    );
 
     synchronized.value = true;
 
     collections.games.subscribe(game.value.id, (data) => {
       game.value = data.record;
+      game.value.config.workers = Object.fromEntries(
+        Object.entries(game.value.config.workers).sort((a, b) => a[1].order - b[1].order),
+      );
+      game.value.config.equipment = Object.fromEntries(
+        Object.entries(game.value.config.equipment).sort((a, b) => a[1].order - b[1].order),
+      );
       if (ready.value && week.value < data.record.current_week) {
         nextWeek();
       }

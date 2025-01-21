@@ -26,6 +26,10 @@ export interface Config {
     [key: string]: {
       label: string;
       cost: number;
+      /**
+       * The index of the order in which the equipment is displayed in the UI.
+       */
+      order: number;
       /** If it is possible to have this equipment type express delivred. Default is true. */
       hasExpressDelivery?: boolean;
     };
@@ -36,6 +40,10 @@ export interface Config {
       shortLabel: string;
       plural: string;
       cost: number;
+      /**
+       * The index of the order in which the worker is displayed in the UI.
+       */
+      order: number;
     };
   };
   payments: {

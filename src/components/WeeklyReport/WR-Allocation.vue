@@ -60,7 +60,7 @@
       :key="key"
       :class="{
         incorrectWorkers:
-          activityStore.totalWorkersAssigned(key as string, week - 2) > workersStore.workersAtWeek(week - 1)[key],
+          activityStore.totalWorkersAssigned(key as string, week - 2) > workersStore.workersAtWeek(week - 2)[key],
       }"
     >
       {{ activityStore.totalWorkersAssigned(key as string, week - 2) }}</span

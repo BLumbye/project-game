@@ -29,14 +29,17 @@ const baseConfig: Omit<Config, 'events'> = {
     steelwork: {
       label: 'Steelwork (Task A)',
       cost: 38000,
+      order: 1,
     },
     interior: {
       label: 'Interior (Task B)',
       cost: 28000,
+      order: 2,
     },
     tbs: {
       label: 'TBS (Task C)',
       cost: 130000,
+      order: 3,
     },
   },
   workers: {
@@ -45,18 +48,21 @@ const baseConfig: Omit<Config, 'events'> = {
       shortLabel: 'LAB',
       plural: 'labourers',
       cost: 800,
+      order: 1,
     },
     skilled: {
       label: 'skilled',
       shortLabel: 'SKI',
       plural: 'skilled workers',
       cost: 1500,
+      order: 2,
     },
     electrician: {
       label: 'electrician',
       shortLabel: 'ELE',
       plural: 'electricians',
       cost: 2000,
+      order: 3,
     },
   },
   payments: {

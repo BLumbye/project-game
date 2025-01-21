@@ -29,11 +29,13 @@ const baseConfig: Omit<Config, 'events'> = {
     fridges: {
       label: 'Fridges (Task D)',
       cost: 3000,
+      order: 1,
     },
     drinks: {
       label: 'Drinks (Task E)',
       cost: 1000,
       hasExpressDelivery: false,
+      order: 2,
     },
   },
   workers: {
@@ -42,12 +44,14 @@ const baseConfig: Omit<Config, 'events'> = {
       shortLabel: 'STU',
       plural: 'students',
       cost: 30,
+      order: 1,
     },
     technician: {
       label: 'technician',
       shortLabel: 'TEC',
       plural: 'technicians',
       cost: 200,
+      order: 2,
     },
   },
   payments: {

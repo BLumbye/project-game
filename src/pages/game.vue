@@ -16,7 +16,7 @@
     <template v-else-if="gameStore.synchronized && gameStore.game!.game_state === 'reviewing_bids'">
       <h2 class="big-text">Survey submissions has been closed. The game is about to start.</h2>
     </template>
-    <template v-else-if="!gameStore.synchronized || gameStore.game!.game_state === 'in_progress'">
+    <template v-else>
       <Event />
       <div class="container">
         <WeeklyReport v-if="gameStore.week > 1" />
@@ -28,9 +28,6 @@
         <DecisionForm v-if="!gameStore.gameOver" />
         <GameFinished v-if="gameStore.gameOver" />
       </div>
-    </template>
-    <template v-else>
-      <h2 class="big-text">The game is now finished.</h2>
     </template>
   </template>
 </template>

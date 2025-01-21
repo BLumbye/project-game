@@ -23,7 +23,6 @@ const disjunctionFormatter = new Intl.ListFormat('en', {
 const messages = computed(() => {
   const messages: string[] = [];
   const activities = activityStore.activitiesAtWeek(props.week - 2);
-  const previousActivities = activityStore.activitiesAtWeek(props.week - 3);
 
   // Add messages for each activity
   activities.forEach((activity) => {
@@ -32,12 +31,11 @@ const messages = computed(() => {
     // Dependency missing
     if (
       activity.requirements.activities?.some(
-        (requiredActivity) =>
-          !activityStore.isActivityDone(previousActivities.find((act) => act.label === requiredActivity)!),
+        (requiredActivity) => !activityStore.isActivityDone(activities.find((act) => act.label === requiredActivity)!),
       )
     ) {
       messages.push(
-        `Activity ${activity.label} was unable to progress since ${messages.length > 1 ? 'either' : ''} activity ${disjunctionFormatter.format(activity.requirements.activities)} was not done.`,
+        `Activity ${activity.label} was unable to progress since ${activity.requirements.activities.length > 1 ? 'either' : ''} activity ${disjunctionFormatter.format(activity.requirements.activities)} was not done.`,
       );
     }
 
@@ -62,7 +60,7 @@ const messages = computed(() => {
   Object.entries(gameStore.config.workers).forEach(([workerType, worker]) => {
     if (
       activityStore.totalWorkersAssigned(workerType, props.week - 2) >
-      workersStore.workersAtWeek(props.week - 1)[workerType]
+      workersStore.workersAtWeek(props.week - 2)[workerType]
     ) {
       messages.push(`No activities could progress since more ${worker.plural} were assigned than hired.`);
     }
