@@ -10,18 +10,30 @@
 
 <script setup lang="ts">
 import { Bar } from 'vue-chartjs';
-import { ChartData } from 'chart.js';
+import { Chart as ChartJS, ChartData } from 'chart.js';
 import { AdminData } from '~/hooks/adminData';
+
+const {
+  hideOutliersDefault = false,
+  pixelRatio = 4,
+  fontSize = 12,
+} = defineProps<{
+  hideOutliersDefault?: boolean;
+  pixelRatio?: number;
+  fontSize?: number;
+}>();
 
 const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
-const hideOutliers = ref(false);
+const hideOutliers = ref(hideOutliersDefault);
 
 type BarData = ChartData<'bar', (number | [number, number] | null)[], unknown>;
 
-const durationDistributionOptions: (typeof Bar)['options'] = {
+ChartJS.defaults.font.size = fontSize;
+
+const durationDistributionOptions = {
   responsive: true,
-  devicePixelRatio: 4,
+  devicePixelRatio: pixelRatio,
   plugins: {
     legend: {
       display: false,
@@ -41,7 +53,7 @@ const durationDistributionOptions: (typeof Bar)['options'] = {
       },
     },
   },
-};
+} as (typeof Bar)['options'];
 
 const durationDistributionData = computed<BarData>(() => {
   let data: { x: number; y: number }[] = [];

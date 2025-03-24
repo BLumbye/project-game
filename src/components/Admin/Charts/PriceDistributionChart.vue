@@ -17,23 +17,39 @@
 </template>
 
 <script setup lang="ts">
-import { ChartData } from 'chart.js';
+import { Chart as ChartJS, ChartData } from 'chart.js';
 import { Bar } from 'vue-chartjs';
 import { AdminData } from '~/hooks/adminData';
 import { Games } from '~/pocketbase';
 
+const {
+  hideUsernamesDefault = false,
+  hideCutoffsDefault = false,
+  hideOutliersDefault = false,
+  pixelRatio = 4,
+  fontSize = 12,
+} = defineProps<{
+  hideUsernamesDefault?: boolean;
+  hideCutoffsDefault?: boolean;
+  hideOutliersDefault?: boolean;
+  pixelRatio?: number;
+  fontSize?: number;
+}>();
+
 const currentGame = inject<Ref<Games>>('currentGame')!;
 const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
-const hideUsernames = ref(false);
-const hideCutoffs = ref(false);
-const hideOutliers = ref(false);
+const hideUsernames = ref(hideUsernamesDefault);
+const hideCutoffs = ref(hideCutoffsDefault);
+const hideOutliers = ref(hideOutliersDefault);
 
 type BarData = ChartData<'bar', (number | [number, number] | null)[], unknown>;
 
+ChartJS.defaults.font.size = fontSize;
+
 const priceDistributionOptions = computed<(typeof Bar)['options']>(() => ({
   responsive: true,
-  devicePixelRatio: 4,
+  devicePixelRatio: pixelRatio,
   plugins: {
     legend: {
       display: false,

@@ -1,10 +1,23 @@
 <template>
   <div class="presentation" :class="{ 'is-fullscreen': isFullscreen }" ref="presentation-container">
-    <OverviewTable :duration="currentGame.config.projectDuration" :currentTime="currentGame.current_week" />
-    <PresentationEvent class="presentation-event" :event="currentEvent" :currentTime="currentGame.current_week" />
-    <div class="timer-status-container">
-      <Timer class="timer" ref="timer" />
-      <Status class="status" @next-week="timer!.resetTimer()" />
+    <div class="chart-slide" v-if="slide === 0">
+      <DurationDistributionChart :hide-outliers-default="true" :pixel-ratio="1" :font-size="36" />
+    </div>
+    <div class="chart-slide" v-if="slide === 1">
+      <PriceDistributionChart
+        :hide-usernames-default="true"
+        :hide-outliers-default="true"
+        :pixel-ratio="1"
+        :font-size="36"
+      />
+    </div>
+    <div class="game-slide" v-if="slide === 2">
+      <OverviewTable :duration="currentGame.config.projectDuration" :currentTime="currentGame.current_week" />
+      <PresentationEvent class="presentation-event" :event="currentEvent" :currentTime="currentGame.current_week" />
+      <div class="timer-status-container">
+        <Timer class="timer" ref="timer" @finished="play" />
+        <Status class="status" @next-week="timer!.resetTimer()" />
+      </div>
     </div>
 
     <button @click="toggle" class="fullscreen-button" :class="{ 'is-fullscreen': isFullscreen }"><Fullscreen /></button>
@@ -12,14 +25,20 @@
 </template>
 
 <script setup lang="ts">
-import { useFullscreen } from '@vueuse/core';
+import { onKeyStroke, useFullscreen } from '@vueuse/core';
 import { AdminData } from '~/hooks/adminData';
 import { Games } from '~/pocketbase';
 import { Fullscreen } from 'lucide-vue-next';
+import { useSound } from '@vueuse/sound';
 import Timer from '~/components/Admin/Presentation/Timer.vue';
+import timerSound from '~/assets/sounds/timer.wav';
+
 const currentGame = inject<Ref<Games>>('currentGame')!;
 const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
+const slide = ref(0);
+
+const { play } = useSound(timerSound);
 const timer = useTemplateRef<typeof Timer>('timer');
 
 const currentEvent = computed(() => {
@@ -32,18 +51,39 @@ const currentEvent = computed(() => {
 
 const presentationContainer = useTemplateRef<HTMLDivElement>('presentation-container');
 const { isFullscreen, enter, exit, toggle } = useFullscreen(presentationContainer);
+
+onKeyStroke('ArrowRight', () => {
+  if (slide.value >= 2) return;
+  slide.value++;
+});
+
+onKeyStroke('ArrowLeft', () => {
+  if (slide.value <= 0) return;
+  slide.value--;
+});
 </script>
 
 <style scoped>
 .presentation {
   width: 100%;
   height: 100%;
+  background: var(--background-color);
+}
+
+.game-slide {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
-  background: var(--background-color);
   padding-bottom: 1.5rem;
+}
+
+.chart-slide {
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
 }
 
 .fullscreen-button {

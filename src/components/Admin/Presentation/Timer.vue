@@ -63,6 +63,10 @@ import { ref, computed, onMounted, nextTick } from 'vue';
 import { templateRef } from '@vueuse/core';
 import { PlayIcon, PauseIcon } from 'lucide-vue-next';
 
+const emit = defineEmits<{
+  (e: 'finished'): void;
+}>();
+
 const minutesTens = ref('1');
 const minutesOnes = ref('0');
 const secondsTens = ref('0');
@@ -188,6 +192,7 @@ function updateTimer(timestamp: number) {
   secondsOnes.value = secsStr[1];
 
   if (remainingMilliseconds.value <= 0) {
+    emit('finished');
     stopTimer();
     return;
   }
@@ -265,6 +270,6 @@ button {
 }
 
 button:hover {
-  background-color: var(--boxed-background-color);
+  background-color: var(--background-color);
 }
 </style>
