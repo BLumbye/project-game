@@ -2,7 +2,7 @@
   <template v-if="currentGame">
     <template v-if="currentGameData && !currentGameData.loading">
       <router-view></router-view>
-      <AdminActionMenu v-if="currentGame.game_state !== 'finished'" class="admin-action-menu" />
+      <AdminActionMenu v-if="displayActionMenu" class="admin-action-menu" />
       <AddUsersDialog ref="addUsersModal" />
     </template>
     <p v-else>Loading...</p>
@@ -24,6 +24,10 @@ const currentGame = computed(() => adminStore.games.find((game) => game.game_id.
 const addUsersModal = ref<typeof AddUsersDialog | null>(null);
 const isGameInProgress = computed(() => currentGame.value?.game_state !== 'finished');
 const currentGameData = ref<ReturnType<typeof useAdminData> | undefined>(undefined);
+
+const displayActionMenu = computed(
+  () => currentGame.value?.game_state !== 'finished' && !route.fullPath.includes('presentation'),
+);
 
 watch(
   () => currentGame.value,

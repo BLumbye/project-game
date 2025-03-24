@@ -63,6 +63,10 @@ const routes = computed<Route[]>(() => [
             path: `/admin/game/${game.game_id}/results`,
             disabled: game.game_state !== 'finished',
           },
+          {
+            name: 'Presentation',
+            path: `/admin/game/${game.game_id}/presentation`,
+          },
         ],
       })),
   },
