@@ -43,10 +43,6 @@ table {
   border-collapse: collapse;
   font-size: 1.5rem;
 
-  td {
-    text-align: right;
-  }
-
   td,
   th {
     padding-block: 0.25rem;
@@ -84,5 +80,17 @@ table {
   th {
     padding-top: 1rem;
   }
+
+  td {
+    text-align: center;
+  }
+}
+
+.submit-row td {
+  text-align: right;
+}
+
+.receive-row td {
+  text-align: left;
 }
 </style>

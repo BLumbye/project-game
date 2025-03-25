@@ -68,7 +68,7 @@ const currentGame = inject<Ref<Games>>('currentGame')!;
 
 .event-image {
   max-width: 40vw;
-  max-height: 100%;
+  max-height: 40vh;
 }
 
 .event-text {
