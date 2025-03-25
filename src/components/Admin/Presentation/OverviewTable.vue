@@ -19,7 +19,7 @@
         <td :class="{ 'is-current': currentTime === 0 }"></td>
         <td :class="{ 'is-current': currentTime === 1 }"></td>
         <td v-for="i in duration - 1" :key="i" :class="{ 'is-current': i === currentTime - 1 }">
-          {{ `WR ${i}` }}
+          {{ `${durationIdentifier}R ${i}` }}
         </td>
       </tr>
     </tbody>
@@ -35,6 +35,8 @@ defineProps<{
 }>();
 
 const currentGame = inject<Ref<Games>>('currentGame')!;
+
+const durationIdentifier = computed(() => currentGame.value.config.durationIdentifier.singular.charAt(0).toUpperCase());
 </script>
 
 <style scoped>

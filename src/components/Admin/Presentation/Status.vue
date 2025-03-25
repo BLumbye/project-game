@@ -28,7 +28,9 @@ const totalTeams = computed(
 );
 
 const buttonText = computed(() => {
-  return currentGame.value.current_week === currentGame.value.config.projectDuration ? 'Finish game' : 'Next week ->';
+  return currentGame.value.current_week === currentGame.value.config.projectDuration
+    ? 'Finish game'
+    : `Next ${currentGame.value.config.durationIdentifier.singular} ->`;
 });
 
 function doAction() {
