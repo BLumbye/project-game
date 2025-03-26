@@ -14,6 +14,7 @@ export const useFinanceStore = defineStore('finance', () => {
   const loading = ref(true);
   //Timelines keep track of the finance through the weeks.
   const incomingTimeline = createWeeklyTimeline('incomingTimeline', 0, sumReducer, 0);
+  const outgoingTimeline = createWeeklyTimeline('outgoingTimeline', 0, sumReducer, 0);
   const workersTimeline = createWeeklyTimeline('workersTimeline', 0, sumReducer, 0);
   const equipmentTimeline = createWeeklyTimeline('equipmentTimeline', 0, sumReducer, 0);
   const overheadTimeline = createWeeklyTimeline('overheadTimeline', 0, sumReducer, 0);
@@ -37,6 +38,17 @@ export const useFinanceStore = defineStore('finance', () => {
         delayPenaltyTimeline.getReduced.value(week) +
         loanInterestTimeline.getReduced.value(week) +
         overdraftInterestTimeline.getReduced.value(week)
+      );
+    };
+  });
+
+  const incomingAtWeek = computed(() => { //Accumulated money from rewards and loans
+    return (week?: number) => {
+      week ??= gameStore.week - 1;
+      return (
+        incomingTimeline.getReduced.value(week) +
+        loanRepayTimeline.getReduced.value(week) +
+        loanTimeline.getReduced.value(week)
       );
     };
   });
@@ -158,7 +170,7 @@ export const useFinanceStore = defineStore('finance', () => {
           equipment[type].deliveryType! === 'regular'
             ? gameStore.config.equipment[type as keyof typeof gameStore.config.equipment].cost
             : gameStore.config.equipment[type as keyof typeof gameStore.config.equipment].cost *
-              gameStore.config.finances.expressMultiplier;
+            gameStore.config.finances.expressMultiplier;
       }
     }
     equipmentTimeline.set(equipmentCost);
@@ -188,7 +200,7 @@ export const useFinanceStore = defineStore('finance', () => {
     addInterestToLoan(
       hasActiveLoan.value(gameStore.week + 1)
         ? gameStore.config.finances.loanInterest *
-            (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
+        (loanAtWeek.value(gameStore.week + 1) - (loanInterestTimeline.get.value(gameStore.week + 1) || 0))
         : 0,
     );
 
@@ -197,6 +209,27 @@ export const useFinanceStore = defineStore('finance', () => {
       balanceAtWeek.value(gameStore.week) < 0
         ? gameStore.config.finances.overdraftInterest * -balanceAtWeek.value(gameStore.week)
         : 0,
+    );
+
+    /*
+    Outgoing : 
+    Workers
+    Equipment
+    Overhead
+    Consumables
+    Project delay penalty
+    Loan interest
+    Overdraft interest
+    */
+
+    outgoingTimeline.set(
+      (workersTimeline.get?.value(gameStore.week) || 0) +
+      (equipmentTimeline.get?.value(gameStore.week) || 0) +
+      (overheadTimeline.get?.value(gameStore.week) || 0) +
+      (consumablesTimeline.get?.value(gameStore.week) || 0) +
+      (delayPenaltyTimeline.get?.value(gameStore.week) || 0) +
+      (loanInterestTimeline.get?.value(gameStore.week) || 0) +
+      (overdraftInterestTimeline.get?.value(gameStore.week) || 0)
     );
 
     if (gameStore.synchronized) updateDatabase();
@@ -340,6 +373,7 @@ export const useFinanceStore = defineStore('finance', () => {
   return {
     loading,
     incomingTimeline,
+    outgoingTimeline,
     workersTimeline,
     equipmentTimeline,
     overheadTimeline,
@@ -351,6 +385,7 @@ export const useFinanceStore = defineStore('finance', () => {
     loanTimeline,
     //rewardTimeline,
     outgoingAtWeek,
+    incomingAtWeek,
     loanAtWeek,
     balanceAtWeek,
     weeklyBalanceAtWeek,
