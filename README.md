@@ -184,3 +184,14 @@ pm2 serve dist 80 --spa --name project-game
 
 ### Note about security
 This guide is still WIP, and the basic auth, as well as the authentication on the website, is not secure at all, meaning that you should use a unique password for these services (as you always should). By setting up SSL and routing the pages through HTTPS instead these methods should be secure.
+
+### Note about running locally (when testing)
+To run on your localhost use
+```
+npm run dev
+```
+For this to work, you'll need a connection to the server. Get this by creating an .env file in the root folder of the project and adding:
+```
+VITE_POCKETBASE_URL=https://v2202303182271221643.ultrasrv.de/
+VITE_APP_VERSION=$npm_package_version
+```
