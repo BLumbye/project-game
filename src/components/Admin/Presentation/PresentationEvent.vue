@@ -1,6 +1,15 @@
 <template>
   <div class="presentation-event" :class="{ 'no-event': events.length === 0 }">
-    <template v-if="events.length === 0">
+    <template v-if="currentTime === currentGame.config.projectDuration">
+      <div class="event-text">
+        <p class="current-time">{{ `${capitalize(currentGame.config.durationIdentifier.singular)} ${currentTime}` }}</p>
+        <p class="game-over">Game over</p>
+        <p class="game-over-description">
+          The deadline is here. If you have not completed the project, the contractor will terminate your contract.
+        </p>
+      </div>
+    </template>
+    <template v-else-if="events.length === 0">
       <div class="event-text">
         <p class="current-time">{{ `${capitalize(currentGame.config.durationIdentifier.singular)} ${currentTime}` }}</p>
         <p class="nothing-to-report">
@@ -82,7 +91,8 @@ const currentGame = inject<Ref<Games>>('currentGame')!;
 }
 
 .nothing-to-report,
-.event-title {
+.event-title,
+.game-over {
   font-size: 5rem;
   font-weight: bold;
   text-wrap: balance;
@@ -94,14 +104,16 @@ const currentGame = inject<Ref<Games>>('currentGame')!;
   text-align: center;
 }
 
-.event-description {
+.event-description,
+.game-over-description {
   font-size: 2.5rem;
+  line-height: 1.15;
   text-wrap: pretty;
 }
 
 .event-image {
   max-width: 40vw;
-  max-height: 100%;
+  max-height: 40vh;
 }
 
 .event-text {
