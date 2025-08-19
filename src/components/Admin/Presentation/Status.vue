@@ -2,7 +2,14 @@
   <div class="status">
     <div class="ready">{{ ready }} / {{ totalTeams }}</div>
     <div class="ready-label">teams ready</div>
-    <button class="continue-button" @click="doAction">{{ buttonText }}</button>
+    <button
+      class="continue-button"
+      @click="doAction"
+      :disabled="isCooldownActive"
+      :class="{ cooldown: isCooldownActive }"
+    >
+      {{ buttonText }}
+    </button>
   </div>
 </template>
 
@@ -19,6 +26,9 @@ const emit = defineEmits<{
   (e: 'finish-game'): void;
 }>();
 
+// Cooldown state to prevent accidental double clicks
+const isCooldownActive = ref(false);
+
 const ready = computed(() => currentGameData.value.gameStates.filter((state) => state.ready).length);
 
 const totalTeams = computed(
@@ -34,6 +44,17 @@ const buttonText = computed(() => {
 });
 
 function doAction() {
+  // Prevent action if cooldown is active
+  if (isCooldownActive.value) return;
+
+  // Activate cooldown
+  isCooldownActive.value = true;
+
+  // Reset cooldown after 1 second
+  setTimeout(() => {
+    isCooldownActive.value = false;
+  }, 1000);
+
   if (
     currentGame.value.game_state === 'in_progress' &&
     currentGame.value.current_week < currentGame.value.config.projectDuration
