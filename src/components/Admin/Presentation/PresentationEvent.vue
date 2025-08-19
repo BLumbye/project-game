@@ -1,6 +1,6 @@
 <template>
-  <div class="presentation-event" :class="{ 'no-event': events.length === undefined }">
-    <template v-if="events.length === undefined">
+  <div class="presentation-event" :class="{ 'no-event': events.length === 0 }">
+    <template v-if="events.length === 0">
       <div class="event-text">
         <p class="current-time">{{ `${capitalize(currentGame.config.durationIdentifier.singular)} ${currentTime}` }}</p>
         <p class="nothing-to-report">

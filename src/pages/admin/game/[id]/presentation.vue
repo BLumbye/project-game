@@ -11,7 +11,16 @@
         :font-size="36"
       />
     </div>
-    <div class="game-slide" v-if="slide === 2">
+    <div
+      class="chart-slide"
+      v-if="slide === 2 && (currentGame.game_state === 'getting_bids' || currentGame.game_state === 'reviewing_bids')"
+    >
+      <AdminActionMenu class="action-menu" />
+    </div>
+    <div
+      class="game-slide"
+      v-if="slide === 2 && (currentGame.game_state === 'in_progress' || currentGame.game_state === 'finished')"
+    >
       <OverviewTable :duration="currentGame.config.projectDuration" :currentTime="currentGame.current_week" />
       <PresentationEvent
         class="presentation-event"
@@ -138,5 +147,10 @@ onKeyStroke('ArrowLeft', () => {
   border-radius: 0.5rem;
   padding: 1.5rem;
   flex-basis: 50%;
+}
+
+.action-menu {
+  place-self: center;
+  padding: 2rem;
 }
 </style>
