@@ -37,7 +37,6 @@
     <div class="chart-container">
       <canvas ref="progressChartRef"></canvas>
     </div>
-
   </div>
 </template>
 
@@ -100,6 +99,7 @@ const createFinanceChart = () => {
     chartInstance.value.destroy();
   }
 
+  // @ts-expect-error
   chartInstance.value = new Chart(chartRef.value, {
     type: 'line',
     data: {
@@ -164,12 +164,14 @@ const getActivityProgressOverTime = () => {
   const activities = activitiesStore.activities; // Assuming activitiesStore.activities is an array of activities
   const weeks = Array.from({ length: gameStore.week + 1 }, (_, i) => i);
 
-  return activities.map(activity => ({
+  return activities.map((activity) => ({
     label: activity.label,
-    progressData: weeks.map(week => {
-      const progress = activitiesStore.activitiesAtWeek(week).find(a => a.label === activity.label)?.progress;
-      return progress === null ? 0 : progress / activitiesStore.activitiesAtWeek(week).find(a => a.label === activity.label)?.duration * 100;
-    })
+    progressData: weeks.map((week) => {
+      const progress = activitiesStore.activitiesAtWeek(week).find((a) => a.label === activity.label)!.progress;
+      return progress === null
+        ? 0
+        : (progress / activitiesStore.activitiesAtWeek(week).find((a) => a.label === activity.label)!.duration) * 100;
+    }),
   }));
 };
 
@@ -181,7 +183,20 @@ const createActivityProgressChart = () => {
   }
 
   const progressData = getActivityProgressOverTime();
-  const colors = ['#FF5733', '#36A2EB', '#FFCE56', '#4CAF50', '#9C27B0', '#795548', '#FF9800', '#607D8B', '#E91E63', '#3F51B5', '#009688', '#FF5722'];
+  const colors = [
+    '#FF5733',
+    '#36A2EB',
+    '#FFCE56',
+    '#4CAF50',
+    '#9C27B0',
+    '#795548',
+    '#FF9800',
+    '#607D8B',
+    '#E91E63',
+    '#3F51B5',
+    '#009688',
+    '#FF5722',
+  ];
 
   progressChartInstance.value = new Chart(progressChartRef.value, {
     type: 'line',
@@ -195,7 +210,7 @@ const createActivityProgressChart = () => {
         pointRadius: 4,
         borderWidth: 2,
         tension: 0.2,
-      }))
+      })),
     },
     options: {
       responsive: true,
@@ -208,22 +223,27 @@ const createActivityProgressChart = () => {
         y: {
           min: 0,
           max: 100,
-          title: { display: true, text: 'Progress (%)' }
+          title: { display: true, text: 'Progress (%)' },
         },
-        x: { title: { display: true, text: `${gameStore.config.durationIdentifier.plural.toUpperCase()}` } }
-      }
-    }
+        x: { title: { display: true, text: `${gameStore.config.durationIdentifier.plural.toUpperCase()}` } },
+      },
+    },
   });
 };
 
-onMounted(() => { //TODO: Check if this is necessary
+onMounted(() => {
+  //TODO: Check if this is necessary
   createFinanceChart();
   createActivityProgressChart();
 });
-watch(() => gameStore.week, () => { //TODO: Only update once
-  createFinanceChart();
-  createActivityProgressChart();
-});
+watch(
+  () => gameStore.week,
+  () => {
+    //TODO: Only update once
+    createFinanceChart();
+    createActivityProgressChart();
+  },
+);
 
 watch(
   () => gameStore.gameOver,
