@@ -19,6 +19,46 @@ import { Games } from '~/pocketbase';
 const currentGame = inject<Ref<Games>>('currentGame')!;
 const currentGameData = inject<Ref<AdminData>>('currentGameData')!;
 
+const canWinStakeholder = (data: TableData) =>
+  data.status === 'won' &&
+  !Object.entries(data.eventChoices!).some(([eventName, choice]) =>
+    currentGame.value.config.events[eventName].choices?.[choice].effects?.some(
+      (effect) => effect.excludeStakeholderWin,
+    ),
+  );
+
+// Common sorting function for columns that only show data for winners
+const createWinnerSortFn = <T,>(getValue: (data: TableData) => T) => {
+  return (a: any, b: any) => {
+    const aWon = a.getValue('status') === 'won';
+    const bWon = b.getValue('status') === 'won';
+
+    if (!aWon && !bWon) return 0; // Both didn't win, maintain order
+    if (!aWon) return 1; // a didn't win, put at bottom
+    if (!bWon) return -1; // b didn't win, put at bottom
+
+    // Both won, sort by the actual value
+    const aVal = getValue(a.original);
+    const bVal = getValue(b.original);
+    return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+  };
+};
+
+// Special sorting function for stakeholder column
+const createStakeholderSortFn = () => {
+  return (a: any, b: any) => {
+    const aCanWin = canWinStakeholder(a.original);
+    const bCanWin = canWinStakeholder(b.original);
+
+    if (!aCanWin && !bCanWin) return 0; // Both can't win, maintain order
+    if (!aCanWin) return 1; // a can't win, put at bottom
+    if (!bCanWin) return -1; // b can't win, put at bottom
+
+    // Both can win, sort by score
+    return a.original.stakeholderScore! - b.original.stakeholderScore!;
+  };
+};
+
 interface AdditionalData {
   eventChoices: Record<string, string>;
   durationModification: number;
@@ -93,12 +133,7 @@ const columns = [
       cell: (info) => info.getValue(),
       header: 'Final Profit',
       sortDescFirst: false,
-      sortingFn: (a, b) =>
-        a.getValue('status') !== 'won'
-          ? 1
-          : b.getValue('status') !== 'won'
-            ? -1
-            : a.original.totalBalance! - b.original.totalBalance!,
+      sortingFn: createWinnerSortFn((data) => data.totalBalance!),
     },
   ),
   columnHelper.accessor((row) => (row.status === 'won' ? row.week : ''), {
@@ -106,32 +141,21 @@ const columns = [
     cell: (info) => info.getValue(),
     header: 'Actual Duration',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won' ? 1 : b.getValue('status') !== 'won' ? -1 : a.original.week! - b.original.week!,
+    sortingFn: createWinnerSortFn((data) => data.week!),
   }),
   columnHelper.accessor((row) => (row.status === 'won' ? row.durationModification : ''), {
     id: 'durationModification',
     cell: (info) => info.getValue(),
     header: 'Duration Modification',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.durationModification! - b.original.durationModification!,
+    sortingFn: createWinnerSortFn((data) => data.durationModification!),
   }),
   columnHelper.accessor((row) => (row.status === 'won' ? row.planDurationDiff : ''), {
     id: 'durationDiff',
     cell: (info) => info.getValue(),
     header: 'Plan - Actual Duration',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.planDurationDiff! - b.original.planDurationDiff!,
+    sortingFn: createWinnerSortFn((data) => data.planDurationDiff!),
   }),
   columnHelper.accessor(
     (row) => (row.status === 'won' ? currencyFormat(currentGame!.value.config).format(row.actualCost!) : ''),
@@ -140,12 +164,7 @@ const columns = [
       cell: (info) => info.getValue(),
       header: 'Actual Cost',
       sortDescFirst: false,
-      sortingFn: (a, b) =>
-        a.getValue('status') !== 'won'
-          ? 1
-          : b.getValue('status') !== 'won'
-            ? -1
-            : a.original.actualCost! - b.original.actualCost!,
+      sortingFn: createWinnerSortFn((data) => data.actualCost!),
     },
   ),
   columnHelper.accessor(
@@ -155,12 +174,7 @@ const columns = [
       cell: (info) => info.getValue(),
       header: 'Plan vs actual costs',
       sortDescFirst: false,
-      sortingFn: (a, b) =>
-        a.getValue('status') !== 'won'
-          ? 1
-          : b.getValue('status') !== 'won'
-            ? -1
-            : a.original.planCostDiff! - b.original.planCostDiff!,
+      sortingFn: createWinnerSortFn((data) => data.planCostDiff!),
     },
   ),
   columnHelper.accessor((row) => (row.status === 'won' ? row.priceRank : ''), {
@@ -168,106 +182,59 @@ const columns = [
     cell: (info) => info.getValue(),
     header: 'Lowest price',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.priceRank! - b.original.priceRank!,
+    sortingFn: createWinnerSortFn((data) => data.priceRank!),
   }),
   columnHelper.accessor((row) => (row.status === 'won' ? row.costRank : ''), {
     id: 'costRank',
     cell: (info) => info.getValue(),
     header: 'Lowest cost',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.costRank! - b.original.costRank!,
+    sortingFn: createWinnerSortFn((data) => data.costRank!),
   }),
   columnHelper.accessor((row) => (row.status === 'won' ? row.profitRank : ''), {
     id: 'profitRank',
     cell: (info) => info.getValue(),
     header: 'Highest profit',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.profitRank! - b.original.profitRank!,
+    sortingFn: createWinnerSortFn((data) => data.profitRank!),
   }),
   columnHelper.accessor((row) => (row.status === 'won' ? row.planRank : ''), {
     id: 'planRank',
     cell: (info) => info.getValue(),
     header: 'Plan ability (costs)',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.planRank! - b.original.planRank!,
+    sortingFn: createWinnerSortFn((data) => data.planRank!),
   }),
   columnHelper.accessor((row) => (row.status === 'won' ? row.durationRank : ''), {
     id: 'durationRank',
     cell: (info) => info.getValue(),
     header: 'Quickest delivery',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.durationRank! - b.original.durationRank!,
+    sortingFn: createWinnerSortFn((data) => data.durationRank!),
   }),
   columnHelper.accessor((row) => (row.status === 'won' ? row.projectManagerScore : ''), {
     id: 'projectManager',
     cell: (info) => info.getValue(),
     header: 'Project manager',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.projectManagerScore! - b.original.projectManagerScore!,
+    sortingFn: createWinnerSortFn((data) => data.projectManagerScore!),
   }),
   columnHelper.accessor((row) => (canWinStakeholder(row) ? row.stakeholderScore : ''), {
     id: 'stakeholder',
     cell: (info) => info.getValue(),
     header: 'Stakeholder',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      canWinStakeholder(b.original)
-        ? 1
-        : canWinStakeholder(a.original)
-          ? -1
-          : a.original.stakeholderScore! - b.original.stakeholderScore!,
+    sortingFn: createStakeholderSortFn(),
   }),
   columnHelper.accessor((row) => (row.status === 'won' ? row.contractorScore : ''), {
     id: 'contractor',
     cell: (info) => info.getValue(),
     header: 'Contractor',
     sortDescFirst: false,
-    sortingFn: (a, b) =>
-      a.getValue('status') !== 'won'
-        ? 1
-        : b.getValue('status') !== 'won'
-          ? -1
-          : a.original.contractorScore! - b.original.contractorScore!,
+    sortingFn: createWinnerSortFn((data) => data.contractorScore!),
   }),
 ];
 
-const canWinStakeholder = (data: TableData) =>
-  data.status === 'won' &&
-  !Object.entries(data.eventChoices!).some(([eventName, choice]) =>
-    currentGame.value.config.events[eventName].choices?.[choice].effects?.some(
-      (effect) => effect.excludeStakeholderWin,
-    ),
-  );
 const getDurationModification = (eventChoices: Record<string, string>) =>
   Object.entries(eventChoices).reduce((acc, [eventName, choice]) => {
     return (
