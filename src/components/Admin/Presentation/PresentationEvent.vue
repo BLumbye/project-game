@@ -1,6 +1,6 @@
 <template>
-  <div class="presentation-event" :class="{ 'no-event': event === undefined }">
-    <template v-if="event === undefined">
+  <div class="presentation-event" :class="{ 'no-event': events.length === undefined }">
+    <template v-if="events.length === undefined">
       <div class="event-text">
         <p class="current-time">{{ `${capitalize(currentGame.config.durationIdentifier.singular)} ${currentTime}` }}</p>
         <p class="nothing-to-report">
@@ -9,11 +9,19 @@
       </div>
     </template>
     <template v-else>
-      <img :src="event.image" :alt="event.title" class="event-image" />
+      <img :src="currentEvent.image" :alt="currentEvent.title" class="event-image" />
       <div class="event-text">
         <p class="current-time">{{ `${capitalize(currentGame.config.durationIdentifier.singular)} ${currentTime}` }}</p>
-        <p class="event-title">{{ event.title }}</p>
-        <p class="event-description">{{ event.description }}</p>
+        <p class="event-title">{{ currentEvent.title }}</p>
+        <p class="event-description">{{ currentEvent.description }}</p>
+        <div class="event-buttons" v-if="events.length > 1">
+          <button class="event-button" @click="currentEventIndex--" :disabled="currentEventIndex === 0">
+            Previous
+          </button>
+          <button class="event-button" @click="currentEventIndex++" :disabled="currentEventIndex === events.length - 1">
+            Next
+          </button>
+        </div>
       </div>
     </template>
   </div>
@@ -24,10 +32,35 @@ import { Games } from '~/pocketbase';
 import { capitalize } from '~/utils/formatters';
 import { Event as TEvent } from '~/types/types';
 
-defineProps<{
-  event?: TEvent;
+const props = defineProps<{
+  events: TEvent[];
+  nextEvents: TEvent[];
   currentTime: number;
 }>();
+
+const currentEventIndex = ref(0);
+
+const currentEvent = computed(() => {
+  return props.events[currentEventIndex.value];
+});
+
+watch(
+  () => props.currentTime,
+  () => (currentEventIndex.value = 0),
+);
+
+// Preload images for next events
+watch(
+  () => props.nextEvents,
+  (newEvents) => {
+    newEvents.forEach((event) => {
+      if (event.image) {
+        const img = new Image();
+        img.src = event.image;
+      }
+    });
+  },
+);
 
 const currentGame = inject<Ref<Games>>('currentGame')!;
 </script>
@@ -73,5 +106,12 @@ const currentGame = inject<Ref<Games>>('currentGame')!;
 
 .event-text {
   max-width: 40vw;
+}
+
+.event-buttons {
+  display: flex;
+  margin-top: 1rem;
+  width: 40vw;
+  justify-content: space-between;
 }
 </style>

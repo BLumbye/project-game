@@ -13,7 +13,12 @@
     </div>
     <div class="game-slide" v-if="slide === 2">
       <OverviewTable :duration="currentGame.config.projectDuration" :currentTime="currentGame.current_week" />
-      <PresentationEvent class="presentation-event" :event="currentEvent" :currentTime="currentGame.current_week" />
+      <PresentationEvent
+        class="presentation-event"
+        :events="currentEvent"
+        :next-events="nextEvents"
+        :currentTime="currentGame.current_week"
+      />
       <div class="timer-status-container">
         <Timer class="timer" ref="timer" @finished="play" />
         <Status class="status" @next-week="timer!.resetTimer()" />
@@ -25,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { onKeyStroke, useFullscreen } from '@vueuse/core';
+import { onKeyStroke, useFullscreen, useKeyModifier } from '@vueuse/core';
 import { AdminData } from '~/hooks/adminData';
 import { Games } from '~/pocketbase';
 import { Fullscreen } from 'lucide-vue-next';
@@ -42,7 +47,15 @@ const { play } = useSound(timerSound);
 const timer = useTemplateRef<typeof Timer>('timer');
 
 const currentEvent = computed(() => {
-  return Object.values(currentGame.value.config.events).find((event) => event.week === currentGame.value.current_week);
+  return Object.values(currentGame.value.config.events).filter(
+    (event) => event.week === currentGame.value.current_week,
+  );
+});
+
+const nextEvents = computed(() => {
+  return Object.values(currentGame.value.config.events).filter(
+    (event) => event.week === currentGame.value.current_week + 1,
+  );
 });
 
 // const currentEvent = computed(() => {
@@ -52,6 +65,8 @@ const currentEvent = computed(() => {
 const presentationContainer = useTemplateRef<HTMLDivElement>('presentation-container');
 const { isFullscreen, enter, exit, toggle } = useFullscreen(presentationContainer);
 
+const ctrlState = useKeyModifier('Control');
+
 onKeyStroke('ArrowRight', () => {
   if (slide.value >= 2) return;
   slide.value++;
@@ -59,6 +74,7 @@ onKeyStroke('ArrowRight', () => {
 
 onKeyStroke('ArrowLeft', () => {
   if (slide.value <= 0) return;
+  if (slide.value == 2 && !ctrlState.value) return;
   slide.value--;
 });
 </script>
