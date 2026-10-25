@@ -19,9 +19,14 @@ The workflow **Publish Docker image** runs on every push to `master`, and can al
 ### Deploying
 On a server with Docker and a domain pointing to it (ports 80 and 443 open):
 
-1. Copy `docker-compose.yml`, `.env.example` and `pb_schema.json` from this repository to a folder on the server, and rename `.env.example` to `.env`.
+1. Copy `docker-compose.yml`, `.env.example` and `pb_schema.json` from this repository to a folder on the server, and rename `.env.example` to `.env`. From the repository root (replace `user@server` and the folder as needed):
+   ```shell
+   ssh user@server 'mkdir -p ~/project-game'
+   scp docker-compose.yml pb_schema.json user@server:~/project-game/
+   scp .env.example user@server:~/project-game/.env
+   ```
 2. Fill in `DOMAIN`, `PB_ADMIN_EMAIL` and `PB_ADMIN_PASSWORD` in `.env`.
-3. Start it:
+3. Start it from that folder:
    ```shell
    docker compose up -d
    ```
