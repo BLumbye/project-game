@@ -1,0 +1,75 @@
+services:
+  app:
+    image: ghcr.io/blumbye/project-game:${TAG:-latest}
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      pocketbase:
+        condition: service_healthy
+
+  pocketbase:
+    # Community image, 0.22.x matches the PocketBase JS SDK (0.21) used by the app
+    image: ghcr.io/muchobien/pocketbase:0.22.32
+    restart: unless-stopped
+    environment:
+      PB_ADMIN_EMAIL: ${PB_ADMIN_EMAIL:?Set PB_ADMIN_EMAIL in .env}
+      PB_ADMIN_PASSWORD: ${PB_ADMIN_PASSWORD:?Set PB_ADMIN_PASSWORD in .env}
+    volumes:
+      - pb_data:/pb_data
+      - ./pb_schema.json:/pb_schema.json:ro
+    configs:
+      - source: pb_init_migration
+        target: /pb_migrations/1700000000_init.js
+    healthcheck:
+      test: wget -q --spider http://127.0.0.1:8090/api/health || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Pulls and restarts the app when a new image is published (only containers labelled above)
+  watchtower:
+    image: nickfedor/watchtower:1.23.2
+    restart: unless-stopped
+    environment:
+      WATCHTOWER_LABEL_ENABLE: 'true'
+      WATCHTOWER_POLL_INTERVAL: ${UPDATE_INTERVAL:-300}
+      WATCHTOWER_CLEANUP: 'true'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+configs:
+  # Runs once on an empty database: imports pb_schema.json (exported via Settings > Export collections)
+  # and creates the admin account. "$$" escapes "$" for Compose.
+  pb_init_migration:
+    content: |
+      migrate((db) => {
+        const dao = new Dao(db);
+
+        const bytes = $$os.readFile('/pb_schema.json');
+        let encoded = '';
+        for (let i = 0; i < bytes.length; i++) {
+          encoded += '%' + ('0' + (bytes[i] & 0xff).toString(16)).slice(-2);
+        }
+        const snapshot = JSON.parse(decodeURIComponent(encoded));
+        dao.importCollections(snapshot.map((item) => new Collection(item)), false, null);
+
+        const admin = new Admin();
+        admin.email = $$os.getenv('PB_ADMIN_EMAIL');
+        admin.setPassword($$os.getenv('PB_ADMIN_PASSWORD'));
+        dao.saveAdmin(admin);
+      });
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pb_data:

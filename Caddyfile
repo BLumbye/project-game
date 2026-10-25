@@ -1,0 +1,15 @@
+# DOMAIN enables automatic HTTPS (Let's Encrypt). Defaults to localhost (self-signed) for local testing.
+{$DOMAIN:localhost} {
+	@pocketbase path /api/* /_ /_/*
+	handle @pocketbase {
+		reverse_proxy {$POCKETBASE_UPSTREAM:pocketbase:8090}
+	}
+
+	handle {
+		encode zstd gzip
+		root * /srv
+		header /assets/* Cache-Control "public, max-age=31536000, immutable"
+		try_files {path} /index.html
+		file_server
+	}
+}

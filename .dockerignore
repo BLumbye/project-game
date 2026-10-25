@@ -1,0 +1,12 @@
+.git
+.github
+.vscode
+node_modules
+dist
+Diagrams
+Favicon
+pb_schema.json
+docker-compose.yml
+.env
+.env.*
+*.log
